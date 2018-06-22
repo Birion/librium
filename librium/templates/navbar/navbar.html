@@ -1,0 +1,43 @@
+{% set endpoint = request.endpoint.split(".")[0] %}
+{% if endpoint == "admin" %}
+    {% set navclass="is-info" %}
+{% elif overdue %}
+    {% set navclass="is-black" %}
+{% else %}
+    {% set navclass="is-dark" %}
+{% endif %}
+{% if current_user.is_admin %}
+    {% set admin = True %}
+{% endif %}
+{% set current_month = pendulum.today("UTC").month %}
+{% set next_month = pendulum.today("UTC").add(months=1).month %}
+
+<nav class="navbar is-spaced is-fixed-top {{ navclass }}" role="navigation" aria-label="dropdown navigation">
+    <div class="navbar-menu">
+        {% include "navbar/navbar/brand.html" %}
+        {% if current_user.is_authenticated %}
+            <div class="navbar-start">
+                {% include "navbar/navbar/dropdown_main.html" %}
+                {% include "navbar/navbar/dropdown_customers.html" %}
+                {% include "navbar/navbar/dropdown_assignees.html" %}
+                {% include "navbar/navbar/search.html" %}
+            </div>
+            {% include "navbar/navbar/tags.html" %}
+            <div class="navbar-end">
+                {% if current_user.is_timing_out %}
+                    <div class="navbar-item tag is-danger">Password timing out soon!</div>
+                {% endif %}
+                {% include "navbar/navbar/dropdown_admin.html" %}
+            </div>
+        {% else %}
+            <div class="navbar-start">
+                <a class="navbar-item">Patch advisory tracking</a>
+            </div>
+            <div class="navbar-end">
+                {% if not endpoint == "setup" %}
+                    <a class="navbar-item" href="{{ url_for("auth.login") }}">Log in</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</nav>

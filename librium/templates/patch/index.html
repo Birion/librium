@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ advisory.number }}{% endblock %}
+
+{% block content %}
+    {% set id = advisory.id %}
+    {% set admin = current_user.is_admin %}
+    {% set readonly = "readonly" if not (admin and not validated) %}
+    {% set static = "is-static" if not (admin and not validated) %}
+    {% set change = advisory.change if advisory.change %}
+    {% set validated = advisory.validated %}
+    <section class="section">
+        <div class="container">
+            <form method="post" class="form" action="{{ url_for("patch.update", pid=advisory.number) }}">
+                {% include "patch/patch/form/hidden.html" %}
+                {% include "patch/patch/form/headings.html" %}
+                {% include "patch/patch/form/info.html" %}
+
+                <div class="columns">
+                    {% include "patch/patch/form/applicability.html" %}
+                    {% include "patch/patch/form/validation.html" %}
+                </div>
+
+                {% include "patch/patch/form/attachments.html" %}
+
+                {% include "patch/patch/form/buttons.html" %}
+            </form>
+        </div>
+    </section>
+    {% if advisory.updates %}
+        {% include "patch/patch/form/updates.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {% if current_user.is_admin %}
+        {% include "patch/patch/scripts.html" %}
+    {% endif %}
+{% endblock %}
+{% block styles %}
+    {% if current_user.is_admin %}
+        {% include "patch/patch/styles.html" %}
+    {% endif %}
+{% endblock %}
+{% block modal %}{% include "patch/patch/modal.html" %}{% endblock %}

@@ -1,0 +1,47 @@
+<div class="navbar-item has-dropdown is-hoverable">
+    <a class="navbar-link">Patch advisory tracking</a>
+    <div class="navbar-dropdown is-boxed">
+        <a class="navbar-item" href="{{ url_for("main.index") }}">Home</a>
+        <div class="navbar-divider"></div>
+        {% set pattern = re.compile("^/month/(\d+)$") %}
+        {% set match = pattern.match(request.path) %}
+        {% if match %}
+            {% set mid = match.group(1) %}
+            {% set mid = mid|int %}
+            {% if mid == current_month %}
+                {% set cur_class = " has-text-weight-bold" %}
+            {% elif mid == next_month %}
+                {% set next_class = " has-text-weight-bold" %}
+            {% else %}
+            {% endif %}
+        {% endif %}
+        <a href="{{ url_for("main.month", mid=current_month) }}"
+           class="navbar-item{{ cur_class }}">Current month</a>
+        <a href="{{ url_for("main.month", mid=next_month) }}"
+           class="navbar-item{{ next_class }}">Next month</a>
+        <div class="navbar-divider"></div>
+        <a href="{{ url_for("main.unassigned") }}" class="navbar-item">Unassigned</a>
+        <a href="{{ url_for("main.assigned") }}" class="navbar-item">Assigned</a>
+        <div class="navbar-divider"></div>
+        <a href="{{ url_for("main.breaching") }}" class="navbar-item">Breaching</a>
+        <a href="{{ url_for("main.overdue") }}" class="navbar-item">Overdue</a>
+        {% if current_user.is_admin %}
+            <div class="navbar-divider"></div>
+            <a href="{{ url_for("main.to_validate") }}" class="navbar-item">For validation</a>
+            <a href="{{ url_for("main.resolved") }}" class="navbar-item">Resolved</a>
+        {% endif %}
+        {% if endpoint == "main" %}
+            <div class="navbar-divider"></div>
+            <a href="?all" class="navbar-item is-italic is-size-7">Single page</a>
+        {% endif %}
+        {% if current_user.is_admin %}
+            <div class="navbar-divider"></div>
+            <a class="navbar-item" href="{{ url_for("patch.create") }}">
+                Create new advisory
+            </a>
+            <a class="navbar-item" href="{{ url_for("patch.multiple") }}">
+                Create multiple advisories
+            </a>
+        {% endif %}
+    </div>
+</div>

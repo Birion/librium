@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Password reset</title>
+</head>
+<body>
+<p>Hello {{ user.fullname }},</p>
+
+<p>you (or someone else) requested password reset for {{ user.username }} for the <strong>Patch advisory
+    management</strong> portal. If you didn't request anything, you can ignore this email. Otherwise, click <a
+        href="{{ url_for("auth.reset", _external=True, email=user.email, token=user.token) }}">this link</a> to reset
+    your password. You can also copy this url into your browser address bar:</p>
+
+<pre><code>{{ url_for("auth.reset", _external=True, email=user.email, token=user.token) }}</code></pre>
+
+<p>The reset token times out at <strong>{{ user.token_timeout }}</strong></p>
+
+</body>
+</html>

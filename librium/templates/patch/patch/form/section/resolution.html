@@ -1,0 +1,24 @@
+<div class="field is-horizontal">
+    <div class="field-label is-normal">
+        <label class="label">Resolved</label>
+    </div>
+    <div class="field-body">
+        <div class="field">
+            {% if advisory.resolved %}
+                <p class="control is-expanded has-icons-left">
+                    <input title="Resolved" type="text" id="resolved" class="is-static input" name="resolved"
+                           value="OK">
+                    <span class="icon is-small is-left has-text-success"><i class="fas fa-check"></i></span>
+                </p>
+            {% else %}
+                <p class="control">
+                    <a class="button is-primary" id="resolve"
+                       data-url="{{ url_for("patch.resolve", pid=advisory.number) }}">
+                        <span class="icon is-small"><i class="fas fa-check"></i></span>
+                        <span>Resolve</span>
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>

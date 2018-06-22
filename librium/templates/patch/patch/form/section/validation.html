@@ -1,0 +1,58 @@
+{% if advisory.resolved %}
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Validated</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                {% if advisory.validated %}
+                    <p class="control is-expanded has-icons-left">
+                        <input title="validated" type="text" id="validated" class="is-static input" name="validated"
+                               value="OK">
+                        <span class="icon is-small is-left has-text-success"><i class="fas fa-check"></i></span>
+                    </p>
+                {% else %}
+                    {% if admin %}
+                        <p class="control">
+                            <a class="button is-primary" id="validate"
+                               data-url="{{ url_for("patch.validate", pid=advisory.number) }}">
+                                <span class="icon is-small"><i class="fas fa-check"></i></span>
+                                <span>Validate</span>
+                            </a>
+                        </p>
+                    {% else %}
+                        <p class="control is-expanded has-icons-left">
+                            <input title="Validated" type="text" class="is-static input" value="No">
+                            <span class="icon is-small is-left has-text-danger"><i class="fas fa-times"></i></span>
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label" for="validator">by</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                <div class="control is-expanded">
+                    <input id="validator" type="text" class="input is-static" value="{{ advisory.validator.fullname }}">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label" for="validate_datetime">on</label>
+        </div>
+        <div class="field-body">
+            <div class="field">
+                <div class="control is-expanded">
+                    <input id="validate_datetime" type="text" class="input is-static"
+                           value="{{ utils.isodatetime(advisory.validate_datetime)|trim }}">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

@@ -1,0 +1,50 @@
+{% import "misc/_utils.html" as utils %}
+<!doctype html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %} - Patch advisories</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/bulma.min.css") }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+          integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/lightbox.min.css") }}">
+    {% block styles %}{% endblock %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    {% include "misc/favicon.html" %}
+</head>
+<body class="has-navbar-fixed-top has-navbar-fixed-bottom">
+<main>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <section class="section">
+                {% set message_categories = {"message": "is-info", "info": "is-info", "success": "is-success", "warning": "is-warning", "error": "is-danger"} %}
+                {% for category, message in messages %}
+                    <div class="notification {{ message_categories[category] }}">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    {% block header %}{% endblock %}
+    {% block modal %}{% endblock %}
+    {% block content %}{% endblock %}
+</main>
+<footer>
+    {% block footer %}{% endblock %}
+</footer>
+
+{#{% include "navbar/navbar.html" %}#}
+
+<script src="{{ url_for("static", filename="js/main.min.js") }}"></script>
+<script src="{{ url_for("static", filename="js/lightbox.min.js") }}"></script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<div class="navbar-item has-dropdown is-hoverable">
+    <a class="navbar-link">Administration</a>
+    <div class="navbar-dropdown is-boxed is-right">
+        <div class="navbar-item has-text-weight-bold has-text-grey-light">{{ current_user.fullname }}</div>
+        <div class="navbar-divider"></div>
+        {% if admin %}
+            <a href="{{ url_for("admin.index") }}" class="navbar-item">Administrative area</a>
+        {% endif %}
+        {% if current_user.is_timing_out %}
+            <a class="navbar-item has-text-danger" href="{{ url_for("user.profile") }}">User profile</a>
+        {% else %}
+            <a class="navbar-item" href="{{ url_for("user.profile") }}">User profile</a>
+        {% endif %}
+        <div class="navbar-divider"></div>
+        <a class="navbar-item" href="{{ url_for('auth.logout') }}">Log out</a>
+    </div>
+</div>

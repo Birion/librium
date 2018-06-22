@@ -1,0 +1,41 @@
+{% macro assignee() %}
+    <div class="select is-fullwidth">
+        {% if advisory.applicable %}
+            <select name="assignee" id="assignee">
+        {% else %}
+            <select name="assignee" id="assignee" disabled>
+        {% endif %}
+        <option value="">Assignee...</option>
+        {% for assignee in g.users %}
+            {% if assignee.is_active %}
+                {% if assignee.id == advisory.assignee.id %}
+                    <option value="{{ assignee.id }}" selected="selected">{{ assignee.fullname }}</option>
+                {% else %}
+                    <option value="{{ assignee.id }}">{{ assignee.fullname }}</option>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        </select>
+    </div>
+{% endmacro %}
+<div class="field is-horizontal">
+    <div class="field-label">
+        <label class="label" for="assignee">Assignee</label>
+    </div>
+    <div class="field-body">
+        <div class="field">
+            <div class="control is-expanded">
+                {% if admin %}
+                    {{ assignee() }}
+                {% else %}
+                    {% if not advisory.assignee %}
+                        {{ assignee() }}
+                    {% else %}
+                        <input name="assignee" type="text" class="input is-static" id="assignee"
+                               value="{{ advisory.assignee.fullname }}" readonly>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

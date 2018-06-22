@@ -1,0 +1,568 @@
+swagger: '2.0'
+info:
+  description: A simple book database.
+  version: 1.0.0
+  title: librium
+  contact:
+    email: ondrej.vagner@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+consumes:
+- application/json
+produces:
+- application/json
+
+tags:
+- name: book
+  description: Show information about your books
+paths:
+
+  /books:
+    get:
+      tags:
+      - Book
+      summary: List all books
+      description: ""
+      operationId: librium.api.book.read
+      parameters:
+        - $ref: "#/parameters/length"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/sort"
+        - $ref: "#/parameters/asc"
+      responses:
+        200:
+          description: List of books from database
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/Book"
+  /book:
+    post:
+      tags:
+      - Book
+      summary: Create a new book
+      description: ""
+      operationId: librium.api.book.create
+      parameters:
+      - name: book
+        in: body
+        description: Book to be created
+        required: true
+        schema:
+          $ref: "#/definitions/Book"
+      responses:
+        201:
+          description: Successfully created a book
+  /book/{id}:
+    get:
+      operationId: librium.api.book.read_by_id
+      tags:
+      - Book
+      summary: Get one book from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully found book from the database
+          schema:
+            $ref: "#/definitions/Book"
+    put:
+      operationId: librium.api.book.update_by_id
+      tags:
+      - Book
+      summary: Update book
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      - name: book
+        in: body
+        schema:
+          $ref: "#/definitions/Book"
+      responses:
+        200:
+          description: Successfully updated the book
+    delete:
+      operationId: librium.api.book.delete_by_id
+      tags:
+      - Book
+      summary: Remove a book from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully deleted the book from the database
+        404:
+          description: No book found
+  /book/{isbn}:
+    get:
+      operationId: librium.api.book.read_by_isbn
+      tags:
+      - Book
+      summary: Get one book from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/isbn"
+      responses:
+        200:
+          description: Successfully found book from the database
+          schema:
+            $ref: "#/definitions/Book"
+    put:
+      operationId: librium.api.book.update_by_isbn
+      tags:
+      - Book
+      summary: Update book
+      description: ""
+      parameters:
+      - $ref: "#/parameters/isbn"
+      - name: book
+        in: body
+        schema:
+          $ref: "#/definitions/Book"
+      responses:
+        200:
+          description: Successfully updated the book
+    delete:
+      operationId: librium.api.book.delete_by_isbn
+      tags:
+      - Book
+      summary: Remove a book from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/isbn"
+      responses:
+        200:
+          description: Successfully deleted the book from the database
+        404:
+          description: No book found
+
+  /authors:
+    get:
+      tags:
+      - Author
+      summary: List all authors
+      description: ""
+      operationId: librium.api.author.read
+      parameters:
+        - $ref: "#/parameters/length"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/sort"
+        - $ref: "#/parameters/asc"
+      responses:
+        200:
+          description: List of authors from database
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/Author"
+  /author:
+    post:
+      tags:
+      - Author
+      summary: Create a new author
+      description: ""
+      operationId: librium.api.author.create
+      parameters:
+      - name: author
+        in: body
+        description: Author to be created
+        required: true
+        schema:
+          $ref: "#/definitions/Author"
+      responses:
+        201:
+          description: Successfully created a new author
+  /author/{id}:
+    get:
+      operationId: librium.api.author.read_one
+      tags:
+      - Author
+      summary: Get one author from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully found the author in the database
+          schema:
+            $ref: "#/definitions/Author"
+    put:
+      operationId: librium.api.author.update
+      tags:
+      - Author
+      summary: Update an author
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      - name: author
+        in: body
+        schema:
+          $ref: "#/definitions/Author"
+      responses:
+        200:
+          description: Successfully updated the author
+    delete:
+      operationId: librium.api.author.delete
+      tags:
+      - Author
+      summary: Remove an author from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully deleted the author from the database
+        404:
+          description: No author found
+
+  /genres:
+    get:
+      tags:
+      - Genre
+      summary: List all genres
+      description: ""
+      operationId: librium.api.genre.read
+      parameters:
+        - $ref: "#/parameters/length"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/sort"
+        - $ref: "#/parameters/asc"
+      responses:
+        200:
+          description: List of genres from database
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/Genre"
+  /genre:
+    post:
+      tags:
+      - Genre
+      summary: Create a new genre
+      description: ""
+      operationId: librium.api.genre.create
+      parameters:
+      - name: genre
+        in: body
+        description: Genre to be created
+        required: true
+        schema:
+          $ref: "#/definitions/Genre"
+      responses:
+        201:
+          description: Successfully created a new genre
+  /genre/{id}:
+    get:
+      operationId: librium.api.genre.read_one
+      tags:
+      - Genre
+      summary: Get one genre from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully found the genre in the database
+          schema:
+            $ref: "#/definitions/Genre"
+    put:
+      operationId: librium.api.genre.update
+      tags:
+      - Genre
+      summary: Update a genre
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      - name: genre
+        in: body
+        schema:
+          $ref: "#/definitions/Genre"
+      responses:
+        200:
+          description: Successfully updated the genre
+    delete:
+      operationId: librium.api.genre.delete
+      tags:
+      - Genre
+      summary: Remove a genre from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully deleted the genre from the database
+        404:
+          description: No genre found
+
+  /publishers:
+    get:
+      tags:
+      - Publisher
+      summary: List all publishers
+      description: ""
+      operationId: librium.api.publisher.read
+      parameters:
+        - $ref: "#/parameters/length"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/sort"
+        - $ref: "#/parameters/asc"
+      responses:
+        200:
+          description: List of publishers from database
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/Publisher"
+  /publisher:
+    post:
+      tags:
+      - Publisher
+      summary: Create a new publisher
+      description: ""
+      operationId: librium.api.publisher.create
+      parameters:
+      - name: publisher
+        in: body
+        description: Publisher to be created
+        required: true
+        schema:
+          $ref: "#/definitions/Publisher"
+      responses:
+        201:
+          description: Successfully created a new publisher
+  /publisher/{id}:
+    get:
+      operationId: librium.api.publisher.read_one
+      tags:
+      - Publisher
+      summary: Get one publisher from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully found the publisher in the database
+          schema:
+            $ref: "#/definitions/Publisher"
+    put:
+      operationId: librium.api.publisher.update
+      tags:
+      - Publisher
+      summary: Update a publisher
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      - name: publisher
+        in: body
+        schema:
+          $ref: "#/definitions/Publisher"
+      responses:
+        200:
+          description: Successfully updated the publisher
+    delete:
+      operationId: librium.api.publisher.delete
+      tags:
+      - Publisher
+      summary: Remove a publisher from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully deleted the publisher from the database
+        404:
+          description: No publisher found
+
+  /series:
+    get:
+      tags:
+      - Series
+      summary: List all series
+      description: ""
+      operationId: librium.api.series.read
+      parameters:
+        - $ref: "#/parameters/length"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/sort"
+        - $ref: "#/parameters/asc"
+      responses:
+        200:
+          description: List of series from database
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/Series"
+    post:
+      tags:
+      - Series
+      summary: Create a new series
+      description: ""
+      operationId: librium.api.series.create
+      parameters:
+      - name: series
+        in: body
+        description: Series to be created
+        required: true
+        schema:
+          $ref: "#/definitions/Series"
+      responses:
+        201:
+          description: Successfully created a new series
+  /series/{id}:
+    get:
+      operationId: librium.api.series.read_one
+      tags:
+      - Series
+      summary: Get one series from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully found the series in the database
+          schema:
+            $ref: "#/definitions/Series"
+    put:
+      operationId: librium.api.series.update
+      tags:
+      - Series
+      summary: Update a series
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      - name: series
+        in: body
+        schema:
+          $ref: "#/definitions/Series"
+      responses:
+        200:
+          description: Successfully updated the series
+    delete:
+      operationId: librium.api.series.delete
+      tags:
+      - Series
+      summary: Remove a series from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully deleted the series from the database
+        404:
+          description: No series found
+
+parameters:
+  id:
+    name: id
+    in: path
+    description: ID
+    type: integer
+    required: true
+  isbn:
+    name: isbn
+    in: path
+    description: ISBN
+    type: string
+    required: true
+  length:
+    name: length
+    in: query
+    type: integer
+    default: 50
+    description: Number to get
+    required: false
+  offset:
+    name: offset
+    in: query
+    type: integer
+    default: 0
+    description: Offset from the beginning
+    required: false
+  sort:
+    name: sort
+    in: query
+    type: string
+    default: id
+    description: Sort-by field
+    required: false
+  asc:
+    name: asc
+    in: query
+    type: boolean
+    default: true
+    description: Sort in ascending order
+    required: false
+
+definitions:
+  Author:
+    type: object
+    required:
+    - first_name
+    - last_name
+    properties:
+      first_name:
+        type: string
+        description: First name of the author
+      last_name:
+        type: string
+        description: Last name of the author
+      middle_name:
+        type: string
+        description: Middle name of the author, if any
+      prefix:
+        type: string
+        description: Author's title as a prefix
+      suffix:
+        type: string
+        description: Author's title as a suffix
+  Book:
+    type: object
+    required:
+    - title
+    properties:
+      title:
+        type: string
+        description: Book title
+      genres:
+        type: array
+        description: Book genre(s)
+        items:
+          $ref: "#/definitions/Genre"
+      format:
+        type: string
+        description: Book format
+      price:
+        type: integer
+        description: Original book price
+      page_count:
+        type: integer
+        description: Book page count
+      authors:
+        type: array
+        description: Book author(s)
+        items:
+        - $ref: "#/definitions/Author"
+      publishers:
+        type: array
+        description: Book publisher(s)
+        items:
+          $ref: "#/definitions/Publisher"
+  Genre:
+    type: string
+  Publisher:
+    type: object
+    required:
+      - name
+    properties:
+      id:
+        type: integer
+        description: Publisher ID
+      name:
+        type: string
+        description: Publisher name
+  Series:
+    type: string

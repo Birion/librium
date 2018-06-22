@@ -1,0 +1,72 @@
+{% extends "admin/index.html" %}
+
+{% block adswitch %}
+    <div class="level-left">
+        <div class="level-item">
+            <p class="title"><a href="{{ url_for("admin.active") }}">Users</a></p>
+            <p class="title">&nbsp;|&nbsp;</p>
+            <p class="title">Customers</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block adminor %}
+    <div class="level-right">
+        <div class="level-item">
+            <a id="modal-init" class="is-size-7">Add new customer</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block adlist %}
+    {% for customer in g.customers %}
+        <nav class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input title="{{ customer.name }}" type="text" class="input is-static" readonly
+                                   name="customer" value="{{ customer.name }}" id="c{{ customer.id }}"
+                                   data-id="{{ customer.id }}">
+                        </div>
+                        <div class="control">
+                            <button class="button update" type="button" id="bu{{ customer.id }}"
+                                    data-url="{{ url_for("admin.customer_update") }}"
+                                    data-id="{{ customer.id }}"
+                                    title="Update">
+                                <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
+                            </button>
+                        </div>
+                        <div class="control">
+                            <button class="button commission" type="button" id="bd{{ customer.id }}"
+                                    data-url="{{ url_for("admin.customer_update") }}"
+                                    data-id="{{ customer.id }}"
+                                    {% if customer.active %}
+                                    title="Decommission"
+                                    {% else %}
+                                    title="Recommission"
+                                    {% endif %}
+                            >
+                                    <span class="icon is-small">
+                                {% if customer.active %}
+                                    <i class="fas fa-times has-text-danger"></i>
+                                {% else %}
+                                    <i class="fas fa-check has-text-success"></i>
+                                {% endif %}
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for("static", filename="js/customers.min.js") }}"></script>
+{% endblock %}
+
+{% block modal %}
+    {% include "admin/customers/modal.html" %}
+{% endblock %}

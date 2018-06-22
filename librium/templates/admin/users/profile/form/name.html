@@ -1,0 +1,21 @@
+<div class="field is-horizontal">
+    <div class="field-label is-normal">
+        <label for="name" class="label">Name</label>
+    </div>
+    <div class="field-body">
+        <div class="field">
+            <div class="control has-icons-left">
+                <input type="text" name="name" id="name" class="input" value="{{ user.name }}"
+                       placeholder="First name" required>
+                <span class="icon is-left"><i class="fas fa-user-circle"></i></span>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control has-icons-left">
+                <input type="text" name="surname" id="surname" class="input" value="{{ user.surname }}"
+                       placeholder="Surname" required>
+                <span class="icon is-left"><i class="fas fa-user-circle"></i></span>
+            </div>
+        </div>
+    </div>
+</div>

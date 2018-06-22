@@ -1,0 +1,51 @@
+<div class="columns">
+    <div class="column">
+        <div class="box">
+            <div class="field is-horizontal">
+                <div class="field-label">
+                    <label for="notes" class="label">Notes</label>
+                </div>
+                <div class="field-body">
+                    <div class="field content is-expanded"><textarea name="notes" id="notes" cols="20" rows="10"
+                                                                     class="textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="box">
+            <div class="field is-horizontal">
+                <div class="field-label"><label class="label">Attachments</label>
+                </div>
+                <div class="field-body">
+                    <ul>
+                        {% for attachment in advisory.attachments %}
+                            <li>
+                                <a target="_blank" id="att{{ attachment.id }}"
+                                   href="{{ url_for("attachment.index", content_hash=attachment.hash, filename=attachment.filename) }}">
+                                    {{ attachment.filename }}
+                                </a>
+                                {% if current_user.is_admin %}
+                                    <a data-url="{{ url_for("attachment.remove") }}" data-hash="{{ attachment.hash }}"
+                                       data-pid="{{ advisory.number }}"
+                                       class="attachment delete is-small"></a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label"></div>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="content is-expanded">
+                            <button id="attachment-button" class="button" type="button">Add new attachment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

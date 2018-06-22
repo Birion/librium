@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <section class="section has-text-centered">
+        <h1 class="title">{% block title %}New patch advisories{% endblock %}</h1>
+    </section>
+{% endblock %}
+
+{% block content %}
+    {% set csv_header = "number,customer,target,assignee\n" %}
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-two-thirds">
+                    <form method="post">
+                        <div class="field">
+                            <div class="control">
+                            <textarea title="New advisories" class="textarea is-left" name="advisories" id="advisories"
+                                      cols="30" rows="20">{{ csv_header }}</textarea>
+                            </div>
+                        </div>
+                        <div class="field is-grouped is-grouped-right">
+                            <div class="control">
+                                <button class="button is-primary" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="column">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent is-vertical">
+
+                            <div class="tile is-child box">
+                                <p class="title">Help</p>
+                                <p>Fill out the text field with one patch advisory per row in a <code>csv</code> format.
+                                    Keep the original header line.</p>
+                            </div>
+                            <div class="tile is-child box">
+                                <p class="subtitle">Target</p>
+                                <p>Write the target date in ISO format (YYYY-MM-DD).</p>
+                            </div>
+
+                            <div class="tile">
+                                <div class="tile is-child box is-5">
+                                    <p class="subtitle">Customers</p>
+                                    <article class="content">
+                                        <ul>
+                                            {% for customer in g.customers %}
+                                                <li>{{ customer.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </article>
+                                </div>
+                                <div class="tile is-child is-1"></div>
+                                <div class="tile is-child box is-6">
+                                    <p class="subtitle">Assignees</p>
+                                    <article class="content">
+                                        <ul>
+                                            {% for user in g.users %}
+                                                <li>{{ user.fullname }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </article>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

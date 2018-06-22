@@ -1,0 +1,55 @@
+{% macro isodate(date) %}{{ pendulum.parse(date.strftime("%Y-%m-%d %H:%M:%S.%f")).to_date_string() }}{% endmacro %}
+{% macro isodatetime(date) %}
+    {% if date %}
+        {% set date_in = date.strftime("%Y-%m-%d %H:%M:%S.%f") %}
+        {% set tzl = pendulum.local_timezone() %}
+        {{ pendulum.parse(date_in).in_timezone(tzl).to_datetime_string() }}
+    {% endif %}
+{% endmacro %}
+{% macro url(target, id, text=None, utype="cid") -%}
+    {% set text = id if not text else text %}
+    {% if utype == "cid" %}
+        <a href="{{ url_for(target, cid=id) }}">{{ text }}</a>
+    {% elif utype =="pid" %}
+        <a href="{{ url_for(target, pid=id) }}">{{ text }}</a>
+    {% elif utype =="uid" %}
+        <a href="{{ url_for(target, uid=id) }}">{{ text }}</a>
+    {% endif %}
+{%- endmacro %}
+{% macro exists(var) -%}
+    {{ var if var else "" }}
+{%- endmacro %}
+{% macro checkbox(state, id) -%}
+    <label for="cb{{ id }}" class="checkbox">
+        {% if state %}
+            <input type="checkbox" id="cb{{ id }}" checked="{{ state }}">
+        {% else %}
+            <input type="checkbox" id="cb{{ id }}">
+        {% endif %}
+        <span id="cbState{{ id }}"></span>
+    </label>
+{%- endmacro %}
+{% macro c_months(cid, mid, comp, current = true) -%}
+    {% set class_minus = "navbar-item is-size-7" %}
+    {% set class_plus = class_minus + " has-text-weight-bold" %}
+    {% set text = "Current month" if current else "Next month" %}
+    {% if not mid or mid != comp %}
+        <a href="{{ url_for("main.customer_month", cid=cid, mid=comp) }}"
+           class="{{ class_minus }}">{{ text }}</a>
+    {% else %}
+        <a href="{{ url_for("main.customer_month", cid=cid, mid=comp) }}"
+           class="{{ class_plus }}">{{ text }}</a>
+    {% endif %}
+{%- endmacro %}
+{% macro a_months(uid, mid, comp, current = true) -%}
+    {% set class_minus = "navbar-item is-size-7 has-text-right" %}
+    {% set class_plus = class_minus + " has-text-weight-bold" %}
+    {% set text = "Current month" if current else "Next month" %}
+    {% if not mid or mid != comp %}
+        <a href="{{ url_for("main.assignee_month", uid=uid, mid=comp) }}"
+           class="{{ class_minus }}">{{ text }}</a>
+    {% else %}
+        <a href="{{ url_for("main.assignee_month", uid=uid, mid=comp) }}"
+           class="{{ class_plus }}">{{ text }}</a>
+    {% endif %}
+{%- endmacro %}

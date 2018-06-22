@@ -1,0 +1,10 @@
+<script src="{{ url_for("static", filename="js/moment.js") }}"></script>
+<script src="{{ url_for("static", filename="js/pikaday.js") }}"></script>
+<script>
+    let picker = new Pikaday({
+        field: document.getElementById("target"),
+        firstDay: 1,
+        format: "YYYY-MM-DD",
+        minDate: moment().toDate()
+    });
+</script>

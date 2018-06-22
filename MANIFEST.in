@@ -1,0 +1,4 @@
+include README.md LICENSE
+graft patches/static
+graft patches/templates
+global-exclude *.pyc

@@ -1,0 +1,15 @@
+<div class="level-item">
+    {% if user.is_active %}
+        <a href="{{ url_for("admin.deactivate", uid=user.id) }}">Deactivate</a>
+    {% else %}
+        <a href="{{ url_for("admin.activate", uid=user.id) }}">Activate</a>
+    {% endif %}
+</div>
+<div class="level-item">&nbsp;|&nbsp;</div>
+<div class="level-item"><a href="{{ url_for("admin.user_update", uid=user.id) }}">Update</a></div>
+<div class="level-item">&nbsp;|&nbsp;</div>
+<div class="level-item"><a href="{{ url_for("admin.reset_password", uid=user.id) }}">Reset password</a></div>
+<div class="level-item">&nbsp;|&nbsp;</div>
+<div class="level-item"><a href="{{ url_for("admin.reset_timeout", uid=user.id) }}">Reset timeout</a></div>
+<div class="level-item">&nbsp;|&nbsp;</div>
+<div class="level-item"><a href="{{ url_for("admin.reset_token", uid=user.id) }}">New session token</a></div>

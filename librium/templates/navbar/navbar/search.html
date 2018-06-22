@@ -1,0 +1,14 @@
+<div class="navbar-item">
+    <form action="{{ url_for("main.search") }}" class="form" method="post">
+        <div class="field has-addons">
+            <div class="control has-icons-left">
+                <input name="search" title="Search" type="text" class="input is-small"
+                       placeholder="Advisory ID...">
+                <span class="icon is-left"><i class="fas fa-search"></i></span>
+            </div>
+            <div class="control">
+                <button type="submit" class="button is-small">Search</button>
+            </div>
+        </div>
+    </form>
+</div>

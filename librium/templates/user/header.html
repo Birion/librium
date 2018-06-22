@@ -1,0 +1,44 @@
+{% if current_user != user %}
+    {% set h_class="hero is-warning is-bold" %}
+{% else %}
+    {% set h_class="hero is-primary is-bold" %}
+{% endif %}
+<section class="{{ h_class }}">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <article class="media">
+                        <figure class="figure media-left">
+                            <p class="image is-128x128">
+                                <img src="https://robohash.org/{{ user.fullname }}.png?size=128x128&set=set4"
+                                     alt="Avatar">
+                            </p>
+                        </figure>
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title">User profile</p>
+                                <p class="subtitle">{{ user.fullname }}
+                                    {% if user.is_active %}
+                                        <span class="tag is-success">active</span>
+                                    {% else %}
+                                        <span class="tag is-danger">inactive</span>
+                                    {% endif %}
+                                    {% if user.is_admin %}
+                                        <span class="tag is-info">admin</span>
+                                    {% endif %}
+                                    {% if user.is_active and user.is_timing_out %}
+                                        <span class="tag is-warning">timing out</span>
+                                    {% endif %}
+                                    {% if user.is_active and user.is_timed_out %}
+                                        <span class="tag is-danger">timed out</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

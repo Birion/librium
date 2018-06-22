@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <section class="section has-text-centered">
+        <h1 class="title">{% block title %}Log in{% endblock %}</h1>
+    </section>
+{% endblock %}
+
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="is-one-third">
+                    <h1 class="title">Log in</h1>
+                    <div class="content box">
+                        <form method="post" class="form">
+                            {{ form.csrf_token }}
+                            <div class="field is-horizontal">
+                                <div class="field-label"><label for="username" class="label">Username</label></div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <p class="control has-icons-left">
+                                            <input class="input" type="text" name="username" id="username"
+                                                   placeholder="Username" required autofocus>
+                                            <span class="icon is-small is-left"><i class="fas fa-pencil-alt"></i></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field is-horizontal">
+                                <div class="field-label"><label for="password" class="label">Password</label></div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <p class="control has-icons-left">
+                                            <input class="input" type="password" name="password" id="password"
+                                                   placeholder="Password" required>
+                                            <span class="icon is-small is-left"><i class="fas fa-unlock-alt"></i></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field is-horizontal">
+                                <div class="field-label"></div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="buttons is-right">
+                                            <button class="button is-primary" type="submit">Log in</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="content has-text-right is-size-7">
+                        <a href="{{ url_for("auth.reset") }}">Reset your password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

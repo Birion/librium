@@ -1,0 +1,12 @@
+{% extends "setup/index.html" %}
+
+{% block sheader %}Success{% endblock %}
+
+{% block setup %}
+    <div class="content">
+        <p class="title">Congratulations!</p>
+        <p class="subtitle">You have successfully set up the <strong>Patch advisory tracking</strong> application!</p>
+        <p class="is-size-5">Click <a href="{{ url_for("main.index") }}">here</a> to start using your brand new
+            application.</p>
+    </div>
+{% endblock %}

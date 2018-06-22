@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = ">=1"
+connexion = ">=1"
+sqlalchemy = "*"
+sqlalchemy_utils = "*"
+alembic = "*"
+attrs = ">=18"
+pendulum = ">=2"
+python-dotenv = ">=0.8"
+psycopg2-binary = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

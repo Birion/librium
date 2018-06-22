@@ -1,0 +1,8 @@
+<div class="column">
+    {% if advisory.applicable or (advisory.resolved and admin) %}
+        <div class="box">
+            {% include "patch/patch/form/section/resolution.html" %}
+            {% include "patch/patch/form/section/validation.html" %}
+        </div>
+    {% endif %}
+</div>

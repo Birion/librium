@@ -1,0 +1,30 @@
+<div class="navbar-item has-dropdown is-hoverable">
+    <a class="navbar-link">Assignees</a>
+    <div class="navbar-dropdown is-boxed">
+        {% for user in g.users %}
+            {% if user.is_active %}
+                <a href="{{ url_for("main.assignee", uid=user.id) }}"
+                   class="navbar-item">{{ user.fullname }}</a>
+                {% if request.endpoint in ["main.assignee", "main.assignee_month"] %}
+                    {% set pattern = re.compile("/assignee/(\d+)(/month/(\d+))?") %}
+                    {% set match = pattern.match(request.path) %}
+                    {% if match %}
+                        {% set uid, _, mid = match.groups() %}
+                        {% set uid = uid|int %}
+                        {% if mid %}
+                            {% set mid = mid|int %}
+                        {% endif %}
+                    {% endif %}
+                    {% if user.id == uid %}
+                        <div class="navbar-divider"></div>
+                        {{ utils.a_months(uid, mid, current_month) }}
+                        {{ utils.a_months(uid, mid, next_month, false) }}
+                        {% if not loop.last %}
+                            <div class="navbar-divider"></div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

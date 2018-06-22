@@ -1,0 +1,32 @@
+<div class="field is-horizontal">
+    <div class="field-label is-normal">
+        <label class="label">Applicable</label>
+    </div>
+    <div class="field-body">
+        <div class="field">
+            {% if advisory.applicable in (true, false) %}
+                {% if advisory.applicable %}
+                    <input type="radio" id="applicableY" name="applicable"
+                           class="is-checkradio has-background-color is-success"
+                           disabled checked value="1">
+                    <label for="applicableY">Yes</label>
+                    <input type="radio" id="applicableN" name="applicable" class="is-checkradio" disabled value="0">
+                    <label for="applicableN">No</label>
+                {% else %}
+                    <input type="radio" id="applicableY" name="applicable" class="is-checkradio" disabled value="1">
+                    <label for="applicableY">Yes</label>
+                    <input type="radio" id="applicableN" name="applicable"
+                           class="is-checkradio has-background-color is-danger" disabled checked value="0">
+                    <label for="applicableN">No</label>
+                {% endif %}
+            {% else %}
+                <input type="radio" id="applicableY" name="applicable" class="is-checkradio has-background-color"
+                       value="1">
+                <label for="applicableY">Yes</label>
+                <input type="radio" id="applicableN" name="applicable" class="is-checkradio has-background-color"
+                       value="0">
+                <label for="applicableN">No</label>
+            {% endif %}
+        </div>
+    </div>
+</div>

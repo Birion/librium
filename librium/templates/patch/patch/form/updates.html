@@ -1,0 +1,37 @@
+<section class="section">
+    <div class="container">
+        <div class="box">
+            {% for update in advisory.updates %}
+                {% if update.user.is_admin %}
+                    {% set tag_colour = "is-success" %}
+                {% else %}
+                    {% set tag_colour = "is-info" %}
+                {% endif %}
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item">{{ loop.index }}</div>
+                        {% if update.attachment %}
+                            <div class="level-item">
+                                {% if advisory in update.attachment.advisories %}
+                                    {% set att_class = "is-success" %}
+                                {% else %}
+                                    {% set att_class = "is-danger" %}
+                                {% endif %}
+                                <div class="tag {{ att_class }}">{{ update.attachment.filename }}</div>
+                            </div>
+                            <div class="level-item has-text-weight-bold">{{ update.action|ed }}</div>
+                        {% else %}
+                            <div class="level-item has-text-weight-bold">{{ update.action|ed|capitalize }}</div>
+                        {% endif %}
+                        <div class="level-item">by</div>
+                        <div class="level-item">
+                            <div class="tag {{ tag_colour }}">{{ update.user.fullname }}</div>
+                        </div>
+                        <div class="level-item">on</div>
+                        <div class="level-item is-italic">{{ utils.isodatetime(update.stored)|trim }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

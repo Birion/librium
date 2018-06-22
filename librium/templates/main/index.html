@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+    {% set shrug = "¯\_(ツ)_/¯" %}
+    {% set table = "(╯°□°）╯︵ ┻━┻" %}
+    {% set happy = "ヾ(＠^∇^＠)ノ" %}
+    <section class="section">
+        <div class="container">
+            <table class="table is-striped is-hoverable is-fullwidth">
+                <thead>
+                <tr>
+                    <th>APAR number</th>
+                    <th>Customer</th>
+                    <th>Target date</th>
+                    <th>Created</th>
+                    <th>Created by</th>
+                    <th>Assigned to</th>
+                    <th>Applicable</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}
+
+{% block footer %}
+    {% if g.pages and g.pages|length > 1 %}
+        <div class="columns is-centered">
+            <div class="column is-two-thirds">
+                <nav class="pagination navbar is-transparent is-centered" role="navigation">
+                    {% if g.page != 1 %}
+                        <a href="?page={{ g.page - 1 }}" class="pagination-previous">Previous page</a>
+                    {% endif %}
+                    {% if g.page != g.count %}
+                        <a href="?page={{ g.page + 1 }}" class="pagination-next">Next page</a>
+                    {% endif %}
+                    <ul class="pagination-list">
+                        {% for page in g.pages %}
+                            {% if page == g.page %}
+                                <li><a href="?page={{ page }}" class="pagination-link is-current"
+                                       aria-label="Go to page {{ page }}" aria-current="page">{{ page }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ page }}" class="pagination-link"
+                                       aria-label="Go to page {{ page }}">{{ page }}</a></li>
+                            {% endif %}
+                            {% if loop.nextitem and loop.nextitem > page + 1 %}
+                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
