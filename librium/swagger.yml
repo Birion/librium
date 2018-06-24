@@ -27,17 +27,13 @@ paths:
       description: ""
       operationId: librium.api.book.read
       parameters:
-        - $ref: "#/parameters/length"
-        - $ref: "#/parameters/offset"
-        - $ref: "#/parameters/sort"
-        - $ref: "#/parameters/asc"
+        - $ref: "#/parameters/lengthParam"
+        - $ref: "#/parameters/offsetParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/ascParam"
       responses:
         200:
-          $ref: "#/responses/ReturnMultiple"
-          schema:
-            type: array
-            items:
-            - $ref: "#/definitions/Book"
+          $ref: "#/responses/ReturnMultipleBooks"
   /book:
     post:
       tags:
@@ -65,12 +61,12 @@ paths:
       summary: Get one book from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Book"
+          $ref: "#/responses/ReturnSingleBook"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.book.update_by_id
       tags:
@@ -78,14 +74,16 @@ paths:
       summary: Update book
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       - name: book
         in: body
         schema:
           $ref: "#/definitions/Book"
       responses:
         200:
-          description: Successfully updated the book
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.book.delete_by_id
       tags:
@@ -93,10 +91,10 @@ paths:
       summary: Remove a book from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          description: Successfully deleted the book from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
           $ref: "#/responses/ObjectNotExists"
   /book/{isbn}:
@@ -107,12 +105,12 @@ paths:
       summary: Get one book from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/isbn"
+      - $ref: "#/parameters/isbnParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Book"
+          $ref: "#/responses/ReturnSingleBook"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.book.update_by_isbn
       tags:
@@ -120,14 +118,16 @@ paths:
       summary: Update book
       description: ""
       parameters:
-      - $ref: "#/parameters/isbn"
+      - $ref: "#/parameters/isbnParam"
       - name: book
         in: body
         schema:
           $ref: "#/definitions/Book"
       responses:
         200:
-          description: Successfully updated the book
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.book.delete_by_isbn
       tags:
@@ -135,10 +135,10 @@ paths:
       summary: Remove a book from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/isbn"
+      - $ref: "#/parameters/isbnParam"
       responses:
         200:
-          description: Successfully deleted the book from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
           $ref: "#/responses/ObjectNotExists"
 
@@ -150,17 +150,13 @@ paths:
       description: ""
       operationId: librium.api.author.read
       parameters:
-        - $ref: "#/parameters/length"
-        - $ref: "#/parameters/offset"
-        - $ref: "#/parameters/sort"
-        - $ref: "#/parameters/asc"
+        - $ref: "#/parameters/lengthParam"
+        - $ref: "#/parameters/offsetParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/ascParam"
       responses:
         200:
-          $ref: "#/responses/ReturnMultiple"
-          schema:
-            type: array
-            items:
-            - $ref: "#/definitions/Author"
+          $ref: "#/responses/ReturnMultipleAuthors"
   /author:
     post:
       tags:
@@ -188,12 +184,12 @@ paths:
       summary: Get one author from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Author"
+          $ref: "#/responses/ReturnSingleAuthor"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.author.update
       tags:
@@ -201,14 +197,16 @@ paths:
       summary: Update an author
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       - name: author
         in: body
         schema:
           $ref: "#/definitions/Author"
       responses:
         200:
-          description: Successfully updated the author
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.author.delete
       tags:
@@ -216,10 +214,10 @@ paths:
       summary: Remove an author from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          description: Successfully deleted the author from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
           $ref: "#/responses/ObjectNotExists"
 
@@ -231,17 +229,13 @@ paths:
       description: ""
       operationId: librium.api.genre.read
       parameters:
-        - $ref: "#/parameters/length"
-        - $ref: "#/parameters/offset"
-        - $ref: "#/parameters/sort"
-        - $ref: "#/parameters/asc"
+        - $ref: "#/parameters/lengthParam"
+        - $ref: "#/parameters/offsetParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/ascParam"
       responses:
         200:
-          $ref: "#/responses/ReturnMultiple"
-          schema:
-            type: array
-            items:
-            - $ref: "#/definitions/Genre"
+          $ref: "#/responses/ReturnMultipleGenres"
   /genre:
     post:
       tags:
@@ -270,12 +264,12 @@ paths:
       summary: Get one genre from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Genre"
+          $ref: "#/responses/ReturnSingleGenre"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.genre.update
       tags:
@@ -283,14 +277,13 @@ paths:
       summary: Update a genre
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
-      - name: genre
-        in: body
-        schema:
-          $ref: "#/definitions/Genre"
+      - $ref: "#/parameters/idParam"
+      - $ref: "#/parameters/nameParam"
       responses:
         200:
-          description: Successfully updated the genre
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.genre.delete
       tags:
@@ -298,36 +291,32 @@ paths:
       summary: Remove a genre from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          description: Successfully deleted the genre from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
-          description: No genre found
+          $ref: "#/responses/ObjectNotExists"
 
   /languages:
     get:
       tags:
-      - language
+      - Language
       summary: List all languages
       description: ""
       operationId: librium.api.language.read
       parameters:
-        - $ref: "#/parameters/length"
-        - $ref: "#/parameters/offset"
-        - $ref: "#/parameters/sort"
-        - $ref: "#/parameters/asc"
+        - $ref: "#/parameters/lengthParam"
+        - $ref: "#/parameters/offsetParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/ascParam"
       responses:
         200:
-          $ref: "#/responses/ReturnMultiple"
-          schema:
-            type: array
-            items:
-            - $ref: "#/definitions/Language"
+          $ref: "#/responses/ReturnMultipleLanguages"
   /language:
     post:
       tags:
-      - language
+      - Language
       summary: Create a new language
       description: ""
       operationId: librium.api.language.create
@@ -348,44 +337,43 @@ paths:
     get:
       operationId: librium.api.language.read_one
       tags:
-      - language
+      - Language
       summary: Get one language from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Language"
+          $ref: "#/responses/ReturnSingleLanguage"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.language.update
       tags:
-      - language
+      - Language
       summary: Update a language
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
-      - name: language
-        in: body
-        schema:
-          $ref: "#/definitions/Language"
+      - $ref: "#/parameters/idParam"
+      - $ref: "#/parameters/nameParam"
       responses:
         200:
-          description: Successfully updated the language
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.language.delete
       tags:
-      - language
+      - Language
       summary: Remove a language from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          description: Successfully deleted the language from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
-          description: No language found
+          $ref: "#/responses/ObjectNotExists"
 
   /publishers:
     get:
@@ -395,17 +383,13 @@ paths:
       description: ""
       operationId: librium.api.publisher.read
       parameters:
-        - $ref: "#/parameters/length"
-        - $ref: "#/parameters/offset"
-        - $ref: "#/parameters/sort"
-        - $ref: "#/parameters/asc"
+        - $ref: "#/parameters/lengthParam"
+        - $ref: "#/parameters/offsetParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/ascParam"
       responses:
         200:
-          $ref: "#/responses/ReturnMultiple"
-          schema:
-            type: array
-            items:
-            - $ref: "#/definitions/Publisher"
+          $ref: "#/responses/ReturnMultiplePublishers"
   /publisher:
     post:
       tags:
@@ -434,12 +418,12 @@ paths:
       summary: Get one publisher from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Publisher"
+          $ref: "#/responses/ReturnSinglePublisher"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.publisher.update
       tags:
@@ -447,14 +431,13 @@ paths:
       summary: Update a publisher
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
-      - name: publisher
-        in: body
-        schema:
-          $ref: "#/definitions/Publisher"
+      - $ref: "#/parameters/idParam"
+      - $ref: "#/parameters/nameParam"
       responses:
         200:
-          description: Successfully updated the publisher
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.publisher.delete
       tags:
@@ -462,10 +445,10 @@ paths:
       summary: Remove a publisher from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          description: Successfully deleted the publisher from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
           $ref: "#/responses/ObjectNotExists"
 
@@ -477,17 +460,13 @@ paths:
       description: ""
       operationId: librium.api.series.read
       parameters:
-        - $ref: "#/parameters/length"
-        - $ref: "#/parameters/offset"
-        - $ref: "#/parameters/sort"
-        - $ref: "#/parameters/asc"
+        - $ref: "#/parameters/lengthParam"
+        - $ref: "#/parameters/offsetParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/ascParam"
       responses:
         200:
-          $ref: "#/responses/ReturnMultiple"
-          schema:
-            type: array
-            items:
-            - $ref: "#/definitions/Series"
+          $ref: "#/responses/ReturnMultipleSeries"
     post:
       tags:
       - Series
@@ -515,12 +494,12 @@ paths:
       summary: Get one series from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          $ref: "#/responses/ReturnSingle"
-          schema:
-            $ref: "#/definitions/Series"
+          $ref: "#/responses/ReturnSingleSeries"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     put:
       operationId: librium.api.series.update
       tags:
@@ -528,14 +507,13 @@ paths:
       summary: Update a series
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
-      - name: series
-        in: body
-        schema:
-          $ref: "#/definitions/Series"
+      - $ref: "#/parameters/idParam"
+      - $ref: "#/parameters/nameParam"
       responses:
         200:
-          description: Successfully updated the series
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
     delete:
       operationId: librium.api.series.delete
       tags:
@@ -543,48 +521,54 @@ paths:
       summary: Remove a series from the database
       description: ""
       parameters:
-      - $ref: "#/parameters/id"
+      - $ref: "#/parameters/idParam"
       responses:
         200:
-          description: Successfully deleted the series from the database
+          $ref: "#/responses/ObjectDeleted"
         404:
           $ref: "#/responses/ObjectNotExists"
 
 parameters:
-  id:
+  idParam:
     name: id
     in: path
-    description: ID
+    description: Object ID
     type: integer
     required: true
-  isbn:
+  nameParam:
+    name: name
+    in: query
+    description: Object name
+    type: string
+    required: true
+  isbnParam:
     name: isbn
     in: path
     description: ISBN
     type: string
     required: true
-  length:
+  lengthParam:
     name: length
     in: query
     type: integer
     default: 50
     description: Number to get
     required: false
-  offset:
+  offsetParam:
     name: offset
     in: query
     type: integer
     default: 0
     description: Offset from the beginning
     required: false
-  sort:
+  sortParam:
     name: sort
     in: query
     type: string
     default: id
     description: Sort-by field
     required: false
-  asc:
+  ascParam:
     name: asc
     in: query
     type: boolean
@@ -694,11 +678,71 @@ definitions:
 responses:
   ObjectCreated:
     description: Object succesfully created
+  ObjectUpdated:
+    description: Object succesfully updated
+  ObjectDeleted:
+    description: Object succesfully deleted
   ObjectExists:
     description: Object already exists
   ObjectNotExists:
     description: Object doesn't exist
-  ReturnSingle:
+  ReturnSingleBook:
     description: Returns a single object from the database
-  ReturnMultiple:
+    schema:
+      $ref: "#/definitions/Book"
+  ReturnSingleAuthor:
+    description: Returns a single object from the database
+    schema:
+      $ref: "#/definitions/Author"
+  ReturnSingleGenre:
+    description: Returns a single object from the database
+    schema:
+      $ref: "#/definitions/Genre"
+  ReturnSingleLanguage:
+    description: Returns a single object from the database
+    schema:
+      $ref: "#/definitions/Language"
+  ReturnSinglePublisher:
+    description: Returns a single object from the database
+    schema:
+      $ref: "#/definitions/Publisher"
+  ReturnSingleSeries:
+    description: Returns a single object from the database
+    schema:
+      $ref: "#/definitions/Series"
+  ReturnMultipleBooks:
     description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Book"
+  ReturnMultipleAuthors:
+    description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Author"
+  ReturnMultipleGenres:
+    description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Genre"
+  ReturnMultipleLanguages:
+    description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Language"
+  ReturnMultiplePublishers:
+    description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Publisher"
+  ReturnMultipleSeries:
+    description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Series"
