@@ -33,7 +33,7 @@ paths:
         - $ref: "#/parameters/asc"
       responses:
         200:
-          description: List of books from database
+          $ref: "#/responses/ReturnMultiple"
           schema:
             type: array
             items:
@@ -54,7 +54,9 @@ paths:
           $ref: "#/definitions/Book"
       responses:
         201:
-          description: Successfully created a book
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
   /book/{id}:
     get:
       operationId: librium.api.book.read_by_id
@@ -66,7 +68,7 @@ paths:
       - $ref: "#/parameters/id"
       responses:
         200:
-          description: Successfully found book from the database
+          $ref: "#/responses/ReturnSingle"
           schema:
             $ref: "#/definitions/Book"
     put:
@@ -96,7 +98,7 @@ paths:
         200:
           description: Successfully deleted the book from the database
         404:
-          description: No book found
+          $ref: "#/responses/ObjectNotExists"
   /book/{isbn}:
     get:
       operationId: librium.api.book.read_by_isbn
@@ -108,7 +110,7 @@ paths:
       - $ref: "#/parameters/isbn"
       responses:
         200:
-          description: Successfully found book from the database
+          $ref: "#/responses/ReturnSingle"
           schema:
             $ref: "#/definitions/Book"
     put:
@@ -138,7 +140,7 @@ paths:
         200:
           description: Successfully deleted the book from the database
         404:
-          description: No book found
+          $ref: "#/responses/ObjectNotExists"
 
   /authors:
     get:
@@ -154,7 +156,7 @@ paths:
         - $ref: "#/parameters/asc"
       responses:
         200:
-          description: List of authors from database
+          $ref: "#/responses/ReturnMultiple"
           schema:
             type: array
             items:
@@ -175,7 +177,9 @@ paths:
           $ref: "#/definitions/Author"
       responses:
         201:
-          description: Successfully created a new author
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
   /author/{id}:
     get:
       operationId: librium.api.author.read_one
@@ -187,7 +191,7 @@ paths:
       - $ref: "#/parameters/id"
       responses:
         200:
-          description: Successfully found the author in the database
+          $ref: "#/responses/ReturnSingle"
           schema:
             $ref: "#/definitions/Author"
     put:
@@ -217,7 +221,7 @@ paths:
         200:
           description: Successfully deleted the author from the database
         404:
-          description: No author found
+          $ref: "#/responses/ObjectNotExists"
 
   /genres:
     get:
@@ -233,7 +237,7 @@ paths:
         - $ref: "#/parameters/asc"
       responses:
         200:
-          description: List of genres from database
+          $ref: "#/responses/ReturnMultiple"
           schema:
             type: array
             items:
@@ -246,15 +250,18 @@ paths:
       description: ""
       operationId: librium.api.genre.create
       parameters:
-      - name: genre
+      - name: name
         in: body
         description: Genre to be created
         required: true
         schema:
-          $ref: "#/definitions/Genre"
+          type: string
+          description: Name of the genre
       responses:
         201:
-          description: Successfully created a new genre
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
   /genre/{id}:
     get:
       operationId: librium.api.genre.read_one
@@ -266,7 +273,7 @@ paths:
       - $ref: "#/parameters/id"
       responses:
         200:
-          description: Successfully found the genre in the database
+          $ref: "#/responses/ReturnSingle"
           schema:
             $ref: "#/definitions/Genre"
     put:
@@ -298,6 +305,88 @@ paths:
         404:
           description: No genre found
 
+  /languages:
+    get:
+      tags:
+      - language
+      summary: List all languages
+      description: ""
+      operationId: librium.api.language.read
+      parameters:
+        - $ref: "#/parameters/length"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/sort"
+        - $ref: "#/parameters/asc"
+      responses:
+        200:
+          $ref: "#/responses/ReturnMultiple"
+          schema:
+            type: array
+            items:
+            - $ref: "#/definitions/Language"
+  /language:
+    post:
+      tags:
+      - language
+      summary: Create a new language
+      description: ""
+      operationId: librium.api.language.create
+      parameters:
+      - name: name
+        in: body
+        description: language to be created
+        required: true
+        schema:
+          type: string
+          description: Name of the language
+      responses:
+        201:
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
+  /language/{id}:
+    get:
+      operationId: librium.api.language.read_one
+      tags:
+      - language
+      summary: Get one language from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          $ref: "#/responses/ReturnSingle"
+          schema:
+            $ref: "#/definitions/Language"
+    put:
+      operationId: librium.api.language.update
+      tags:
+      - language
+      summary: Update a language
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      - name: language
+        in: body
+        schema:
+          $ref: "#/definitions/Language"
+      responses:
+        200:
+          description: Successfully updated the language
+    delete:
+      operationId: librium.api.language.delete
+      tags:
+      - language
+      summary: Remove a language from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Successfully deleted the language from the database
+        404:
+          description: No language found
+
   /publishers:
     get:
       tags:
@@ -312,7 +401,7 @@ paths:
         - $ref: "#/parameters/asc"
       responses:
         200:
-          description: List of publishers from database
+          $ref: "#/responses/ReturnMultiple"
           schema:
             type: array
             items:
@@ -325,15 +414,18 @@ paths:
       description: ""
       operationId: librium.api.publisher.create
       parameters:
-      - name: publisher
+      - name: name
         in: body
         description: Publisher to be created
         required: true
         schema:
-          $ref: "#/definitions/Publisher"
+          type: string
+          description: Publisher name
       responses:
         201:
-          description: Successfully created a new publisher
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
   /publisher/{id}:
     get:
       operationId: librium.api.publisher.read_one
@@ -345,7 +437,7 @@ paths:
       - $ref: "#/parameters/id"
       responses:
         200:
-          description: Successfully found the publisher in the database
+          $ref: "#/responses/ReturnSingle"
           schema:
             $ref: "#/definitions/Publisher"
     put:
@@ -375,7 +467,7 @@ paths:
         200:
           description: Successfully deleted the publisher from the database
         404:
-          description: No publisher found
+          $ref: "#/responses/ObjectNotExists"
 
   /series:
     get:
@@ -391,7 +483,7 @@ paths:
         - $ref: "#/parameters/asc"
       responses:
         200:
-          description: List of series from database
+          $ref: "#/responses/ReturnMultiple"
           schema:
             type: array
             items:
@@ -403,15 +495,18 @@ paths:
       description: ""
       operationId: librium.api.series.create
       parameters:
-      - name: series
+      - name: name
         in: body
         description: Series to be created
         required: true
         schema:
-          $ref: "#/definitions/Series"
+          type: string
+          description: Name of the series
       responses:
         201:
-          description: Successfully created a new series
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
   /series/{id}:
     get:
       operationId: librium.api.series.read_one
@@ -423,7 +518,7 @@ paths:
       - $ref: "#/parameters/id"
       responses:
         200:
-          description: Successfully found the series in the database
+          $ref: "#/responses/ReturnSingle"
           schema:
             $ref: "#/definitions/Series"
     put:
@@ -453,7 +548,7 @@ paths:
         200:
           description: Successfully deleted the series from the database
         404:
-          description: No series found
+          $ref: "#/responses/ObjectNotExists"
 
 parameters:
   id:
@@ -552,7 +647,27 @@ definitions:
         items:
           $ref: "#/definitions/Publisher"
   Genre:
-    type: string
+    type: object
+    required:
+      - name
+    properties:
+      id:
+        type: integer
+        description: Genre ID
+      name:
+        type: string
+        description: Genre name
+  Language:
+    type: object
+    required:
+      - name
+    properties:
+      id:
+        type: integer
+        description: Language ID
+      name:
+        type: string
+        description: Language name
   Publisher:
     type: object
     required:
@@ -565,4 +680,25 @@ definitions:
         type: string
         description: Publisher name
   Series:
-    type: string
+    type: object
+    required:
+      - name
+    properties:
+      id:
+        type: integer
+        description: Series ID
+      name:
+        type: string
+        description: Series name
+
+responses:
+  ObjectCreated:
+    description: Object succesfully created
+  ObjectExists:
+    description: Object already exists
+  ObjectNotExists:
+    description: Object doesn't exist
+  ReturnSingle:
+    description: Returns a single object from the database
+  ReturnMultiple:
+    description: Returns multiple objects from the database

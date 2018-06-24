@@ -10,3 +10,6 @@ def get_all(table, **kwargs):
         {"id": pub.id, "name": pub.name}
         for pub in table.query.order_by(f(column))[offset:length]
     ]
+
+def add_one(table, **kwargs):
+    print(kwargs)
