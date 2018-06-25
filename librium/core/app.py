@@ -14,7 +14,6 @@ load_dotenv(find_dotenv())
 
 
 class CustomJSONEncoder(JSONEncoder):
-
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
             return obj.to_dict()

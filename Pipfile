@@ -15,9 +15,9 @@ python-dotenv = ">=0.8"
 psycopg2-binary = "*"
 
 [dev-packages]
-black = "*"
 pylint = "*"
 mypy = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.6"

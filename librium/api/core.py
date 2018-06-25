@@ -2,9 +2,20 @@ from pprint import pprint
 
 import attr
 from sqlalchemy import desc, asc
+from sqlalchemy.orm.exc import NoResultFound
 from flask import abort
 
-from librium.database import db_session, Author, Format, Genre, Language, Publisher, Series, Book
+from librium.database import (
+    db_session,
+    Author,
+    Format,
+    Genre,
+    Language,
+    Publisher,
+    Series,
+    SeriesIndex,
+    Book,
+)
 
 
 @attr.s
@@ -56,41 +67,67 @@ class BookAPI(API):
         "languages": Language,
         "publishers": Publisher,
         "series": Series,
-        "format": Format
+        "format": Format,
     }
 
     def __attrs_post_init__(self):
         super(BookAPI, self).__init__(self.table)
 
-    def create(self, **kwargs):
-        _book = kwargs["book"]
-        book = self.table()
+    def create_one(self, _book):
+        try:
+            series = []
+            for _series in _book["series"]:
+                idx = _series.get("idx", 0)
+                name = _series.get("name")
+                series_details = self.add(self.LOOKUP["series"], {"name": name})
+                series.append(SeriesIndex(**{"idx": idx, "series": series_details}))
+            pprint(series)
+            del _book["series"]
+        except KeyError:
+            pass
+
         for key in _book:
             if key in self.LOOKUP.keys():
-                if key == "series":
-                    for idx, item in enumerate(_book[key]):
-                        series = self.add(Series, item["series"])
-                        _book[key][idx]["series"] = series
-                elif isinstance(_book[key], list):
+                if isinstance(_book[key], list):
                     for idx, item in enumerate(_book[key]):
                         _book[key][idx] = self.add(self.LOOKUP[key], item)
                 else:
                     _book[key] = self.add(self.LOOKUP[key], _book[key])
-        pprint(_book)
 
-        pprint(self.table(**_book))
+        book = self.table(**_book)
+        try:
+            book.series = series
+        except UnboundLocalError:
+            pass
+        book.make_uuid()
+        return book
+
+    def create(self, **kwargs):
+        book = self.create_one(kwargs["book"])
+        if book._id:
+            return abort(400)
+        db_session.add(book)
+        db_session.commit()
+
+    def create_many(self, **kwargs):
+        for _book in kwargs["books"]:
+            book = self.create_one(_book)
+            if book._id:
+                return abort(400)
+            db_session.add(book)
+            db_session.commit()
 
     def update(self, **kwargs):
         pass
 
     @staticmethod
     def add(table, item):
-        _item = table.query.filter_by(**item).one_or_none()
-        if not _item:
+        try:
+            _item = table.query.filter_by(**item).one()
+        except NoResultFound:
             _item = table(**item)
-        return _item
-
-    @staticmethod
-    def remove(table, item):
-        _item = table.query.filter_by(**item).one_or_none()
+            try:
+                _item.make_uuid()
+            except AttributeError:
+                pass
         return _item

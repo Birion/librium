@@ -1,3 +1,5 @@
+import uuid
+
 import sqlalchemy as sa
 import sqlalchemy_utils as sau
 from sqlalchemy.orm import relationship
@@ -42,7 +44,7 @@ class Series(OutputMixin, Base):
     __tablename__ = "series"
 
     _id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.String(50))
+    name = sa.Column(sa.String(50), unique=True)
 
     books = relationship("SeriesIndex", back_populates="series")
 
@@ -53,23 +55,44 @@ class Book(OutputMixin, Base):
     RELATIONSHIPS_TO_DICT = True
 
     _id = sa.Column(sa.Integer, primary_key=True)
-    title = sa.Column(sa.String(50))
+    title = sa.Column(sa.String(250))
     price = sa.Column(sa.Integer)
     page_count = sa.Column(sa.Integer, nullable=True)
-    isbn = sa.Column(sa.String(13), unique=True)
+    isbn = sa.Column(sa.String(13))
     read = sa.Column(sa.Boolean, default=False, nullable=False)
     _uuid = sa.Column(sau.UUIDType, unique=True)
 
-    authors = relationship("Author", back_populates="books", secondary="book_authors")
-    publishers = relationship(
-        "Publisher", back_populates="books", secondary="book_publishers"
+    authors = relationship(
+        "Author",
+        back_populates="books",
+        secondary="book_authors",
+        cascade="all, delete",
     )
-    genres = relationship("Genre", back_populates="books", secondary="book_genres")
-    series = relationship("SeriesIndex", back_populates="book")
-    languages = relationship("Language", back_populates="books", secondary="book_languages")
+    publishers = relationship(
+        "Publisher",
+        back_populates="books",
+        secondary="book_publishers",
+        cascade="all, delete",
+    )
+    genres = relationship(
+        "Genre", back_populates="books", secondary="book_genres", cascade="all, delete"
+    )
+    series = relationship("SeriesIndex", back_populates="book", cascade="all, delete")
+    languages = relationship(
+        "Language",
+        back_populates="books",
+        secondary="book_languages",
+        cascade="all, delete",
+    )
 
     format_id = sa.Column(sa.Integer, sa.ForeignKey("format._id"))
-    format = relationship("Format", back_populates="books", primaryjoin=format_id == Format._id)
+    format = relationship(
+        "Format", back_populates="books", primaryjoin=format_id == Format._id
+    )
+
+    def make_uuid(self):
+        if not self._uuid:
+            self._uuid = uuid.uuid4()
 
 
 @generic_repr
@@ -84,9 +107,20 @@ class Author(OutputMixin, Base):
     suffix = sa.Column(sa.String(20), nullable=True, default=None)
     _uuid = sa.Column(sau.UUIDType, unique=True)
 
-    sa.UniqueConstraint("prefix", "first_name", "middle_name", "last_name", "suffix", name="unique_author")
+    sa.UniqueConstraint(
+        "prefix",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "suffix",
+        name="unique_author",
+    )
 
     books = relationship("Book", back_populates="authors", secondary="book_authors")
+
+    def make_uuid(self):
+        if not self._uuid:
+            self._uuid = uuid.uuid4()
 
 
 @generic_repr
@@ -96,7 +130,9 @@ class Publisher(OutputMixin, Base):
     _id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
 
-    books = relationship("Book", back_populates="publishers", secondary="book_publishers")
+    books = relationship(
+        "Book", back_populates="publishers", secondary="book_publishers"
+    )
 
 
 @generic_repr
@@ -109,7 +145,9 @@ class SeriesIndex(OutputMixin, Base):
     book = relationship("Book", back_populates="series")
     series = relationship("Series", back_populates="books")
 
-    idx = sa.Column(sa.Float, sa.CheckConstraint("idx>=0", name="positive_index"))
+    idx = sa.Column(
+        sa.Float, sa.CheckConstraint("idx>=0", name="positive_index"), primary_key=True
+    )
 
 
 book_authors = sa.Table(

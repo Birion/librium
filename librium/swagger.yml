@@ -46,6 +46,27 @@ paths:
       responses:
         200:
           $ref: "#/responses/ReturnMultipleBooks"
+    post:
+      tags:
+      - Book
+      summary: Create multiple new books
+      description: ""
+      operationId: librium.api.book.create_many
+      parameters:
+      - name: books
+        in: body
+        description: Book to be created
+        required: true
+        schema:
+          type: array
+          description: List of books
+          items:
+            $ref: "#/definitions/Book"
+      responses:
+        201:
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
   /book:
     post:
       tags:
@@ -627,7 +648,6 @@ definitions:
     type: object
     required:
     - first_name
-    - last_name
     properties:
       _id:
         type: integer
@@ -700,14 +720,14 @@ definitions:
         items:
           type: object
           required:
-          - series
-          - idx
+          - name
           properties:
             idx:
               type: number
               description: Series index
-            series:
-              $ref: "#/definitions/Series"
+            name:
+              type: string
+              description: Series name
       _uuid:
         type: string
         description: Book UUID
@@ -731,11 +751,9 @@ definitions:
         last_name: Michel
       series:
       - idx: 1
-        series:
-          name: The Ruby Master
+        name: The Ruby Master
       - idx: 1.5
-        series:
-          name: The Ruby Master World
+        name: The Ruby Master World
   Genre:
     type: object
     required:
