@@ -15,8 +15,20 @@ produces:
 - application/json
 
 tags:
-- name: book
-  description: Show information about your books
+- name: Book
+  description: Show information about the books
+- name: Author
+  description: Show information about the authors
+- name: Genre
+  description: Show information about the genres
+- name: Language
+  description: Show information about the languages
+- name: Publisher
+  description: Show information about the publishers
+- name: Series
+  description: Show information about the series
+- name: Format
+  description: Show information about the formats
 paths:
 
   /books:
@@ -27,10 +39,10 @@ paths:
       description: ""
       operationId: librium.api.book.read
       parameters:
-        - $ref: "#/parameters/lengthParam"
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/sortParam"
-        - $ref: "#/parameters/ascParam"
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
       responses:
         200:
           $ref: "#/responses/ReturnMultipleBooks"
@@ -53,9 +65,9 @@ paths:
           $ref: "#/responses/ObjectCreated"
         400:
           $ref: "#/responses/ObjectExists"
-  /book/{id}:
+  /book/{_id}:
     get:
-      operationId: librium.api.book.read_by_id
+      operationId: librium.api.book.read_one
       tags:
       - Book
       summary: Get one book from the database
@@ -68,7 +80,7 @@ paths:
         404:
           $ref: "#/responses/ObjectNotExists"
     put:
-      operationId: librium.api.book.update_by_id
+      operationId: librium.api.book.update
       tags:
       - Book
       summary: Update book
@@ -85,57 +97,13 @@ paths:
         404:
           $ref: "#/responses/ObjectNotExists"
     delete:
-      operationId: librium.api.book.delete_by_id
+      operationId: librium.api.book.delete
       tags:
       - Book
       summary: Remove a book from the database
       description: ""
       parameters:
       - $ref: "#/parameters/idParam"
-      responses:
-        200:
-          $ref: "#/responses/ObjectDeleted"
-        404:
-          $ref: "#/responses/ObjectNotExists"
-  /book/{isbn}:
-    get:
-      operationId: librium.api.book.read_by_isbn
-      tags:
-      - Book
-      summary: Get one book from the database
-      description: ""
-      parameters:
-      - $ref: "#/parameters/isbnParam"
-      responses:
-        200:
-          $ref: "#/responses/ReturnSingleBook"
-        404:
-          $ref: "#/responses/ObjectNotExists"
-    put:
-      operationId: librium.api.book.update_by_isbn
-      tags:
-      - Book
-      summary: Update book
-      description: ""
-      parameters:
-      - $ref: "#/parameters/isbnParam"
-      - name: book
-        in: body
-        schema:
-          $ref: "#/definitions/Book"
-      responses:
-        200:
-          $ref: "#/responses/ObjectUpdated"
-        404:
-          $ref: "#/responses/ObjectNotExists"
-    delete:
-      operationId: librium.api.book.delete_by_isbn
-      tags:
-      - Book
-      summary: Remove a book from the database
-      description: ""
-      parameters:
-      - $ref: "#/parameters/isbnParam"
       responses:
         200:
           $ref: "#/responses/ObjectDeleted"
@@ -150,10 +118,10 @@ paths:
       description: ""
       operationId: librium.api.author.read
       parameters:
-        - $ref: "#/parameters/lengthParam"
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/sortParam"
-        - $ref: "#/parameters/ascParam"
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
       responses:
         200:
           $ref: "#/responses/ReturnMultipleAuthors"
@@ -176,7 +144,7 @@ paths:
           $ref: "#/responses/ObjectCreated"
         400:
           $ref: "#/responses/ObjectExists"
-  /author/{id}:
+  /author/{_id}:
     get:
       operationId: librium.api.author.read_one
       tags:
@@ -229,10 +197,10 @@ paths:
       description: ""
       operationId: librium.api.genre.read
       parameters:
-        - $ref: "#/parameters/lengthParam"
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/sortParam"
-        - $ref: "#/parameters/ascParam"
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
       responses:
         200:
           $ref: "#/responses/ReturnMultipleGenres"
@@ -256,7 +224,7 @@ paths:
           $ref: "#/responses/ObjectCreated"
         400:
           $ref: "#/responses/ObjectExists"
-  /genre/{id}:
+  /genre/{_id}:
     get:
       operationId: librium.api.genre.read_one
       tags:
@@ -306,10 +274,10 @@ paths:
       description: ""
       operationId: librium.api.language.read
       parameters:
-        - $ref: "#/parameters/lengthParam"
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/sortParam"
-        - $ref: "#/parameters/ascParam"
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
       responses:
         200:
           $ref: "#/responses/ReturnMultipleLanguages"
@@ -333,7 +301,7 @@ paths:
           $ref: "#/responses/ObjectCreated"
         400:
           $ref: "#/responses/ObjectExists"
-  /language/{id}:
+  /language/{_id}:
     get:
       operationId: librium.api.language.read_one
       tags:
@@ -383,10 +351,10 @@ paths:
       description: ""
       operationId: librium.api.publisher.read
       parameters:
-        - $ref: "#/parameters/lengthParam"
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/sortParam"
-        - $ref: "#/parameters/ascParam"
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
       responses:
         200:
           $ref: "#/responses/ReturnMultiplePublishers"
@@ -410,7 +378,7 @@ paths:
           $ref: "#/responses/ObjectCreated"
         400:
           $ref: "#/responses/ObjectExists"
-  /publisher/{id}:
+  /publisher/{_id}:
     get:
       operationId: librium.api.publisher.read_one
       tags:
@@ -452,6 +420,84 @@ paths:
         404:
           $ref: "#/responses/ObjectNotExists"
 
+  /formats:
+    get:
+      tags:
+      - Format
+      summary: List all formats
+      description: ""
+      operationId: librium.api.format.read
+      parameters:
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
+      responses:
+        200:
+          $ref: "#/responses/ReturnMultipleFormats"
+  /format:
+    post:
+      tags:
+      - Format
+      summary: Create a new format
+      description: ""
+      operationId: librium.api.format.create
+      parameters:
+      - name: name
+        in: body
+        description: Format to be created
+        required: true
+        schema:
+          type: string
+          description: Format name
+      responses:
+        201:
+          $ref: "#/responses/ObjectCreated"
+        400:
+          $ref: "#/responses/ObjectExists"
+  /format/{_id}:
+    get:
+      operationId: librium.api.format.read_one
+      tags:
+      - Format
+      summary: Get one format from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/idParam"
+      responses:
+        200:
+          $ref: "#/responses/ReturnSingleFormat"
+        404:
+          $ref: "#/responses/ObjectNotExists"
+    put:
+      operationId: librium.api.format.update
+      tags:
+      - Format
+      summary: Update a format
+      description: ""
+      parameters:
+      - $ref: "#/parameters/idParam"
+      - $ref: "#/parameters/nameParam"
+      responses:
+        200:
+          $ref: "#/responses/ObjectUpdated"
+        404:
+          $ref: "#/responses/ObjectNotExists"
+    delete:
+      operationId: librium.api.format.delete
+      tags:
+      - Format
+      summary: Remove a format from the database
+      description: ""
+      parameters:
+      - $ref: "#/parameters/idParam"
+      responses:
+        200:
+          $ref: "#/responses/ObjectDeleted"
+        404:
+          $ref: "#/responses/ObjectNotExists"
+
+
   /series:
     get:
       tags:
@@ -460,10 +506,10 @@ paths:
       description: ""
       operationId: librium.api.series.read
       parameters:
-        - $ref: "#/parameters/lengthParam"
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/sortParam"
-        - $ref: "#/parameters/ascParam"
+      - $ref: "#/parameters/lengthParam"
+      - $ref: "#/parameters/offsetParam"
+      - $ref: "#/parameters/sortParam"
+      - $ref: "#/parameters/ascParam"
       responses:
         200:
           $ref: "#/responses/ReturnMultipleSeries"
@@ -486,7 +532,7 @@ paths:
           $ref: "#/responses/ObjectCreated"
         400:
           $ref: "#/responses/ObjectExists"
-  /series/{id}:
+  /series/{_id}:
     get:
       operationId: librium.api.series.read_one
       tags:
@@ -530,7 +576,7 @@ paths:
 
 parameters:
   idParam:
-    name: id
+    name: _id
     in: path
     description: Object ID
     type: integer
@@ -565,7 +611,7 @@ parameters:
     name: sort
     in: query
     type: string
-    default: id
+    default: _id
     description: Sort-by field
     required: false
   ascParam:
@@ -583,26 +629,40 @@ definitions:
     - first_name
     - last_name
     properties:
-      first_name:
-        type: string
-        description: First name of the author
-      last_name:
-        type: string
-        description: Last name of the author
-      middle_name:
-        type: string
-        description: Middle name of the author, if any
+      _id:
+        type: integer
+        description: Author ID
       prefix:
         type: string
         description: Author's title as a prefix
+      first_name:
+        type: string
+        description: First name of the author
+      middle_name:
+        type: string
+        description: Middle name of the author, if any
+      last_name:
+        type: string
+        description: Last name of the author
       suffix:
         type: string
         description: Author's title as a suffix
+      _uuid:
+        type: string
+        description: Author UUID
+    example:
+      first_name: Jonathan
+      last_name: Sims
+      middle_name: A.
+      suffix: Jr.
   Book:
     type: object
     required:
     - title
     properties:
+      _id:
+        type: integer
+        description: Book ID
       title:
         type: string
         description: Book title
@@ -612,8 +672,12 @@ definitions:
         items:
           $ref: "#/definitions/Genre"
       format:
-        type: string
-        description: Book format
+        $ref: "#/definitions/Format"
+      languages:
+        type: array
+        description: Book language(s)
+        items:
+          $ref: "#/definitions/Language"
       price:
         type: integer
         description: Original book price
@@ -630,50 +694,113 @@ definitions:
         description: Book publisher(s)
         items:
           $ref: "#/definitions/Publisher"
+      series:
+        type: array
+        description: Book series
+        items:
+          type: object
+          required:
+          - series
+          - idx
+          properties:
+            idx:
+              type: number
+              description: Series index
+            series:
+              $ref: "#/definitions/Series"
+      _uuid:
+        type: string
+        description: Book UUID
+    example:
+      title: Crown of the Ancient Keeper
+      genres:
+      - name: Fantasy
+      - name: Comics
+      format:
+        name: Hardcover
+      languages:
+      - name: Czech
+      price: 298
+      page_count: 155
+      publishers:
+      - name: Argo
+      authors:
+      - first_name: Diane
+        last_name: Henderson
+      - first_name: Aaron
+        last_name: Michel
+      series:
+      - idx: 1
+        series:
+          name: The Ruby Master
+      - idx: 1.5
+        series:
+          name: The Ruby Master World
   Genre:
     type: object
     required:
-      - name
+    - name
     properties:
-      id:
+      _id:
         type: integer
         description: Genre ID
       name:
         type: string
         description: Genre name
+    example:
+      name: Urban Fantasy
   Language:
     type: object
     required:
-      - name
+    - name
     properties:
-      id:
+      _id:
         type: integer
         description: Language ID
       name:
         type: string
         description: Language name
+    example:
+      name: English
   Publisher:
     type: object
     required:
-      - name
+    - name
     properties:
-      id:
+      _id:
         type: integer
         description: Publisher ID
       name:
         type: string
         description: Publisher name
+    example:
+      name: BBC Books
+  Format:
+    type: object
+    required:
+    - name
+    properties:
+      _id:
+        type: integer
+        description: Format ID
+      name:
+        type: string
+        description: Format name
+    example:
+      name: Hardcover
   Series:
     type: object
     required:
-      - name
+    - name
     properties:
-      id:
+      _id:
         type: integer
         description: Series ID
       name:
         type: string
         description: Series name
+    example:
+      name: Discworld
 
 responses:
   ObjectCreated:
@@ -706,6 +833,10 @@ responses:
     description: Returns a single object from the database
     schema:
       $ref: "#/definitions/Publisher"
+  ReturnSingleFormat:
+    description: Returns a single object from the database
+    schema:
+      $ref: "#/definitions/Format"
   ReturnSingleSeries:
     description: Returns a single object from the database
     schema:
@@ -740,6 +871,12 @@ responses:
       type: array
       items:
       - $ref: "#/definitions/Publisher"
+  ReturnMultipleFormats:
+    description: Returns multiple objects from the database
+    schema:
+      type: array
+      items:
+      - $ref: "#/definitions/Format"
   ReturnMultipleSeries:
     description: Returns multiple objects from the database
     schema:

@@ -3,7 +3,7 @@ import sqlalchemy_utils as sau
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import generic_repr
 
-from librium.database.db import Base
+from librium.database.db import Base, db_session
 from librium.database.mixin import OutputMixin
 
 
@@ -11,7 +11,7 @@ from librium.database.mixin import OutputMixin
 class Format(OutputMixin, Base):
     __tablename__ = "format"
 
-    id = sa.Column(sa.Integer, primary_key=True)
+    _id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
 
     books = relationship("Book", back_populates="format")
@@ -21,17 +21,17 @@ class Format(OutputMixin, Base):
 class Language(OutputMixin, Base):
     __tablename__ = "language"
 
-    id = sa.Column(sa.Integer, primary_key=True)
+    _id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
 
-    books = relationship("Book", back_populates="language")
+    books = relationship("Book", back_populates="languages", secondary="book_languages")
 
 
 @generic_repr
 class Genre(OutputMixin, Base):
     __tablename__ = "genre"
 
-    id = sa.Column(sa.Integer, primary_key=True)
+    _id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
 
     books = relationship("Book", back_populates="genres", secondary="book_genres")
@@ -41,10 +41,10 @@ class Genre(OutputMixin, Base):
 class Series(OutputMixin, Base):
     __tablename__ = "series"
 
-    id = sa.Column(sa.Integer, primary_key=True)
+    _id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
 
-    books = relationship("Book", back_populates="series", secondary="series_index")
+    books = relationship("SeriesIndex", back_populates="series")
 
 
 @generic_repr
@@ -52,38 +52,37 @@ class Book(OutputMixin, Base):
     __tablename__ = "book"
     RELATIONSHIPS_TO_DICT = True
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.String(50))
+    _id = sa.Column(sa.Integer, primary_key=True)
+    title = sa.Column(sa.String(50))
     price = sa.Column(sa.Integer)
     page_count = sa.Column(sa.Integer, nullable=True)
     isbn = sa.Column(sa.String(13), unique=True)
     read = sa.Column(sa.Boolean, default=False, nullable=False)
-    uuid = sa.Column(sau.UUIDType, unique=True)
+    _uuid = sa.Column(sau.UUIDType, unique=True)
 
     authors = relationship("Author", back_populates="books", secondary="book_authors")
     publishers = relationship(
         "Publisher", back_populates="books", secondary="book_publishers"
     )
     genres = relationship("Genre", back_populates="books", secondary="book_genres")
-    series = relationship("Series", back_populates="books", secondary="series_index")
+    series = relationship("SeriesIndex", back_populates="book")
+    languages = relationship("Language", back_populates="books", secondary="book_languages")
 
-    format_id = sa.Column(sa.Integer, sa.ForeignKey("format.id"))
-    format = relationship("Format", back_populates="books", primaryjoin=format_id == Format.id)
-    language_id = sa.Column(sa.Integer, sa.ForeignKey("language.id"))
-    language = relationship("Language", back_populates="books", primaryjoin=language_id == Language.id)
+    format_id = sa.Column(sa.Integer, sa.ForeignKey("format._id"))
+    format = relationship("Format", back_populates="books", primaryjoin=format_id == Format._id)
 
 
 @generic_repr
 class Author(OutputMixin, Base):
     __tablename__ = "author"
 
-    id = sa.Column(sa.Integer, primary_key=True)
+    _id = sa.Column(sa.Integer, primary_key=True)
     first_name = sa.Column(sa.String(50))
     last_name = sa.Column(sa.String(50))
     middle_name = sa.Column(sa.String(50), nullable=True, default=None)
     prefix = sa.Column(sa.String(20), nullable=True, default=None)
     suffix = sa.Column(sa.String(20), nullable=True, default=None)
-    uuid = sa.Column(sau.UUIDType, unique=True)
+    _uuid = sa.Column(sau.UUIDType, unique=True)
 
     sa.UniqueConstraint("prefix", "first_name", "middle_name", "last_name", "suffix", name="unique_author")
 
@@ -94,7 +93,7 @@ class Author(OutputMixin, Base):
 class Publisher(OutputMixin, Base):
     __tablename__ = "publisher"
 
-    id = sa.Column(sa.Integer, primary_key=True)
+    _id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(50))
 
     books = relationship("Book", back_populates="publishers", secondary="book_publishers")
@@ -104,8 +103,11 @@ class Publisher(OutputMixin, Base):
 class SeriesIndex(OutputMixin, Base):
     __tablename__ = "series_index"
 
-    book_id = sa.Column(sa.Integer, sa.ForeignKey("book.id"), primary_key=True)
-    series_id = sa.Column(sa.Integer, sa.ForeignKey("series.id"), primary_key=True)
+    book_id = sa.Column(sa.Integer, sa.ForeignKey("book._id"), primary_key=True)
+    series_id = sa.Column(sa.Integer, sa.ForeignKey("series._id"), primary_key=True)
+
+    book = relationship("Book", back_populates="series")
+    series = relationship("Series", back_populates="books")
 
     idx = sa.Column(sa.Float, sa.CheckConstraint("idx>=0", name="positive_index"))
 
@@ -113,20 +115,27 @@ class SeriesIndex(OutputMixin, Base):
 book_authors = sa.Table(
     "book_authors",
     Base.metadata,
-    sa.Column("book_id", sa.ForeignKey("book.id"), primary_key=True),
-    sa.Column("author_id", sa.ForeignKey("author.id"), primary_key=True),
+    sa.Column("book_id", sa.ForeignKey("book._id"), primary_key=True),
+    sa.Column("author_id", sa.ForeignKey("author._id"), primary_key=True),
 )
 
 book_publishers = sa.Table(
     "book_publishers",
     Base.metadata,
-    sa.Column("book_id", sa.ForeignKey("book.id"), primary_key=True),
-    sa.Column("publisher_id", sa.ForeignKey("publisher.id"), primary_key=True),
+    sa.Column("book_id", sa.ForeignKey("book._id"), primary_key=True),
+    sa.Column("publisher_id", sa.ForeignKey("publisher._id"), primary_key=True),
 )
 
 book_genres = sa.Table(
     "book_genres",
     Base.metadata,
-    sa.Column("book_id", sa.ForeignKey("book.id"), primary_key=True),
-    sa.Column("genre_id", sa.ForeignKey("genre.id"), primary_key=True),
+    sa.Column("book_id", sa.ForeignKey("book._id"), primary_key=True),
+    sa.Column("genre_id", sa.ForeignKey("genre._id"), primary_key=True),
+)
+
+book_languages = sa.Table(
+    "book_languages",
+    Base.metadata,
+    sa.Column("book_id", sa.ForeignKey("book._id"), primary_key=True),
+    sa.Column("language_id", sa.ForeignKey("language._id"), primary_key=True),
 )

@@ -23,7 +23,7 @@ class CustomJSONEncoder(JSONEncoder):
 
 def create_app(test_config=None):
     # create and configure the app
-    app = connexion.App(__name__, specification_dir="../")
+    app = connexion.App("librium", specification_dir="./")
     app.add_api("swagger.yml", base_path="/api")
 
     application = app.app
