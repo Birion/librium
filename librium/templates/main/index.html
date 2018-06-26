@@ -34,11 +34,7 @@
                     <tr>
                         <td>
                             {% for author in book.authors %}
-                                {{ author.prefix or "" }}
-                                {{ author.first_name or "" }}
-                                {{ author.middle_name or "" }}
-                                {{ author.last_name or "" }}
-                                {{ author.suffix or "" }}
+                                {{ get_author(author) }}
                                 {% if not loop.last %}
                                     <br>
                                 {% endif %}

@@ -1,17 +1,8 @@
-from math import ceil
 from functools import wraps
 
-from flask import (
-    Blueprint,
-    render_template,
-    current_app,
-    request,
-    g,
-    has_request_context,
-    _request_ctx_stack,
-)
+from flask import Blueprint, render_template, g
 
-from librium.database import Book, Format
+from librium.database import Book, Format, Author, Series, Genre, Publisher
 
 bp = Blueprint("book", __name__, url_prefix="/book")
 
@@ -19,8 +10,11 @@ bp = Blueprint("book", __name__, url_prefix="/book")
 def add_formats(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        formats = Format.query.all()
-        g.formats = formats
+        g.formats = Format.query.all()
+        g.authors = Author.query.order_by(Author.last_name).all()
+        g.genres = Genre.query.order_by(Genre.name).all()
+        g.series = Series.query.order_by(Series.name).all()
+        g.publishers = Publisher.query.order_by(Publisher.name).all()
         return func(*args, **kwargs)
 
     return decorated_function

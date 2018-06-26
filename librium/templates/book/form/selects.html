@@ -1,0 +1,43 @@
+<div class="fields">
+    <div class="field">
+        <label for="author-select">Authors</label>
+        <select name="authors" id="author-select" class="ui dropdown" multiple="">
+            <option value="">Authors</option>
+            {% for author in g.authors %}
+                {% if author in book.authors %}
+                    <option value="{{ author._id }}" selected="">{{ get_author(author) }}</option>
+                {% else %}
+                    <option value="{{ author._id }}">{{ get_author(author) }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="field">
+        <label for="genre-select">Genres</label>
+        <select name="genres" id="genre-select" class="ui dropdown" multiple="">
+            <option value="">Genres</option>
+            {% for genre in g.genres %}
+                {% if genre in book.genres %}
+                    <option value="{{ genre._id }}" selected="">{{ genre.name }}</option>
+                {% else %}
+                    <option value="{{ genre._id }}">{{ genre.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+</div>
+<div class="fields">
+    <div class="field">
+        <label for="series-select">Series</label>
+        <select name="series" id="series-select" class="ui-dropdown">
+            <option value="">Series</option>
+            {% for series in g.series %}
+                {% if series in series_names %}
+                    <option value="{{ series._id }}" selected="">{{ series.name }}</option>
+                {% else %}
+                    <option value="{{ series._id }}">{{ series.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+</div>

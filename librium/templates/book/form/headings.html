@@ -1,32 +1,50 @@
 <div class="fields">
     <div class="field">
         <label for="title">Title</label>
-        <input title="Title" id="title" name="title" type="text" value="{{ book.title }}" readonly="">
+        <input title="Title" id="title" name="title" type="text" value="{{ book.title }}">
     </div>
     <div class="field">
         <label for="isbn">ISBN</label>
-        <input title="ISBN" name="isbn" type="text" id="isbn" value="{{ book.isbn }}" readonly="">
+        <input title="ISBN" name="isbn" type="text" id="isbn" value="{{ book.isbn }}">
     </div>
     <div class="field">
         <label for="uuid">UUID</label>
-        <input title="UUID" name="uuid" type="text" id="uuid" value="{{ book._uuid }}" readonly="">
+        <input title="UUID" name="uuid" type="text" id="uuid" value="{{ book._uuid }}">
     </div>
 </div>
 <div class="fields">
     <div class="field">
         <label for="price">Price</label>
-        <input title="Price" name="price" type="text" id="price" value="{{ book.price or "-" }}" readonly="">
+        <input title="Price" name="price" type="text" id="price" value="{{ book.price or "-" }}">
     </div>
     <div class="field">
         <label for="pages">Page count</label>
-        <input title="Page count" name="pages" type="text" id="pages" value="{{ book.page_count or "" }}" readonly="">
+        <input title="Page count" name="pages" type="text" id="pages" value="{{ book.page_count or "" }}">
     </div>
     <div class="field">
-        <label for="format">Format</label>
-        <div class="ui selection dropdown">
-            <input type="hidden" name="format">
-            <i class="dropdown icon"></i>
-            <div class="text"></div>
-        </div>
+        <label for="format-select">Format</label>
+        <select name="format" id="format-select" class="ui dropdown">
+            <option value="">Format</option>
+            {% for format in g.formats %}
+                {% if format == book.format %}
+                    <option value="{{ format._id }}" selected="">{{ format.name }}</option>
+                {% else %}
+                    <option value="{{ format._id }}">{{ format.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="field">
+        <label for="publisher-select">Publisher(s)</label>
+        <select name="publishers" id="publisher-select" class="ui dropdown" multiple="">
+            <option value="">Publisher(s)</option>
+            {% for publisher in g.publishers %}
+                {% if publisher in book.publishers %}
+                    <option value="{{ publisher._id }}" selected="">{{ publisher.name }}</option>
+                {% else %}
+                    <option value="{{ publisher._id }}">{{ publisher.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
     </div>
 </div>

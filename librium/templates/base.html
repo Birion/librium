@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>{% block title %}{% endblock %} - Patch advisories</title>
+    <title>Librium - {% block title %}{% endblock %}</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,13 @@
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     {% include "misc/favicon.html" %}
 </head>
+{%- macro get_author(author) -%}
+    {{ author.prefix or "" }}
+    {{ author.first_name or "" }}
+    {{ author.middle_name or "" }}
+    {{ author.last_name or "" }}
+    {{ author.suffix or "" }}
+{%- endmacro -%}
 <body>
 <main>
     {% with messages = get_flashed_messages(with_categories=True) %}

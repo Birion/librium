@@ -9,28 +9,16 @@
                 <input type="hidden" name="_id" id="_id" value="{{ book._id }}">
                 {{ book }}
                 {% include "book/form/headings.html" %}
+                {% include "book/form/selects.html" %}
                 {% include "book/form/buttons.html" %}
             </form>
         </div>
     </section>
+    {% for series in book.series %}
+        {{ series.series }}
+    {% endfor %}
 {% endblock %}
 
-{% block scripts %}
+{% block scripts -%}
 <script src="{{ url_for("static", filename="js/book.min.js") }}"></script>
-    <script type="text/javascript">
-        $(function () {
-            $(".ui.dropdown").dropdown(
-                {
-                    values: [
-                        {%- for format in g.formats %}
-                            {
-                                name: "{{ format.name }}", value: "{{ format._id }}"
-                                {%- if book.format == format %}, selected: true{% endif %}
-                            }{% if not loop.last -%},{%- endif -%}
-                        {% endfor %}
-                    ]
-                }
-            );
-        });
-    </script>
-{% endblock %}
+{%- endblock %}
