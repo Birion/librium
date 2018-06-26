@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from librium.__version__ import __version__
 from librium.database import db_session
-from librium.views import main
+from librium.views import main, book
 
 load_dotenv(find_dotenv())
 
@@ -32,13 +32,6 @@ def create_app(test_config=None):
 
     application.json_encoder = CustomJSONEncoder
 
-    # auth.login_manager.init_app(app)
-    # auth.login_manager.login_view = "auth.login"
-    #
-    # app.jinja_env.globals["pendulum"] = pendulum
-    # app.jinja_env.globals["re"] = re
-    # app.jinja_env.filters["ed"] = ed
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         application.config.from_pyfile("config.py", silent=True)
@@ -61,6 +54,7 @@ def create_app(test_config=None):
         db_session.remove()
 
     application.register_blueprint(main.bp)
+    application.register_blueprint(book.bp)
     application.add_url_rule("/", endpoint="index")
 
     return application

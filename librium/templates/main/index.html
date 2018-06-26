@@ -2,58 +2,107 @@
 
 {% block title %}Index{% endblock %}
 
+{% macro loop_book(items) -%}
+    {% for item in items %}
+        {{ item.name or "" }}
+        {% if not loop.last %}
+            <br>
+        {% endif %}
+    {% endfor %}
+{%- endmacro %}
+
 {% block content %}
-    {% set shrug = "¯\_(ツ)_/¯" %}
-    {% set table = "(╯°□°）╯︵ ┻━┻" %}
-    {% set happy = "ヾ(＠^∇^＠)ノ" %}
-    <section class="section">
-        <div class="container">
-            <table class="table is-striped is-hoverable is-fullwidth">
+    <section>
+        <div class="ui container">
+            <table class="ui striped selectable sortable table">
                 <thead>
                 <tr>
-                    <th>APAR number</th>
-                    <th>Customer</th>
-                    <th>Target date</th>
-                    <th>Created</th>
-                    <th>Created by</th>
-                    <th>Assigned to</th>
-                    <th>Applicable</th>
+                    <th>Author(s)</th>
+                    <th>Title</th>
+                    <th>ISBN</th>
+                    <th>Genres</th>
+                    <th>Publisher</th>
+                    <th>Series</th>
+                    <th>Price</th>
+                    <th>Pages</th>
+                    <th>Language</th>
+                    <th>Format</th>
                 </tr>
                 </thead>
                 <tbody>
+                {% for book in books %}
+                    <tr>
+                        <td>
+                            {% for author in book.authors %}
+                                {{ author.prefix or "" }}
+                                {{ author.first_name or "" }}
+                                {{ author.middle_name or "" }}
+                                {{ author.last_name or "" }}
+                                {{ author.suffix or "" }}
+                                {% if not loop.last %}
+                                    <br>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for("book.index", _id=book._id) }}">
+                                {{ book.title }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ book.isbn }}
+                        </td>
+                        <td>
+                            {{ loop_book(book.genres) }}
+                        </td>
+                        <td>
+                            {{ loop_book(book.publishers) }}
+                        </td>
+                        <td></td>
+                        <td>
+                            {{ book.price or "-" }}
+                        </td>
+                        <td>
+                            {{ book.page_count or "" }}
+                        </td>
+                        <td>
+                            {{ loop_book(book.languages) }}
+                        </td>
+                        <td>
+                            {{ book.format.name }}
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
     </section>
 {% endblock %}
 
-{% block footer %}
+{% block header %}
     {% if g.pages and g.pages|length > 1 %}
-        <div class="columns is-centered">
-            <div class="column is-two-thirds">
-                <nav class="pagination navbar is-transparent is-centered" role="navigation">
-                    {% if g.page != 1 %}
-                        <a href="?page={{ g.page - 1 }}" class="pagination-previous">Previous page</a>
+        <div class="ui center aligned container">
+            <div class="ui pagination menu">
+                {% for page in g.pages %}
+                    {% if page == g.page %}
+                        <a href="?page={{ page }}" class="active item" aria-label="Go to page {{ page }}"
+                           aria-current="page">{{ page }}</a>
+                    {% else %}
+                        <a href="?page={{ page }}" class="item" aria-label="Go to page {{ page }}">{{ page }}</a>
                     {% endif %}
-                    {% if g.page != g.count %}
-                        <a href="?page={{ g.page + 1 }}" class="pagination-next">Next page</a>
+                    {% if loop.nextitem and loop.nextitem > page + 1 %}
+                        <span class="disabled item">&hellip;</span>
                     {% endif %}
-                    <ul class="pagination-list">
-                        {% for page in g.pages %}
-                            {% if page == g.page %}
-                                <li><a href="?page={{ page }}" class="pagination-link is-current"
-                                       aria-label="Go to page {{ page }}" aria-current="page">{{ page }}</a></li>
-                            {% else %}
-                                <li><a href="?page={{ page }}" class="pagination-link"
-                                       aria-label="Go to page {{ page }}">{{ page }}</a></li>
-                            {% endif %}
-                            {% if loop.nextitem and loop.nextitem > page + 1 %}
-                                <li><span class="pagination-ellipsis">&hellip;</span></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </nav>
+                {% endfor %}
             </div>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function () {
+            return $("table").tablesort();
+        });
+    </script>
 {% endblock %}

@@ -17,7 +17,7 @@ bp.before_request(set_lists)
 def index(pid):
     advisory = Advisory.query.filter(Advisory.number == pid).one_or_none()
     if advisory:
-        return render_template("patch/index.html", advisory=advisory)
+        return render_template("patch/../templates/book/index.html", advisory=advisory)
     else:
         flash(f"No patch advisory with this number: {pid}.", "error")
     return redirect(url_for("patch.index"))

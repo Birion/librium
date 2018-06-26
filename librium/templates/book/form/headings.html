@@ -1,0 +1,32 @@
+<div class="fields">
+    <div class="field">
+        <label for="title">Title</label>
+        <input title="Title" id="title" name="title" type="text" value="{{ book.title }}" readonly="">
+    </div>
+    <div class="field">
+        <label for="isbn">ISBN</label>
+        <input title="ISBN" name="isbn" type="text" id="isbn" value="{{ book.isbn }}" readonly="">
+    </div>
+    <div class="field">
+        <label for="uuid">UUID</label>
+        <input title="UUID" name="uuid" type="text" id="uuid" value="{{ book._uuid }}" readonly="">
+    </div>
+</div>
+<div class="fields">
+    <div class="field">
+        <label for="price">Price</label>
+        <input title="Price" name="price" type="text" id="price" value="{{ book.price or "-" }}" readonly="">
+    </div>
+    <div class="field">
+        <label for="pages">Page count</label>
+        <input title="Page count" name="pages" type="text" id="pages" value="{{ book.page_count or "" }}" readonly="">
+    </div>
+    <div class="field">
+        <label for="format">Format</label>
+        <div class="ui selection dropdown">
+            <input type="hidden" name="format">
+            <i class="dropdown icon"></i>
+            <div class="text"></div>
+        </div>
+    </div>
+</div>
