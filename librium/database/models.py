@@ -3,6 +3,7 @@ import uuid
 import sqlalchemy as sa
 import sqlalchemy_utils as sau
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils import generic_repr
 
 from librium.database.db import Base, db_session
@@ -93,6 +94,22 @@ class Book(OutputMixin, Base):
     def make_uuid(self):
         if not self._uuid:
             self._uuid = uuid.uuid4()
+
+    @staticmethod
+    def add(rel, table: Base, value: dict):
+        try:
+            item = table.query.filter_by(**value).one()
+        except NoResultFound:
+            item = table(**value)
+        rel.append(item)
+
+    @staticmethod
+    def remove(rel, table: Base, value: dict):
+        try:
+            item = table.query.filter_by(**value).one()
+            rel.remove(item)
+        except NoResultFound:
+            pass
 
 
 @generic_repr
