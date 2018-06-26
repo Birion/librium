@@ -54,7 +54,17 @@
                         <td>
                             {{ loop_book(book.publishers) }}
                         </td>
-                        <td></td>
+                        <td>
+                            {% for series in book.series %}
+                                {{ series.series.name }}
+                                {% if series.idx %}
+                                ({{ series.idx|int }})
+                                {% endif %}
+                                {% if not loop.last %}
+                                    <br>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
                         <td>
                             {{ book.price or "-" }}
                         </td>

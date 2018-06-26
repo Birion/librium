@@ -29,10 +29,10 @@
 <div class="fields">
     <div class="field">
         <label for="series-select">Series</label>
-        <select name="series" id="series-select" class="ui-dropdown">
+        <select name="series" id="series-select" class="ui-dropdown" multiple="">
             <option value="">Series</option>
             {% for series in g.series %}
-                {% if series in series_names %}
+                {% if series in g.book_series %}
                     <option value="{{ series._id }}" selected="">{{ series.name }}</option>
                 {% else %}
                     <option value="{{ series._id }}">{{ series.name }}</option>
