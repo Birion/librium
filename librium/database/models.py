@@ -7,11 +7,10 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils import generic_repr
 
 from librium.database.db import Base, db_session
-from librium.database.mixin import OutputMixin
 
 
 @generic_repr
-class Format(OutputMixin, Base):
+class Format(Base):
     __tablename__ = "format"
 
     _id = sa.Column(sa.Integer, primary_key=True)
@@ -21,7 +20,7 @@ class Format(OutputMixin, Base):
 
 
 @generic_repr
-class Language(OutputMixin, Base):
+class Language(Base):
     __tablename__ = "language"
 
     _id = sa.Column(sa.Integer, primary_key=True)
@@ -31,7 +30,7 @@ class Language(OutputMixin, Base):
 
 
 @generic_repr
-class Genre(OutputMixin, Base):
+class Genre(Base):
     __tablename__ = "genre"
 
     _id = sa.Column(sa.Integer, primary_key=True)
@@ -41,7 +40,7 @@ class Genre(OutputMixin, Base):
 
 
 @generic_repr
-class Series(OutputMixin, Base):
+class Series(Base):
     __tablename__ = "series"
 
     _id = sa.Column(sa.Integer, primary_key=True)
@@ -51,7 +50,7 @@ class Series(OutputMixin, Base):
 
 
 @generic_repr
-class Book(OutputMixin, Base):
+class Book(Base):
     __tablename__ = "book"
     RELATIONSHIPS_TO_DICT = True
 
@@ -113,7 +112,7 @@ class Book(OutputMixin, Base):
 
 
 @generic_repr
-class Author(OutputMixin, Base):
+class Author(Base):
     __tablename__ = "author"
 
     _id = sa.Column(sa.Integer, primary_key=True)
@@ -141,7 +140,7 @@ class Author(OutputMixin, Base):
 
 
 @generic_repr
-class Publisher(OutputMixin, Base):
+class Publisher(Base):
     __tablename__ = "publisher"
 
     _id = sa.Column(sa.Integer, primary_key=True)
@@ -153,7 +152,7 @@ class Publisher(OutputMixin, Base):
 
 
 @generic_repr
-class SeriesIndex(OutputMixin, Base):
+class SeriesIndex(Base):
     __tablename__ = "series_index"
 
     book_id = sa.Column(sa.Integer, sa.ForeignKey("book._id"), primary_key=True)
