@@ -179,3 +179,4 @@ typings/
 
 utils/data/passwords.txt
 gunicorn_config.py
+/librium.sqlite
