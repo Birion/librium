@@ -13,6 +13,7 @@ ScrollView:
     languages: book_languages
 
     scroll_distance: 50
+    scroll_type: ["bars", "content"]
 
     LibriumLayout:
         cols: 1
@@ -22,20 +23,13 @@ ScrollView:
         padding: 20
         spacing: 20
 
-        Label:
-            id: testing
-
-        SingleInput:
-            title: "Title"
-            id: book_title
-
         MultiInput:
             id: book_authors
             title: "Author(s)"
 
-        MultiInput:
-            id: book_publishers
-            title: "Publisher(s)"
+        SingleInput:
+            title: "Title"
+            id: book_title
 
         SingleInput:
             title: "ISBN"
@@ -54,6 +48,10 @@ ScrollView:
             id: book_format
 
         MultiInput:
+            id: book_publishers
+            title: "Publisher(s)"
+
+        MultiInput:
             id: book_genres
             title: "Genre(s)"
 
@@ -70,10 +68,5 @@ ScrollView:
             Button:
                 text: "Reset"
 
-<Label>:
-    font_name: "Roboto"
-    font_size: 20
-    bold: True
-
 <TextInput>:
-    font_name: "Roboto"
+    font_name: "Input"

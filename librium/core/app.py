@@ -11,6 +11,7 @@ from kivy.app import App
 from kivy.core.text import LabelBase
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
+from kivy.resources import resource_paths, resource_find, resource_add_path
 from pathlib import Path
 from librium.database import *
 from librium.gui.detail.widgets import Book as KivyBook
@@ -19,21 +20,25 @@ kivy.require("1.10.1")
 
 resource_root = Path(__file__).parent.parent / "resources"
 
-
-def get_res_path(path: str, name: str) -> str:
-    res_path = resource_root / path / name
-    return str(res_path.resolve())
-
+resource_add_path(str(resource_root / "fonts" / "roboto"))
+resource_add_path(str(resource_root / "fonts" / "input"))
 
 LabelBase.register(
     name='Roboto',
-    fn_regular=get_res_path("fonts/roboto", 'Roboto-Thin.ttf'),
-    fn_bold=get_res_path("fonts/roboto", 'Roboto-Medium.ttf')
+    fn_regular=resource_find('Roboto-Thin.ttf'),
+    fn_bold=resource_find('Roboto-Medium.ttf')
+)
+LabelBase.register(
+    name='Input',
+    fn_regular=resource_find('InputMono-Thin.ttf'),
+    fn_bold=resource_find('InputMono-Medium.ttf')
 )
 Window.clearcolor = get_color_from_hex("#2d323d")
 Factory.register("SingleInput", module="librium.gui.detail.widgets")
 Factory.register("MultiInput", module="librium.gui.detail.widgets")
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
+Config.set('graphics', 'width', '540')
+Config.set('graphics', 'height', '960')
 
 
 class LibriumLayout(GridLayout):
