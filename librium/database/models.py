@@ -4,6 +4,7 @@ import sqlalchemy as sa
 import sqlalchemy_utils as sau
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy_utils import generic_repr
 
 from librium.database.db import Base
@@ -56,9 +57,9 @@ class Book(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     title = sa.Column(sa.String(250))
-    price = sa.Column(sa.Integer)
-    page_count = sa.Column(sa.Integer, nullable=True)
     isbn = sa.Column(sa.String(13))
+    page_count = sa.Column(sa.Integer, nullable=True)
+    price = sa.Column(sa.Float)
     read = sa.Column(sa.Boolean(name="read_bool"), default=False, nullable=False)
     uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
 
@@ -91,7 +92,7 @@ class Book(Base):
     )
 
     @staticmethod
-    def add(rel, table: Base, value: dict):
+    def add(rel: InstrumentedList, table: Base, value: dict):
         try:
             item = table.query.filter_by(**value).one()
         except NoResultFound:
@@ -99,12 +100,16 @@ class Book(Base):
         rel.append(item)
 
     @staticmethod
-    def remove(rel, table: Base, value: dict):
+    def remove(rel: InstrumentedList, table: Base, value: dict):
         try:
             item = table.query.filter_by(**value).one()
             rel.remove(item)
         except NoResultFound:
             pass
+
+def make_author_name(context) -> str:
+    order = [context.prefix, context.first_name, context.middle_name, context.last_name, context.suffix]
+    return " ".join(x for x in order if x)
 
 
 @generic_repr
@@ -113,19 +118,12 @@ class Author(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     first_name = sa.Column(sa.String(50))
-    last_name = sa.Column(sa.String(50))
     middle_name = sa.Column(sa.String(50), nullable=True, default=None)
+    last_name = sa.Column(sa.String(50))
     prefix = sa.Column(sa.String(20), nullable=True, default=None)
     suffix = sa.Column(sa.String(20), nullable=True, default=None)
+    name = sa.Column(sa.String, default=make_author_name)
     uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
-
-    sa.UniqueConstraint(
-        "prefix",
-        "first_name",
-        "middle_name",
-        "last_name",
-        "suffix",
-    )
 
     books = relationship("Book", back_populates="authors", secondary="book_authors")
 
@@ -153,7 +151,7 @@ class SeriesIndex(Base):
     series = relationship("Series", back_populates="books")
 
     idx = sa.Column(
-        sa.Float, primary_key=True
+        sa.Float, primary_key=True, default=0
     )
 
     sa.CheckConstraint("idx>=0", name="positive_index")
