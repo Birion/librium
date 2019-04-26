@@ -107,6 +107,14 @@ class Book(Base):
         except NoResultFound:
             pass
 
+    @property
+    def price_(self):
+        if self.price * 10 % 10:
+            return self.price
+        else:
+            return int(self.price)
+
+
 def make_author_name(context) -> str:
     order = [context.prefix, context.first_name, context.middle_name, context.last_name, context.suffix]
     return " ".join(x for x in order if x)
