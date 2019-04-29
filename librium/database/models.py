@@ -62,6 +62,7 @@ class Book(Base):
     price = sa.Column(sa.Float)
     read = sa.Column(sa.Boolean(name="read_bool"), default=False, nullable=False)
     uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
+    has_cover = sa.Column(sa.Boolean(name="cover_bool"), default=False, nullable=False)
 
     authors = relationship(
         "Author",
@@ -116,7 +117,8 @@ class Book(Base):
 
 
 def make_author_name(context) -> str:
-    order = [context.prefix, context.first_name, context.middle_name, context.last_name, context.suffix]
+    parameters = context.get_current_parameters()
+    order = [parameters["prefix"], parameters["first_name"], parameters["middle_name"], parameters["last_name"], parameters["suffix"]]
     return " ".join(x for x in order if x)
 
 

@@ -6,6 +6,7 @@ ScrollView:
     format: book_format
     page_count: book_pages
     price: book_price
+    cover: book_cover
 
     authors: book_authors
     publishers: book_publishers
@@ -22,6 +23,11 @@ ScrollView:
 
         padding: 20
         spacing: 20
+
+        Widget:
+            Image:
+                id: book_cover
+                source: ""
 
         MultiInput:
             id: book_authors
@@ -59,14 +65,7 @@ ScrollView:
             id: book_languages
             title: "Language(s)"
 
-        GridLayout:
-            cols: 2
-
-            Button:
-                text: "Save"
-
-            Button:
-                text: "Reset"
+        Buttons:
 
 <TextInput>:
     font_name: "Input"

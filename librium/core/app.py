@@ -1,7 +1,10 @@
+from io import BytesIO
+
 import kivy
 import pendulum
 from kivy import Config
 from kivy.clock import Clock
+from kivy.core.image import Image
 from kivy.factory import Factory
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -30,11 +33,12 @@ LabelBase.register(
 )
 LabelBase.register(
     name='Input',
-    fn_regular=resource_find('InputMono-Thin.ttf'),
+    fn_regular=resource_find('InputMono-Regular.ttf'),
     fn_bold=resource_find('InputMono-Medium.ttf')
 )
 Window.clearcolor = get_color_from_hex("#2d323d")
 Factory.register("SingleInput", module="librium.gui.detail.widgets")
+Factory.register("MultiInput", module="librium.gui.detail.widgets")
 Factory.register("MultiInput", module="librium.gui.detail.widgets")
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 Config.set('graphics', 'width', '540')
@@ -79,3 +83,10 @@ class LibriumApp(App):
 
         for section in ["authors", "genres", "languages", "publishers"]:
             add_multiple(section)
+
+        img = Path(__file__).parent.parent / Path("covers") / f"{book.uuid}.jpg"
+
+        if not img.exists():
+            img = img.with_suffix(".png")
+
+        root.cover.source = str(img)

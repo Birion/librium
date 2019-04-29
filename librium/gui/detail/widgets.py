@@ -9,6 +9,10 @@ class Book(TextInput):
     pass
 
 
+class Buttons(GridLayout):
+    pass
+
+
 class Section(GridLayout):
     title = StringProperty()
 
