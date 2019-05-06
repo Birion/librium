@@ -58,11 +58,12 @@ class Book(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     title = sa.Column(sa.String(250))
     isbn = sa.Column(sa.String(13))
+    released = sa.Column(sa.Integer)
     page_count = sa.Column(sa.Integer, nullable=True)
     price = sa.Column(sa.Float)
     read = sa.Column(sa.Boolean(name="read_bool"), default=False, nullable=False)
-    uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
     has_cover = sa.Column(sa.Boolean(name="cover_bool"), default=False, nullable=False)
+    uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
 
     authors = relationship(
         "Author",

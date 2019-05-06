@@ -180,4 +180,5 @@ typings/
 utils/data/passwords.txt
 gunicorn_config.py
 /librium.sqlite
-/covers/*
+/covers[_old]*/*
+*.ipynb

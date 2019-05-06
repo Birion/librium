@@ -51,7 +51,7 @@ class LibriumLayout(GridLayout):
 
 class LibriumApp(App):
     def on_start(self):
-        book = Book.query.first()
+        book = Book.query.filter(Book.id == 1208).first()
 
         root = self.root
 
