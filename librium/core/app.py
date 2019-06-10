@@ -1,4 +1,5 @@
 from io import BytesIO
+import random
 
 import kivy
 import pendulum
@@ -51,7 +52,7 @@ class LibriumLayout(GridLayout):
 
 class LibriumApp(App):
     def on_start(self):
-        book = Book.query.filter(Book.id == 1208).first()
+        book = random.choice(Book.query.all())
 
         root = self.root
 
@@ -84,7 +85,7 @@ class LibriumApp(App):
         for section in ["authors", "genres", "languages", "publishers"]:
             add_multiple(section)
 
-        img = Path(__file__).parent.parent / Path("covers") / f"{book.uuid}.jpg"
+        img = Path(__file__).parent.parent.parent / Path("covers_old") / f"{book.uuid}.jpg"
 
         if not img.exists():
             img = img.with_suffix(".png")

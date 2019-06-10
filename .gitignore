@@ -182,3 +182,4 @@ gunicorn_config.py
 /librium.sqlite
 /covers[_old]*/*
 *.ipynb
+*.csv

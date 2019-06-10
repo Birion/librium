@@ -63,7 +63,7 @@ class Book(Base):
     price = sa.Column(sa.Float)
     read = sa.Column(sa.Boolean(name="read_bool"), default=False, nullable=False)
     has_cover = sa.Column(sa.Boolean(name="cover_bool"), default=False, nullable=False)
-    uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
+    uuid = sa.Column(sa.String, unique=True, default=lambda: str(uuid.uuid4()))
 
     authors = relationship(
         "Author",
@@ -134,7 +134,7 @@ class Author(Base):
     prefix = sa.Column(sa.String(20), nullable=True, default=None)
     suffix = sa.Column(sa.String(20), nullable=True, default=None)
     name = sa.Column(sa.String, default=make_author_name)
-    uuid = sa.Column(sau.UUIDType, unique=True, default=uuid.uuid4)
+    uuid = sa.Column(sa.String, unique=True, default=lambda: str(uuid.uuid4()))
 
     books = relationship("Book", back_populates="authors", secondary="book_authors")
 
