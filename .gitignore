@@ -183,3 +183,5 @@ gunicorn_config.py
 /covers[_old]*/*
 *.ipynb
 *.csv
+*.ods
+/librium-bck.sqlite
