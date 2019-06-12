@@ -118,7 +118,13 @@ class Book(Base):
 
 def make_author_name(context) -> str:
     parameters = context.get_current_parameters()
-    order = [parameters["prefix"], parameters["first_name"], parameters["middle_name"], parameters["last_name"], parameters["suffix"]]
+    order = [
+        parameters["prefix"],
+        parameters["first_name"],
+        parameters["middle_name"],
+        parameters["last_name"],
+        parameters["suffix"],
+    ]
     return " ".join(x for x in order if x)
 
 
@@ -154,15 +160,17 @@ class Publisher(Base):
 class SeriesIndex(Base):
     __tablename__ = "series_index"
 
-    book_id = sa.Column(sa.Integer, sa.ForeignKey("book.id"), primary_key=True, name="book")
-    series_id = sa.Column(sa.Integer, sa.ForeignKey("series.id"), primary_key=True, name="series")
+    book_id = sa.Column(
+        sa.Integer, sa.ForeignKey("book.id"), primary_key=True, name="book"
+    )
+    series_id = sa.Column(
+        sa.Integer, sa.ForeignKey("series.id"), primary_key=True, name="series"
+    )
 
     book = relationship("Book", back_populates="series")
     series = relationship("Series", back_populates="books")
 
-    idx = sa.Column(
-        sa.Float, primary_key=True, default=0
-    )
+    idx = sa.Column(sa.Float, primary_key=True, default=0)
 
     sa.CheckConstraint("idx>=0", name="positive_index")
 
@@ -171,7 +179,7 @@ class BookAuthors(Base):
     __tablename__ = "book_authors"
 
     book = sa.Column(sa.Integer, sa.ForeignKey("book.id"), primary_key=True)
-    author= sa.Column(sa.Integer, sa.ForeignKey("author.id"), primary_key=True)
+    author = sa.Column(sa.Integer, sa.ForeignKey("author.id"), primary_key=True)
 
 
 class BookPublishers(Base):

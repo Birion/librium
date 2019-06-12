@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col s6 offset-s3">
+                <ul class="collapsible">
+                    {% for author in authors %}
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">face</i>{{ author.name }}</div>
+                            <div class="collapsible-body">
+                                <ul>
+                                    {% for book in author.books %}
+                                        <li><i class="material-icons">book</i>{{ book.title }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% include "main/pagination.html" %}
+{% endblock %}
