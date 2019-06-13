@@ -1,6 +1,5 @@
-<div class="container">
     <div class="row">
-        <div class="col s6 offset-s3">
+        <div class="col s8 offset-s2 center-align">
             {% set current_page = request.args.page|int if "page" in request.args.keys() else 1 %}
             {% if True %}
                 {% if current_page == 1 %}
@@ -19,13 +18,17 @@
                 {% endif %}
             {% endif %}
             <ul class="pagination">
+                {% set offset = 3 %}
                 <li class="{{ prev_class }}"><a href="{{ prev_url }}"><i class="material-icons">chevron_left</i></a></li>
                 {% for x in range(1, pagination + 1) %}
-                    {% set p_class = "active blue" if x == current_page else "waves-effect" %}
+                    {% if (loop.first or loop.last or current_page - offset < x < current_page + offset) %}
+                    {% set p_class = "active" if x == current_page else "waves-effect" %}
                     <li class="{{ p_class }}"><a href="{{ url_for(request.endpoint, page = x) }}">{{ x }}</a></li>
+                    {% elif x == current_page - offset or x == current_page + offset %}
+                    <li class="disabled">&hellip;</li>
+                    {% endif %}
                 {% endfor %}
                 <li class="{{ next_class }}"><a href="{{ next_url }}"><i class="material-icons">chevron_right</i></a></li>
             </ul>
         </div>
     </div>
-</div>

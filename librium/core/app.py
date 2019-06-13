@@ -6,7 +6,7 @@ from flask import Flask
 from pony.flask import Pony
 
 from librium.__version__ import __version__
-from librium.views import main
+from librium.views import main, book
 
 # from handover.database.db import User
 # from handover.views import main, action, task
@@ -30,5 +30,6 @@ def create_app():
     assets.init_app(app)
 
     app.register_blueprint(main.bp)
+    app.register_blueprint(book.bp)
 
     return app

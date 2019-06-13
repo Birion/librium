@@ -90,5 +90,9 @@ class SeriesIndex(db.Entity):
     idx = Required(float, default=0)
     PrimaryKey(book, series)
 
+    @property
+    def index(self):
+        return int(self.idx) if not self.idx * 10 % 10 else self.idxk
+
 
 db.generate_mapping(create_tables=True)

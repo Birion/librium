@@ -1,32 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% block title %}{% endblock %} – Handover</title>
+    <title>{% block title %}{% endblock %} – Librium</title>
     {% include "_core/_head.html" %}
 </head>
 <body>
-{% macro dateParse(timestamp) -%}
-    {%- if timestamp is string -%}
-        {%- set fn = pendulum.parse -%}
-    {%- else -%}
-        {%- if timestamp|string|length == 13 %}{% set timestamp = timestamp / 1000 %}{% endif -%}
-        {%- set fn = pendulum.from_timestamp -%}
-    {%- endif -%}
-    {{ fn(timestamp).to_date_string() }}
-{%- endmacro %}
-{% macro timeParse(timestamp) -%}
-    {%- if timestamp is string -%}
-        {%- set fn = pendulum.parse -%}
-    {%- else -%}
-        {%- if timestamp|string|length == 13 %}{% set timestamp = timestamp / 1000 %}{% endif -%}
-        {%- set fn = pendulum.from_timestamp -%}
-    {%- endif -%}
-    {{ fn(timestamp).format("HH:mm") }}
-{%- endmacro %}
-
 {% include "_core/navbar.html" %}
 
 <div class="container">
+<div class="row"></div>
     {% block content %}{% endblock %}
 </div>
 

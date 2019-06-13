@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% macro make_select(local_items, global_items, title) %}
+    <div class="col s6">
+        <div class="row">
+            <div class="col s11">
+                <h6>{{ title|capitalize }}s</h6>
+            </div>
+            <div class="col s1">
+                <a class="btn btn-floating btn-small waves-effect waves-light right"><i
+                        class="material-icons">add</i></a>
+            </div>
+        </div>
+        {% for l_item in local_items %}
+            <div class="row">
+                <div class="input-field col s12">
+                    <select name="{{ title }}-{{ loop.index }}" id="{{ title }}-{{ loop.index }}">
+                        {% for g_item in global_items %}
+                            <option value="{{ g_item.id }}" {{ "selected" if g_item == l_item }}>{{ g_item.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="{{ title }}-{{ loop.index }}">{{ title|capitalize }}</label>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s8 offset-s2">
+            <form action="#">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input name="title" id="title" type="text" value="{{ book.title }}">
+                        <label for="title">Book title</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input name="isbn" id="isbn" type="text" value="{{ book.isbn }}">
+                        <label for="isbn">ISBN</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input type="text" name="uuid" id="uuid" value="{{ book.uuid }}" disabled="disabled">
+                        <label for="uuid">UUID</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <select name="format" id="format">
+                            {% for format in formats %}
+                                <option value="{{ format.id }}" {{ "selected" if format == book.format }}>{{ format.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="format">Format</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <input name="released" id="released" type="text" value="{{ book.released }}">
+                        <label for="released">Year released</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input name="price" id="price" type="text" value="{{ book.price }}">
+                        <label for="price">Original price</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input name="page_count" id="page_count" type="text" value="{{ book.page_count }}">
+                        <label for="page_count">Page count</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <label>
+                            <input type="checkbox" {{ 'checked="checked"' if book.read }}>
+                            <span>Read</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    {{ make_select(book.authors, authors, "author") }}
+                    {{ make_select(book.genres, genres, "genre") }}
+                </div>
+                <div class="row">
+                    {{ make_select(book.publishers, publishers, "publisher") }}
+                    {{ make_select(book.languages, languages, "language") }}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
