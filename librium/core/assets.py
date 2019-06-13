@@ -5,7 +5,7 @@ assets = Environment()
 vendor_js = Bundle("js/vendor/**/*.js")
 vendor_sass = Bundle("sass/vendor/**/*.sass", filters=["libsass"])
 vendor_scss = Bundle("scss/vendor/**/**/*.scss", filters=["pyscss"])
-vendor_css = Bundle("css/vendor/**/*.css")
+vendor_css = Bundle("css/vendor/**/**/*.css")
 personal_sass = Bundle("sass/*.sass", filters=["libsass"], depends=("sass/**/*.sass"))
 personal_js = Bundle("coffee/*.coffee", filters=["coffeescript"])
 
