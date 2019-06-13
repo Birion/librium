@@ -47,12 +47,9 @@ def get_authors(args) -> Tuple[Any, int]:
             s[sx].sort(key=lambda x: x["book"])
             s[sx].sort(key=lambda x: x["idx"])
 
-        print(s)
         _ = {"author": author.name, "series": [{"series": x, "books": s[x]} for x in s]}
         _["series"].sort(key=lambda x: x["series"])
         authors.append(_)
-
-    print(authors)
 
     max_length = int(count(a for a in Author) / 10)
     return authors, max_length
