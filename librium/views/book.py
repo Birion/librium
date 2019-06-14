@@ -1,28 +1,18 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from marshmallow import fields
+from pprint import pprint
+
+from flask import Blueprint, redirect, render_template, request, url_for
 from webargs.flaskparser import use_args
 
 from librium.database.pony.db import *
-from librium.views.utilities import MyBoolean
+from librium.views.utilities import BookSchema
 
 bp = Blueprint("book", __name__, url_prefix="/book")
 
 
 @bp.route("/<int:id>", methods=["GET", "POST"])
-@use_args({
-    'title': fields.String(),
-    'isbn': fields.String(),
-    'format': fields.Integer(),
-    'released': fields.Integer(),
-    'price': fields.Float(),
-    'page_count': fields.Integer(),
-    'read': MyBoolean(missing=False),
-    'authors': fields.List(fields.Integer()),
-    'genres': fields.List(fields.Integer()),
-    'publishers': fields.List(fields.Integer()),
-    'languages': fields.List(fields.Integer())
-})
+@use_args(BookSchema)
 def index(args, id):
+    pprint(args)
     if request.method == "POST":
 
         lookup_table = {
@@ -40,12 +30,18 @@ def index(args, id):
         for k, v in lookup_table.items():
             args[k] = [v[i] for i in args[k]]
         args["format"] = Format[args["format"]]
-
-        # TODO: Include series
-
-        print(args)
+        _series = []
+        for s in args["series"]:
+            try:
+                si = SeriesIndex[id, s["series"]]
+            except ObjectNotFound:
+                si = SeriesIndex(book=Book[id], series=Series[s["series"]])
+            si.idx = s["idx"]
+            _series.append(si)
+        args["series"] = _series
 
         book.set(**args)
+        commit()
         return redirect(url_for("book.index", id=id))
     options = {
         "book": Book[id],

@@ -92,7 +92,7 @@ class SeriesIndex(db.Entity):
 
     @property
     def index(self):
-        return int(self.idx) if not self.idx * 10 % 10 else self.idxk
+        return int(self.idx) if not self.idx * 10 % 10 else self.idx
 
 
 db.generate_mapping(create_tables=True)

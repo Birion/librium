@@ -6,10 +6,7 @@ from flask import Flask
 from pony.flask import Pony
 
 from librium.__version__ import __version__
-from librium.views import main, book
-
-# from handover.database.db import User
-# from handover.views import main, action, task
+from librium.views import book, main, api
 from .assets import assets
 
 load_dotenv(find_dotenv())
@@ -29,7 +26,12 @@ def create_app():
 
     assets.init_app(app)
 
+    @app.route("/favicon.ico")
+    def send_favicon():
+        return app.send_static_file("img/favicon.ico")
+
     app.register_blueprint(main.bp)
     app.register_blueprint(book.bp)
+    app.register_blueprint(api.bp)
 
     return app

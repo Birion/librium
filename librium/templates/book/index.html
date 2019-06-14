@@ -2,8 +2,13 @@
 
 {% macro make_select(local_items, global_items, title) %}
     <div class="field">
-        <label for="{{ title }}">{{ title|capitalize }}</label>
-        <select name="{{ title }}" id="{{ title }}" multiple="multiple" class="ui dropdown">
+        <label for="{{ title }}">
+            {{ title|capitalize }}
+            <a href="#" style="float: right;" data-content="Add new {{ title }}">
+                <i class="plus icon"></i>
+            </a>
+        </label>
+        <select name="{{ title }}" id="{{ title }}" multiple="multiple" class="ui search dropdown">
             {% for item in global_items %}
                 <option value="{{ item.id }}" {{ "selected" if item in local_items }}>{{ item.name }}</option>
             {% endfor %}
@@ -14,7 +19,7 @@
 {% block title %}{{ book.title }}{% endblock %}
 
 {% block content %}
-    <form class="ui equal width form" action="#" method="post">
+    <form id="book" class="ui equal width form" action="#" method="post">
         <div class="two fields">
             <div class="field">
                 <label for="title">Title</label>
@@ -39,25 +44,33 @@
                 </select>
             </div>
         </div>
-        <div class="three fields">
+        <div class="two fields">
             <div class="field">
-                <label for="released">Year released</label>
-                <input name="released" id="released" type="text" value="{{ book.released }}">
+                <img class="ui small bordered rounded centered image"
+                     src="{{ url_for("static", filename="img/covers/" + book.uuid + ".jpg") }}"
+                     alt="{{ book.title }} cover">
             </div>
             <div class="field">
-                <label for="price">Original price</label>
-                <input name="price" id="price" type="text" value="{{ book.price }}">
-            </div>
-            <div class="field">
-                <label for="page_count">Page count</label>
-                <input name="page_count" id="page_count" type="text" value="{{ book.page_count }}">
-            </div>
-        </div>
-        <div class="field">
-            <div class="ui checkbox">
-                <input name="read" id="read" type="checkbox" {{ 'checked="checked"' if book.read }} class="hidden"
-                       tabindex="0">
-                <label>Read</label>
+                <div class="five wide field">
+                    <label for="released">Year released</label>
+                    <input name="released" id="released" type="number" value="{{ book.released }}" min="0">
+                </div>
+                <div class="five wide field">
+                    <label for="price">Original price</label>
+                    <input name="price" id="price" type="number" value="{{ book.price }}" min="0">
+                </div>
+                <div class="five wide field">
+                    <label for="page_count">Page count</label>
+                    <input name="page_count" id="page_count" type="number" value="{{ book.page_count }}" min="0">
+                </div>
+                <div class="five wide field">
+                    <p></p>
+                    <div class="ui checkbox">
+                        <input name="read" id="read" type="checkbox" {{ 'checked="checked"' if book.read }}
+                               class="hidden" tabindex="0">
+                        <label for="read">Read</label>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="two fields">
@@ -69,10 +82,58 @@
             {{ make_select(book.languages, languages, "languages") }}
         </div>
 
-{#    TODO: Include series#}
+        <h4 class="ui dividing header">
+            <span>Series</span>
+            <a href="#" data-content="Create new series" id="create-series" style="float: right;">
+                <i class="plus icon"></i>
+            </a>
+        </h4>
+        <input type="hidden" name="series" id="series">
+
+        {% for si in book.series %}
+            <div class="fields">
+                <div class="eight wide field">
+                    <label for="series-name-{{ loop.index }}">Name</label>
+                    <div class="ui fluid buttons">
+                        <div class="ui fluid dropdown search icon button">
+                            <input type="hidden" name="series-name-{{ loop.index }}" value="{{ si.series.id }}">
+                            <span class="text">Select series</span>
+                            <div class="menu">
+                                {% for s in series %}
+                                    <div class="item" data-value="{{ s.id }}">{{ s.name }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <a class="ui teal button edit series">
+                            <i class="pencil icon"></i>
+                        </a>
+                        <a class="ui teal button remove series">
+                            <i class="minus icon"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="one wide field">
+                </div>
+                <div class="one wide field">
+                    <label for="series-index-{{ loop.index }}">Index</label>
+                    <input name="series-index-{{ loop.index }}" id="series-index-{{ loop.index }}" type="number" min="0"
+                           step="0.1"
+                           value="{{ si.index }}">
+                </div>
+            </div>
+        {% endfor %}
 
         <div class="field">
-            <button class="ui primary button" type="submit">Submit</button>
+            <a id="add-series" class="ui basic fluid icon button"><i class="plus icon"></i></a>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div class="centered field">
+            <button class="ui primary animated fade button" type="submit">
+                <span class="hidden content"><i class="thumbs up icon"></i></span>
+                <span class="visible content">Submit</span>
+            </button>
         </div>
     </form>
 {% endblock %}

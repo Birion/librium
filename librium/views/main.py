@@ -1,3 +1,4 @@
+from math import ceil
 from typing import Any, Tuple
 
 from flask import Blueprint, render_template
@@ -12,10 +13,11 @@ bp = Blueprint("main", __name__)
 
 def get_authors(args) -> Tuple[Any, int]:
     page = args.get("page", 1)
+    pagesize = 15
 
     authors = []
 
-    for author in Author.select().order_by(Author.last_name).page(page):
+    for author in Author.select().order_by(Author.last_name).page(page, pagesize=pagesize):
         s = {"0": []}
         s.update({x: [] for x in {series.name for series in author.books.series.series}})
         for book in author.books:
@@ -51,7 +53,7 @@ def get_authors(args) -> Tuple[Any, int]:
         _["series"].sort(key=lambda x: x["series"])
         authors.append(_)
 
-    max_length = int(count(a for a in Author) / 10)
+    max_length = ceil(count(a for a in Author) / pagesize)
     return authors, max_length
 
 
