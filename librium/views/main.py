@@ -1,7 +1,7 @@
 from math import ceil
 from typing import Any, Tuple
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from marshmallow import fields
 from pony.orm import *
 from webargs.flaskparser import use_args
@@ -16,8 +16,11 @@ def get_authors(args) -> Tuple[Any, int]:
     pagesize = 15
 
     authors = []
+    _authors = Author.select(lambda a: len(a.books) > 0)
+    if args.get("start"):
+        _authors = _authors.filter(lambda a: a.last_name.lower().startswith(args.get("start").lower()))
 
-    for author in Author.select().order_by(Author.last_name).page(page, pagesize=pagesize):
+    for author in _authors.order_by(Author.last_name).page(page, pagesize=pagesize):
         s = {"0": []}
         s.update({x: [] for x in {series.name for series in author.books.series.series}})
         for book in author.books:
@@ -53,13 +56,14 @@ def get_authors(args) -> Tuple[Any, int]:
         _["series"].sort(key=lambda x: x["series"])
         authors.append(_)
 
-    max_length = ceil(count(a for a in Author) / pagesize)
+    max_length = ceil(count(a for a in _authors) / pagesize)
     return authors, max_length
 
 
 @bp.route("/")
 @use_args({
-    "page": fields.Integer()
+    "page": fields.Integer(),
+    "start": fields.String(required=False),
 })
 def index(args):
     authors, max_length = get_authors(args)

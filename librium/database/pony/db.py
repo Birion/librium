@@ -42,6 +42,9 @@ class Author(db.Entity):
 
     books = Set(Book)
 
+    def make_uuid(self):
+        self.uuid = str(uuid.uuid4())
+
 
 class Publisher(db.Entity):
     _table_ = "publisher"

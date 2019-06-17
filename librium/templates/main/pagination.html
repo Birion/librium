@@ -6,27 +6,27 @@
             {% set prev_url = "#" %}
         {% else %}
             {% set prev_class = "item" %}
-            {% set prev_url = url_for(request.endpoint, page=current_page - 1) %}
+            {% set prev_url = url_for_self(page=current_page - 1) %}
         {% endif %}
         {% if current_page == pagination %}
             {% set next_class = "disabled item" %}
             {% set next_url = "#" %}
         {% else %}
             {% set next_class = "item" %}
-            {% set next_url = url_for(request.endpoint, page = current_page + 1) %}
+            {% set next_url = url_for_self(page=current_page + 1) %}
         {% endif %}
     {% endif %}
     {% set offset = 3 %}
-    <a href="{{ url_for(request.endpoint) }}" class="{{ prev_class }}"><i class="angle double left icon"></i></a>
+    <a href="{{ url_for_self() }}" class="{{ prev_class }}"><i class="angle double left icon"></i></a>
     <a href="{{ prev_url }}" class="{{ prev_class }}"><i class="angle left icon"></i></a>
     {% for x in range(1, pagination + 1) %}
         {% if (loop.first or loop.last or current_page - offset < x < current_page + offset) %}
             {% set p_class = "active item" if x == current_page else "item" %}
-            <a class="{{ p_class }}" href="{{ url_for(request.endpoint, page = x) }}">{{ x }}</a>
+            <a class="{{ p_class }}" href="{{ url_for_self(page = x) }}">{{ x }}</a>
         {% elif x == current_page - offset or x == current_page + offset %}
             <div class="disabled item">&hellip;</div>
         {% endif %}
     {% endfor %}
     <a href="{{ next_url }}" class="{{ next_class }}"><i class="angle right icon"></i></a>
-    <a href="{{ url_for(request.endpoint, page = pagination) }}" class="{{ next_class }}"><i class="angle double right icon"></i></a>
+    <a href="{{ url_for_self(page = pagination) }}" class="{{ next_class }}"><i class="angle double right icon"></i></a>
 </div>

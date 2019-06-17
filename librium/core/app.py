@@ -2,7 +2,7 @@ import os
 import os.path
 
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask
+from flask import Flask, url_for, request
 from pony.flask import Pony
 
 from librium.__version__ import __version__
@@ -29,6 +29,11 @@ def create_app():
     @app.route("/favicon.ico")
     def send_favicon():
         return app.send_static_file("img/favicon.ico")
+
+    def url_for_self(**args):
+        return url_for(request.endpoint, **dict(request.args, **args))
+
+    app.jinja_env.globals['url_for_self'] = url_for_self
 
     app.register_blueprint(main.bp)
     app.register_blueprint(book.bp)

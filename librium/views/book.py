@@ -12,7 +12,6 @@ bp = Blueprint("book", __name__, url_prefix="/book")
 @bp.route("/<int:id>", methods=["GET", "POST"])
 @use_args(BookSchema)
 def index(args, id):
-    pprint(args)
     if request.method == "POST":
 
         lookup_table = {
