@@ -6,7 +6,7 @@ from flask import Flask, url_for, request
 from pony.flask import Pony
 
 from librium.__version__ import __version__
-from librium.views import book, main, api
+from librium.views import book, main, api, covers
 from .assets import assets
 
 load_dotenv(find_dotenv())
@@ -38,5 +38,6 @@ def create_app():
     app.register_blueprint(main.bp)
     app.register_blueprint(book.bp)
     app.register_blueprint(api.bp)
+    app.register_blueprint(covers.bp)
 
     return app

@@ -51,8 +51,7 @@
             <div class="field">
                 {% if book and book.has_cover %}
                     <img class="ui small bordered rounded centered image"
-                         src="{{ url_for("static", filename="/covers/" + book.uuid + ".jpg") }}"
-                         alt="{{ book.title }} cover">
+                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
                 {% endif %}
             </div>
             <div class="field">
@@ -146,7 +145,7 @@
 {% endblock %}
 
 {% block modal %}
-    <div class="ui mini modal" data-url="{{ url_for("api.add") }}">
+    <div id="new-modal" class="ui mini modal" data-url="{{ url_for("api.add") }}">
         <div class="header"></div>
         <div class="content">
             <div class="ui fluid input">
@@ -162,6 +161,18 @@
             <div class="ui negative right labeled icon button">
                 Cancel
                 <i class="x icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="ui modal" id="cover-modal">
+        <div class="image content">
+            <img src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover"
+                 class="image">
+            <div class="description">
+                <h1>{{ book.title }}</h1>
+                {% for author in book.authors %}
+                    <h2>{{ author.name }}</h2>
+                {% endfor %}
             </div>
         </div>
     </div>

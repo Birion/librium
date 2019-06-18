@@ -28,6 +28,10 @@ class Book(db.Entity):
     genres = Set("Genre", table="book_genres")
     series = Set("SeriesIndex")
 
+    @property
+    def hex_uuid(self):
+        return uuid.UUID(self.uuid).hex
+
 
 class Author(db.Entity):
     _table_ = "author"

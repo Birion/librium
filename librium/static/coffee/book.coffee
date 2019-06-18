@@ -3,8 +3,10 @@ $ ->
   $lastID = 0
   $seriesInputs = $ "input[name^=series-name]"
 
-  $ ".ui.modal"
+  $ "#new-modal"
     .modal "attach events", ".new-link", "show"
+  $ "#cover-modal"
+    .modal "attach events", "img[alt$='cover']", "show"
 
   if $seriesInputs.length
     s = $seriesInputs.last()
@@ -130,3 +132,5 @@ $ ->
             ,
             (data) ->
               updateDropdown $type, data.id, data.name
+
+  $ "img[alt$='cover']"
