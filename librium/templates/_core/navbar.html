@@ -1,8 +1,9 @@
 <div class="ui fixed inverted menu">
     <div class="ui container">
-      <a href="{{ url_for("main.index") }}" class="header item">
-        <img class="logo" src="{{ url_for("static", filename="img/logo.png") }}" alt="Librium logo">
-      </a>
-      <a href="{{ url_for("main.index") }}" class="item">Home</a>
+        <a href="{{ url_for("main.index") }}" class="header item">
+            <img class="logo" src="{{ url_for("static", filename="img/logo.png") }}" alt="Librium logo">
+        </a>
+        <a href="{{ url_for("main.index") }}" class="item">Home</a>
+        <a href="{{ url_for("book.add") }}" class="item">Add new book</a>
     </div>
-  </div>
+</div>

@@ -14,33 +14,38 @@
         {% endif %}
         <i class="{{ "check" if book.read }} icon"></i>
         <div class="content">
-                <a href="{{ url_for("book.index", id=book.id) }}">{{ book.book }}</a>
-                ({{ book.year }})
+            <a href="{{ url_for("book.index", id=book.id) }}">{{ book.book }}</a>
+            ({{ book.year }})
         </div>
     </div>
 {% endmacro %}
 
 {% block content %}
     <div class="ui styled accordion">
-        {% for author in authors %}
-            <div class="title"><i class="dropdown icon"></i>{{ author.author }}</div>
-            <div class="content">
+        {% if authors %}
+            {% for author in authors %}
+                <div class="title"><i class="dropdown icon"></i>{{ author.author }}</div>
+                <div class="content">
                     {% for series in author.series %}
                         <div class="ui raised segment">
-                <div class="ui middle aligned divided list">
-                        {% if series.series != "0" %}
-                            <div class="item">
-                                <div class="header">{{ series.series }}</div>
+                            <div class="ui middle aligned divided list">
+                                {% if series.series != "0" %}
+                                    <div class="item">
+                                        <div class="header">{{ series.series }}</div>
+                                    </div>
+                                {% endif %}
+                                {% for book in series.books %}
+                                    {{ make_book(book) }}
+                                {% endfor %}
                             </div>
-                        {% endif %}
-                        {% for book in series.books %}
-                            {{ make_book(book) }}
-                        {% endfor %}
-                </div>
                         </div>
                     {% endfor %}
-            </div>
-        {% endfor %}
+                </div>
+            {% endfor %}
+        {% elif series %}
+            {% for s in series %}
+            {% endfor %}
+        {% endif %}
     </div>
 
     {% include "main/pagination.html" %}

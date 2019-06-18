@@ -4,7 +4,7 @@ $ ->
     .accordion()
   $ "select.dropdown, .ui.dropdown"
     .dropdown
-      allowAdditions: true
+      fullTextSearch: true
   $ ".ui.checkbox"
     .checkbox()
   $ "label > a, h4 > a"

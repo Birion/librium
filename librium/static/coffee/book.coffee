@@ -3,11 +3,20 @@ $ ->
   $lastID = 0
   $seriesInputs = $ "input[name^=series-name]"
 
+  $ ".ui.modal"
+    .modal "attach events", ".new-link", "show"
+
   if $seriesInputs.length
     s = $seriesInputs.last()
     $lastID = Number(s.attr("name")[s.attr("name").length - 1])
 
-  console.log $lastID
+  updateDropdown = (id, value, text) ->
+    dropdown = $ "##{id}s"
+    option = $ "<option/>",
+      value: value
+      text: text
+    dropdown.append option
+    dropdown.dropdown "refresh"
 
   $ "form#book"
     .submit (event) ->
@@ -95,16 +104,29 @@ $ ->
       $removeLink = makeLink "remove", "minus"
       $removeLink.appendTo $buttonsDiv
 
-      $.getJSON(
-            "/api/series",
-            [],
+      $.getJSON "/api/series",
+        [],
+        (data) ->
+          for item in data
+            console.log item
+            _ = $ "<div/>",
+              class: "item"
+              "data-value": item.id
+              text: item.name
+            _.appendTo $menuDiv
+          $buttonDiv.dropdown()
+
+  $ ".new-link"
+    .click ->
+      $type = $( @ ).data "type"
+      $modal = $ ".ui.modal"
+      $modal.children ".header"
+        .text "Create a new #{$type}"
+      $modal.modal
+        onApprove: ->
+          $.post $modal.data("url"),
+            name: $modal.find("#name").val()
+            type: $type
+            ,
             (data) ->
-              for item in data
-                console.log item
-                _ = $ "<div/>",
-                  class: "item"
-                  "data-value": item.id
-                  text: item.name
-                _.appendTo $menuDiv
-              $buttonDiv.dropdown()
-          )
+              updateDropdown $type, data.id, data.name

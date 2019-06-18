@@ -18,6 +18,7 @@ bundles = {
         personal_sass,
         filters=["cssutils"],
         output="gen/packed.css",
+        depends=("sass/**/*.sass")
     ),
 }
 

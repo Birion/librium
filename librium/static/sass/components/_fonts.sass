@@ -1,0 +1,119 @@
+$default-fonts: 'Helvetica Neue', Helvetica, Arial, sans-serif
+$font-cabin: 'Cabin'
+$body-fonts: $font-cabin, $default-fonts
+
+@function make-input-types()
+  $type-output: ()
+  $types: 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'color', 'date', 'datetime', 'datetime-local', 'month', 'time', 'week'
+  @each $t in $types
+    $type-output: append($type-output, 'input[type=#{$t}]')
+  @return $type-output
+
+$inputs-list: make-input-types()
+
+@mixin bodyfont
+  font-family: $body-fonts !important
+
+@mixin add-header($direct: false)
+  @if $direct
+    > .header
+      +bodyfont
+  @else
+    .header
+      +bodyfont
+
+
+@mixin add-sub($type)
+  .ui
+    &.#{$type}s
+      > .#{$type}
+        > .content
+          +add-header(true)
+
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i&display=swap&subset=latin-ext')
+
+
+body
+  +bodyfont
+
+.ui
+  &.button,
+  &.header,
+  &.menu
+    +bodyfont
+
+  &.text
+    &.container
+      +bodyfont
+
+  &.input
+    > input
+      +bodyfont
+
+  &.accordion
+    .title
+      &:not(.ui)
+        +bodyfont
+
+  &.steps
+    .step
+      .title
+        +bodyfont
+
+  &.category
+    &.search
+      > .results
+        .category
+          > .name
+            +bodyfont
+
+  &.search
+    > .results
+      .result
+        .title
+          +bodyfont
+      > .message
+        +add-header
+
+  &.modal
+    +add-header
+  &.popup
+    +add-header
+
+  &.list
+    .list
+      >.item
+        +add-header
+    >.item
+      +add-header
+  &.message
+    +add-header
+
+  &.card
+    > .content
+      +add-header(true)
+
+  &.form
+    input
+      &:not([type])
+        +bodyfont
+
+  @each $elem in $inputs-list
+    #{$elem}
+      +bodyfont
+
+@each $elem in 'card', 'item'
+  +add-sub($elem)
+
+@each $elem in '.label', '.value'
+  .ui
+    &.statistic
+      .statistic
+        > #{$elem}
+          +bodyfont
+      > #{$elem}
+        +bodyfont
+
+@for $i from 1 to 5
+  h#{$i}
+    +bodyfont

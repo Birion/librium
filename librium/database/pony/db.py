@@ -23,7 +23,7 @@ class Book(db.Entity):
 
     authors = Set("Author", table="book_authors")
     publishers = Set("Publisher", table="book_publishers")
-    format = Required("Format")
+    format = Required("Format", default=1)
     languages = Set("Language", table="book_languages")
     genres = Set("Genre", table="book_genres")
     series = Set("SeriesIndex")
@@ -32,12 +32,12 @@ class Book(db.Entity):
 class Author(db.Entity):
     _table_ = "author"
     id = PrimaryKey(int, auto=True)
-    first_name = Optional(str, 50)
-    middle_name = Optional(str, 50)
-    last_name = Optional(str, 50)
-    prefix = Optional(str, 20)
-    suffix = Optional(str, 20)
-    name = Required(str)
+    first_name = Optional(str, 50, default=None, nullable=True)
+    middle_name = Optional(str, 50, default=None, nullable=True)
+    last_name = Optional(str, 50, default=None, nullable=True)
+    prefix = Optional(str, 20, default=None, nullable=True)
+    suffix = Optional(str, 20, default=None, nullable=True)
+    name = Optional(str)
     uuid = Required(str, unique=True, default=lambda: str(uuid.uuid4()))
 
     books = Set(Book)

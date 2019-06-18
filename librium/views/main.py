@@ -1,7 +1,7 @@
 from math import ceil
 from typing import Any, Tuple
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from marshmallow import fields
 from pony.orm import *
 from webargs.flaskparser import use_args
@@ -60,11 +60,33 @@ def get_authors(args) -> Tuple[Any, int]:
     return authors, max_length
 
 
-@bp.route("/")
-@use_args({
+user_args = {
     "page": fields.Integer(),
     "start": fields.String(required=False),
-})
+}
+
+
+@bp.route("/")
+@use_args(user_args)
 def index(args):
     authors, max_length = get_authors(args)
     return render_template("main/index.html", authors=authors, pagination=max_length)
+
+
+@bp.route("/a")
+@use_args(user_args)
+def authors(args):
+    a, max_length = get_authors(args)
+
+    options = {
+        "authors": a,
+        "pagination": max_length
+    }
+
+    return render_template("main/index.html", **options)
+
+
+@bp.route("/s")
+@use_args(user_args)
+def series(args):
+    pass
