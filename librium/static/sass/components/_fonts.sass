@@ -1,6 +1,8 @@
 $default-fonts: 'Helvetica Neue', Helvetica, Arial, sans-serif
 $font-cabin: 'Cabin'
+$font-source-sans-pro: 'Source Sans Pro'
 $body-fonts: $font-cabin, $default-fonts
+$release-font: $font-source-sans-pro
 
 @function make-input-types()
   $type-output: ()
@@ -30,11 +32,15 @@ $inputs-list: make-input-types()
         > .content
           +add-header(true)
 
-@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i&display=swap&subset=latin-ext')
-
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i|Source+Sans+Pro:700&display=swap&subset=latin-ext')
 
 body
   +bodyfont
+
+.year
+  &.label
+    font-family: $release-font
+    font-variant-numeric: tabular-nums
 
 .ui
   &.button,
@@ -72,20 +78,24 @@ body
       .result
         .title
           +bodyfont
+
       > .message
         +add-header
 
   &.modal
     +add-header
+
   &.popup
     +add-header
 
   &.list
     .list
-      >.item
+      > .item
         +add-header
-    >.item
+
+    > .item
       +add-header
+
   &.message
     +add-header
 
@@ -111,6 +121,7 @@ body
       .statistic
         > #{$elem}
           +bodyfont
+
       > #{$elem}
         +bodyfont
 

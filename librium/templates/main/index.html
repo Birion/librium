@@ -1,44 +1,25 @@
 {% extends 'base.html' %}
+{% include "book/definitions.html" %}
+{% from "book/definitions.html" import make_content %}
 
 {% block title %}Index{% endblock %}
 
-{% macro make_book(book) %}
-    <div class="item">
-        {% if book.idx and book.idx != -1 %}
-            <div class="right floated content">
-                <div class="ui teal label">
-                    <div class="book icon"></div>
-                    {{ book.idx }}
-                </div>
-            </div>
-        {% endif %}
-        <i class="{{ "check" if book.read }} icon"></i>
-        <div class="content">
-            <a href="{{ url_for("book.index", id=book.id) }}">{{ book.book }}</a>
-            ({{ book.year }})
-        </div>
-    </div>
-{% endmacro %}
 
 {% block content %}
     <div class="ui styled accordion">
+        {% if request.args.read is defined %}
+            {% set read_only = request.args.read == "true" %}
+        {% endif %}
         {% if authors %}
             {% for author in authors %}
                 <div class="title"><i class="dropdown icon"></i>{{ author.author }}</div>
                 <div class="content">
                     {% for series in author.series %}
-                        <div class="ui raised segment">
-                            <div class="ui middle aligned divided list">
-                                {% if series.series != "0" %}
-                                    <div class="item">
-                                        <div class="header">{{ series.series }}</div>
-                                    </div>
-                                {% endif %}
-                                {% for book in series.books %}
-                                    {{ make_book(book) }}
-                                {% endfor %}
+                        {% if (request.args.read is undefined) or (read_only and series.status.read > 0) or (read_only or series.status.unread > 0) %}
+                            <div class="ui raised segment">
+                                {{ make_content(series, [request.args.read, read_only]) }}
                             </div>
-                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% endfor %}

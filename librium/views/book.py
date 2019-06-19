@@ -11,7 +11,6 @@ def add_or_update(book: Book, args):
     lookup_table = {
         "genres": Genre,
         "publishers": Publisher,
-        "authors": Author,
         "languages": Language
     }
 
@@ -30,7 +29,18 @@ def add_or_update(book: Book, args):
             si = SeriesIndex(book=book, series=Series[s["series"]])
         si.idx = s["idx"]
         _series.append(si)
+    _authors = []
+    i = 1
+    for a in args["authors"]:
+        try:
+            ax = AuthorOrdering[book.id, a]
+        except ObjectNotFound:
+            ax = AuthorOrdering(book=book, author=Author[a])
+        ax.idx = i
+        i += 1
+        _authors.append(ax)
     args["series"] = _series
+    args["authors"] = _authors
 
     book.set(**args)
     commit()

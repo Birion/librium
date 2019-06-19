@@ -9,12 +9,16 @@
                 <i class="plus icon"></i>
             </a>
         </label>
-        <select name="{{ title }}s" id="{{ title }}s" multiple="multiple" class="ui search dropdown">
-            <option value="">Select {{ title }}</option>
-            {% for item in global_items %}
-                <option value="{{ item.id }}" {{ "selected" if local_items and item in local_items }}>{{ item.name }}</option>
-            {% endfor %}
-        </select>
+        <div class="ui clearable multiple search selection dropdown">
+            <input type="hidden" name="{{ title }}s" value="{{ local_items|join(',') }}">
+            <i class="dropdown icon"></i>
+            <div class="default text">Select {{ title }}</div>
+            <div class="menu">
+                {% for item in global_items %}
+                    <div class="item" data-value="{{ item.id }}">{{ item.name }}</div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 {% endmacro %}
 
@@ -79,12 +83,12 @@
             </div>
         </div>
         <div class="two fields">
-            {{ make_select(book.authors if book else None, authors, "author") }}
-            {{ make_select(book.genres if book else None, genres, "genre") }}
+            {{ make_select(book.a_id if book else None, authors, "author") }}
+            {{ make_select(book.g_id if book else None, genres, "genre") }}
         </div>
         <div class="two fields">
-            {{ make_select(book.publishers if book else None, publishers, "publisher") }}
-            {{ make_select(book.languages if book else None, languages, "language") }}
+            {{ make_select(book.p_id if book else None, publishers, "publisher") }}
+            {{ make_select(book.l_id if book else None, languages, "language") }}
         </div>
 
         <h4 class="ui dividing header">
@@ -164,16 +168,18 @@
             </div>
         </div>
     </div>
-    <div class="ui modal" id="cover-modal">
-        <div class="image content">
-            <img src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover"
-                 class="image">
-            <div class="description">
-                <h1>{{ book.title }}</h1>
-                {% for author in book.authors %}
-                    <h2>{{ author.name }}</h2>
-                {% endfor %}
+    {% if book %}
+        <div class="ui modal" id="cover-modal">
+            <div class="image content">
+                <img src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover"
+                     class="image">
+                <div class="description">
+                    <h1>{{ book.title }}</h1>
+                    {% for author in book.authors %}
+                        <h2>{{ author.author.name }}</h2>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

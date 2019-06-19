@@ -1,6 +1,7 @@
 import json
 
 from marshmallow import Schema, fields, pre_load
+from webargs.fields import DelimitedList
 
 
 class MyBoolean(fields.Boolean):
@@ -26,7 +27,7 @@ class BookSchema(Schema):
     price = fields.Float(required=False)
     page_count = fields.Integer(required=False)
     read = MyBoolean(missing=False)
-    authors = fields.List(fields.Integer(), required=False)
+    authors = DelimitedList(fields.Integer(), required=False)
     genres = fields.List(fields.Integer(), required=False)
     publishers = fields.List(fields.Integer(), required=False)
     languages = fields.List(fields.Integer(), required=False)

@@ -1,5 +1,6 @@
 import os
 import uuid
+from decimal import Decimal
 
 from dotenv import find_dotenv, load_dotenv
 from pony.orm import *
@@ -16,12 +17,12 @@ class Book(db.Entity):
     isbn = Optional(str, 13)
     released = Optional(int, size=64)
     page_count = Optional(int, size=64)
-    price = Optional(float)
+    price = Optional(Decimal)
     read = Required(bool, default=False)
     has_cover = Required(bool, default=False)
     uuid = Required(str, unique=True, default=lambda: str(uuid.uuid4()))
 
-    authors = Set("Author", table="book_authors")
+    authors = Set("AuthorOrdering")
     publishers = Set("Publisher", table="book_publishers")
     format = Required("Format", default=1)
     languages = Set("Language", table="book_languages")
@@ -31,6 +32,38 @@ class Book(db.Entity):
     @property
     def hex_uuid(self):
         return uuid.UUID(self.uuid).hex
+
+    @property
+    def name(self):
+        return self.title
+
+    @name.setter
+    def name(self, value):
+        self.title = value
+
+    @property
+    def authors_deep(self):
+        return [a.author for a in select(a for a in self.authors).order_by(AuthorOrdering.idx)]
+
+    @property
+    def a_id(self):
+        return [a.author.id for a in select(a for a in self.authors).order_by(AuthorOrdering.idx)]
+
+    @property
+    def g_id(self):
+        return select(g.id for g in self.genres)
+
+    @property
+    def p_id(self):
+        return select(p.id for p in self.publishers)
+
+    @property
+    def l_id(self):
+        return select(l.id for l in self.languages)
+
+    @property
+    def s_id(self):
+        return select(s.series.id for s in self.series)
 
 
 class Author(db.Entity):
@@ -44,10 +77,18 @@ class Author(db.Entity):
     name = Optional(str)
     uuid = Required(str, unique=True, default=lambda: str(uuid.uuid4()))
 
-    books = Set(Book)
+    books = Set("AuthorOrdering")
 
     def make_uuid(self):
         self.uuid = str(uuid.uuid4())
+
+    @property
+    def books_in_series(self):
+        return select(b.book for b in self.books if not b.book.series.is_empty())
+
+    @property
+    def books_standalone(self):
+        return select(b.book for b in self.books if b.book.series.is_empty())
 
 
 class Publisher(db.Entity):
@@ -89,17 +130,42 @@ class Series(db.Entity):
 
     books = Set("SeriesIndex")
 
+    @property
+    def has_unread_books(self):
+        return len(self.books.filter(lambda si: si.book.read is False)) > 0
+
+    @property
+    def has_read_books(self):
+        return len(self.books.filter(lambda si: si.book.read is True)) > 0
+
+    @property
+    def books_read(self):
+        return select(si for si in self.books if si.book.read)
+
+    @property
+    def books_unread(self):
+        return select(si for si in self.books if not si.book.read)
+
 
 class SeriesIndex(db.Entity):
     _table_ = "series_index"
     book = Required(Book)
     series = Required(Series)
-    idx = Required(float, default=0)
-    PrimaryKey(book, series)
+    idx = Required(Decimal, default=0)
+    PrimaryKey(book, series, idx)
 
     @property
     def index(self):
         return int(self.idx) if not self.idx * 10 % 10 else self.idx
+
+
+class AuthorOrdering(db.Entity):
+    _table_ = "book_authors"
+    book = Required(Book)
+    author = Required(Author)
+    idx = Required(int, default=0)
+    PrimaryKey(book, author)
+    composite_index(book, idx)
 
 
 db.generate_mapping(create_tables=True)
