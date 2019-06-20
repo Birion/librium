@@ -1,33 +1,67 @@
 {% extends 'base.html' %}
-{% include "book/definitions.html" %}
-{% from "book/definitions.html" import make_content %}
+{% from "main/definitions.html" import make_author_content, make_series_content, make_book_content, make_year_content, make_head, make_content %}
 
 {% block title %}Index{% endblock %}
 
 
 {% block content %}
-    <div class="ui styled accordion">
+    <div class="ui fluid styled accordion">
         {% if request.args.read is defined %}
             {% set read_only = request.args.read == "true" %}
         {% endif %}
-        {% if authors %}
-            {% for author in authors %}
-                <div class="title"><i class="dropdown icon"></i>{{ author.author }}</div>
-                <div class="content">
-                    {% for series in author.series %}
+        {% set active = pagination == 1 %}
+        {% if authors is defined %}
+            {% for a in authors %}
+                {{ make_head(a.author, active) }}
+                {% call make_content(active) %}
+                    {% for series in a.series %}
                         {% if (request.args.read is undefined) or (read_only and series.status.read > 0) or (read_only or series.status.unread > 0) %}
                             <div class="ui raised segment">
-                                {{ make_content(series, [request.args.read, read_only]) }}
+                                {{ make_author_content(series, [request.args.read, read_only]) }}
                             </div>
                         {% endif %}
                     {% endfor %}
-                </div>
+                {% endcall %}
             {% endfor %}
-        {% elif series %}
+        {% elif series is defined %}
             {% for s in series %}
+                {{ make_head(s.series, active) }}
+                {% call make_content(active) %}
+                    {{ make_series_content(s) }}
+                {% endcall %}
+            {% endfor %}
+        {% elif books is defined %}
+            {% for b in books %}
+                {% set title %}
+                <div class="ui grid">
+                    <div class="fourteen wide column"><i class="dropdown icon"></i>{{ b.title }}</div>
+                    <div class="one wide column"><i class="{{ "green check" if b.read else "red times" }} icon"></i></div>
+                </div>
+                {% endset %}
+                {{ make_head(title, active, False) }}
+                {% call make_content(active) %}
+                    {{ make_book_content(b) }}
+                {% endcall %}
+            {% endfor %}
+        {% elif years is defined %}
+            {% for y in years %}
+                {% set title %}
+                <div class="ui grid">
+                    <div class="fourteen wide column"><i class="dropdown icon"></i>{{ y.year }}</div>
+                    <div class="two wide column"><div class="ui basic horizontal label">{{ y.books|length }} book{{ "s" if y.books|length > 1 }}</div></div>
+                </div>
+                {% endset %}
+{#                {{ make_head(y.year, active) }}#}
+                {{ make_head(title, active, False) }}
+                {% call make_content(active) %}
+                    {{ make_year_content(y) }}
+                {% endcall %}
             {% endfor %}
         {% endif %}
-    </div>
+    {% if pagination > 1 %}
+        <div class="ui center aligned container">
+            {% include "main/pagination.html" %}
+        </div>
+    {% endif %}
 
-    {% include "main/pagination.html" %}
 {% endblock %}

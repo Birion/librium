@@ -20,6 +20,11 @@ $ ->
     dropdown.append option
     dropdown.dropdown "refresh"
 
+  class Values
+    constructor: (@inputs) ->
+      @[f.name] = f.value for f in @inputs when f.name != "" and f.value != ""
+      delete @inputs
+
   $ "form#book"
     .submit (event) ->
       $series = $ "#series"
@@ -134,3 +139,13 @@ $ ->
               updateDropdown $type, data.id, data.name
 
   $ "img[alt$='cover']"
+
+  $ "#book"
+    .submit (event) ->
+      event.preventDefault()
+      values = new Values $( @ ).find("input, select#format")
+      $.post @.action,
+        values
+        ,
+        (data) ->
+          console.log data

@@ -7,5 +7,5 @@ $ ->
       fullTextSearch: true
   $ ".ui.checkbox"
     .checkbox()
-  $ "label > a, h4 > a"
+  $ "*[data-content]"
     .popup()

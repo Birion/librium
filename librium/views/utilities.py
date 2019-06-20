@@ -10,7 +10,7 @@ class MyBoolean(fields.Boolean):
 
 
 class SeriesSchema(Schema):
-    series = fields.Integer()
+    series = fields.Integer(required=True)
     idx = fields.Float(missing=0.0)
 
     @pre_load
@@ -20,18 +20,18 @@ class SeriesSchema(Schema):
 
 
 class BookSchema(Schema):
-    title = fields.String(required=False)
-    isbn = fields.String(required=False)
-    format = fields.Integer(required=False)
-    released = fields.Integer(required=False)
-    price = fields.Float(required=False)
-    page_count = fields.Integer(required=False)
+    title = fields.String()
+    isbn = fields.String()
+    format = fields.Integer()
+    released = fields.Integer()
+    price = fields.Float()
+    page_count = fields.Integer()
     read = MyBoolean(missing=False)
-    authors = DelimitedList(fields.Integer(), required=False)
-    genres = fields.List(fields.Integer(), required=False)
-    publishers = fields.List(fields.Integer(), required=False)
-    languages = fields.List(fields.Integer(), required=False)
-    series = fields.Nested(SeriesSchema, many=True, required=False)
+    authors = DelimitedList(fields.Integer())
+    genres = fields.List(fields.Integer())
+    publishers = fields.List(fields.Integer())
+    languages = fields.List(fields.Integer())
+    series = fields.Nested(SeriesSchema, many=True)
 
     @pre_load
     def parse_series(self, in_data):

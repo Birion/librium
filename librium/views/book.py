@@ -50,6 +50,7 @@ def add_or_update(book: Book, args):
 @use_args(BookSchema)
 def index(args, id):
     if request.method == "POST":
+        print(args)
         book = Book[id]
 
         add_or_update(book, args)
@@ -81,6 +82,6 @@ def add(args):
         "languages": Language.select().order_by(Language.name),
         "publishers": Publisher.select().order_by(Publisher.name),
         "series": Series.select().order_by(Series.name),
-        "authors": Author.select(lambda a: len(a.books) > 0).order_by(Author.last_name),
+        "authors": Author.select(lambda a: not a.books.is_empty()).order_by(Author.last_name),
     }
     return render_template("book/index.html", **options)
