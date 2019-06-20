@@ -48,10 +48,9 @@
                 {% set title %}
                 <div class="ui grid">
                     <div class="fourteen wide column"><i class="dropdown icon"></i>{{ y.year }}</div>
-                    <div class="two wide column"><div class="ui basic horizontal label">{{ y.books|length }} book{{ "s" if y.books|length > 1 }}</div></div>
+                    <div class="two wide column"><div class="ui teal horizontal label">{{ y.books|length }} book{{ "s" if y.books|length > 1 }}</div></div>
                 </div>
                 {% endset %}
-{#                {{ make_head(y.year, active) }}#}
                 {{ make_head(title, active, False) }}
                 {% call make_content(active) %}
                     {{ make_year_content(y) }}

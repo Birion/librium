@@ -16,9 +16,14 @@
 {% macro make_year(year) %}
     <a href="{{ url_for("main.year", year=year) }}" data-content="Show all books released in {{ year }}">{{ year }}</a>
 {% endmacro %}
-{% macro make_index(idx) %}
+{% macro make_index(idx, circular=True) %}
+    {% if circular %}
+        {% set class = "horizontal blue circular" %}
+    {% else %}
+        {% set class = "horizontal blue" %}
+    {% endif %}
     {% if idx and idx != -1 %}
-        {{ label("horizontal blue circular", idx) }}
+        {{ label(class, idx) }}
     {% endif %}
 {% endmacro %}
 
@@ -122,7 +127,7 @@
                     </td>
                     <td class="one wide">
                         {% for series in book.series %}
-                            <div>{{ make_index(series.index) }}</div>
+                            <div>{{ make_index(series.index, False) }}</div>
                         {% endfor %}
                     </td>
                     <td class="two wide">
@@ -160,7 +165,7 @@
                 </td>
                 <td class="center aligned">
                     {% for series in book.series %}
-                    <div>{{ make_index(book.idx) }}</div>
+                        <div>{{ make_index(series.index, False) }}</div>
                     {% endfor %}
                 </td>
             </tr>
