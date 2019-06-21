@@ -22,9 +22,14 @@ def paginate(length: int) -> int:
     return ceil(length / pagesize)
 
 
-def get_raw(table: db.Entity, args: dict, filters: dict, order: LambdaType = lambda x: x.name) -> Tuple[Iterable, int]:
+def get_raw(
+        table: db.Entity, args: dict, filters: dict, attrib: str, order: LambdaType = lambda x: x.name
+) -> Tuple[Union[list, Any], List[str], int]:
+    print(attrib)
     items = select(i for i in table)
     page = args.get("page", 1)
+    start_filter = f"x.{attrib} for x in {table.__name__}"
+    print(start_filter)
 
     for k, v in filters.items():
         if (k == "default" and v) or args.get(k):
@@ -34,26 +39,28 @@ def get_raw(table: db.Entity, args: dict, filters: dict, order: LambdaType = lam
 
     items = items.order_by(order).page(page, pagesize=pagesize)
 
+    letters = sorted({x[0].lower() for x in select(start_filter)})
+
     if args.get("id"):
         items = [table[args["id"]]]
         length = count(x for x in items)
 
-    return items, paginate(length)
+    return items, letters, paginate(length)
 
 
 def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
     filters = {
         "default": lambda x: not x.books.is_empty(),
         "start": lambda x: x.last_name.lower().startswith(args.get("start").lower()),
-        "read": lambda x: len(x.books.filter(lambda b: b.book.read is args.get("read"))) > 0,
+        "read": lambda x: len(x.books.filter(lambda b: b.book.read is args.get("read")))
+                          > 0,
         "name": lambda x: x.name == args.get("name"),
     }
-    options = {
-        "authors": [],
-        "pagination": None
-    }
+    options = {"authors": [], "pagination": None, "letters": {}}
 
-    _authors, options["pagination"] = get_raw(Author, args, filters, lambda x: x.last_name)
+    _authors, options["letters"], options["pagination"] = get_raw(
+        Author, args, filters, "last_name", lambda x: x.last_name
+    )
 
     def _add_book(book: Book, index: int) -> dict:
         return {
@@ -61,7 +68,7 @@ def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
             "id": book.id,
             "year": book.released,
             "read": book.read,
-            "idx": index
+            "idx": index,
         }
 
     for author in _authors:
@@ -82,21 +89,32 @@ def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
             s[sx].sort(key=lambda x: x["idx"])
 
         def _read(series) -> int:
-            return count(si for si in Series.get(name=series).books_read if author in si.book.authors) if Series.get(
-                name=series) else count(b for b in author.books_standalone if b.read)
+            return (
+                count(
+                    si
+                    for si in Series.get(name=series).books_read
+                    if author in si.book.authors
+                )
+                if Series.get(name=series)
+                else count(b for b in author.books_standalone if b.read)
+            )
 
         def _unread(series) -> int:
-            return count(si for si in Series.get(name=series).books_unread if author in si.book.authors) if Series.get(
-                name=series) else count(b for b in author.books_standalone if not b.read)
+            return (
+                count(
+                    si
+                    for si in Series.get(name=series).books_unread
+                    if author in si.book.authors
+                )
+                if Series.get(name=series)
+                else count(b for b in author.books_standalone if not b.read)
+            )
 
         def _series(series, books) -> dict:
             return {
                 "series": series,
-                "status": {
-                    "read": _read(series),
-                    "unread": _unread(series)
-                },
-                "books": books
+                "status": {"read": _read(series), "unread": _unread(series)},
+                "books": books,
             }
 
         _ = {"author": author.name, "series": [_series(x, s[x]) for x in s]}
@@ -111,12 +129,9 @@ def get_series(args) -> Dict[str, Union[List[SeriesType], int]]:
         "start": lambda x: x.name.lower().startswith(args.get("start").lower()),
         "name": lambda x: x.name == args.get("name"),
     }
-    options = {
-        "series": [],
-        "pagination": None
-    }
+    options = {"series": [], "pagination": None, "letters": {}}
 
-    _series, options["pagination"] = get_raw(Series, args, filters)
+    _series, options["letters"], options["pagination"] = get_raw(Series, args, filters, "name")
 
     for si in _series:
         _ = {"series": si.name, "books": []}
@@ -136,27 +151,36 @@ def get_books(args) -> Dict[str, Union[List[BookType], int]]:
         "name": lambda x: x.title == args.get("name"),
         "read": lambda x: x.read is args.get("read"),
     }
-    options = {"books": get_raw(Book, args, filters)[0], "pagination": get_raw(Book, args, filters)[1]}
+    _ = get_raw(Book, args, filters, "title")
+    options = {
+        "books": _[0],
+        "pagination": _[2],
+        "letters": _[1]
+    }
 
     return options
 
 
 def get_years(args) -> Dict[str, Union[List[YearType], int]]:
     page = args.get("page", 1) - 1
-    print(page)
-    filters = {
-        "year": lambda x: x.released == args.get("year")
-    }
+    filters = {"year": lambda x: x.released == args.get("year")}
     options = {
-        "years": [{"year": y, "books": select(b for b in Book if b.released == y)} for y in
-                  set(select(b.released for b in Book)[:])],
-        "pagination": paginate((count(x.released for x in Book)))
+        "years": [],
+        "pagination": paginate((count(x.released for x in Book))),
+        "all_years": {x for x in select(b.released for b in Book if b.released)}
     }
 
     if args.get("year"):
-        options["years"] = [x for x in options["years"] if x["year"] == args.get("year")]
+        options["years"] = [
+            {"year": args.get("year"), "books": Book.select(lambda b: b.released == args.get("year"))}
+        ]
+    else:
+        options["years"] = [
+            {"year": y, "books": select(b for b in Book if b.released == y)}
+            for y in {x.released for x in Book.select().order_by(Book.released)}
+        ]
 
-    options["years"] = options["years"][pagesize * page:pagesize * (page + 1)]
+    options["years"] = options["years"][pagesize * page: pagesize * (page + 1)]
 
     return options
 
@@ -198,9 +222,6 @@ def books(args):
 
 
 @bp.route("/y")
-@use_args({
-    "page": fields.Integer(),
-    "year": fields.Integer(),
-})
+@use_args({"page": fields.Integer(), "year": fields.Integer()})
 def years(args):
     return render_template("main/index.html", **get_years(args))

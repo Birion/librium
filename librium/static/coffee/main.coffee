@@ -9,3 +9,13 @@ $ ->
     .checkbox()
   $ "*[data-content]"
     .popup()
+
+  $ "#filter"
+    .change ->
+      key = $(@).data "type"
+      val = @.value
+      url = new URI $(@).data "url"
+      data =
+        "#{key}": val
+      url.query data
+      window.location = url.toString()

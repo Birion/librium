@@ -33,7 +33,7 @@ def create_app():
     def url_for_self(**args):
         return url_for(request.endpoint, **dict(request.args, **args))
 
-    app.jinja_env.globals['url_for_self'] = url_for_self
+    app.jinja_env.globals["url_for_self"] = url_for_self
 
     app.register_blueprint(main.bp)
     app.register_blueprint(book.bp)

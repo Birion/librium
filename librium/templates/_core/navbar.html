@@ -11,7 +11,7 @@
         {% if endpoint == "main" %}
             <div class="item">
                 Order by&nbsp;
-                <div class="ui inline clearable dropdown">
+                <div class="ui inline dropdown">
                     <div class="text">{{ current if current else "types" }}</div>
                     <i class="dropdown icon"></i>
                     <div class="menu">
@@ -21,6 +21,33 @@
                     </div>
                 </div>
             </div>
+            {% if letters %}
+                {% set is_filtered = "start" in request.args.keys() %}
+                {% set filter = request.args.start %}
+                <div class="item">
+                    <label for="filter">Show {{ current }} starting with&nbsp;</label>
+                    <select name="filter" id="filter" class="ui inline text inverted three column dropdown" data-type="start" data-url="{{ url_for(request.endpoint) }}">
+                        <option value="">---</option>
+                        {% for letter in letters %}
+                            <option {{ "selected" if is_filtered and letter == filter }}>{{ letter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            {% if all_years %}
+                {% set is_filtered = "year" in request.args.keys() %}
+                {% set filter = request.args.year|int %}
+                <div class="item">
+                    <label for="filter">Show books published in&nbsp;</label>
+                    <select name="filter" id="filter" class="ui inline text inverted two column dropdown" data-type="year" data-url="{{ url_for(request.endpoint) }}">
+                        <option value="">---</option>
+                        {% for year in all_years %}
+                            <option {{ "selected" if is_filtered and year == filter }}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            {% endif %}
         {% endif %}
     </div>
 </div>

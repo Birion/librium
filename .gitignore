@@ -185,4 +185,4 @@ gunicorn_config.py
 *.csv
 *.ods
 /librium-bck.sqlite
-sass/personal.css
+/librium/static/sass/personal.css

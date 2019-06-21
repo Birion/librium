@@ -10,7 +10,9 @@ bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 def get_data(table):
-    return jsonify([{"name": item.name, "id": item.id} for item in select(i for i in table)])
+    return jsonify(
+        [{"name": item.name, "id": item.id} for item in select(i for i in table)]
+    )
 
 
 @bp.route("/series")
@@ -34,10 +36,7 @@ def publishers():
 
 
 @bp.route("/add", methods=["POST"])
-@use_args({
-    "type": fields.String(required=True),
-    "name": fields.String(required=True)
-})
+@use_args({"type": fields.String(required=True), "name": fields.String(required=True)})
 def add(args):
     print(args)
     if args["name"] == "":
@@ -47,7 +46,7 @@ def add(args):
         "publisher": Publisher,
         "language": Language,
         "series": Series,
-        "author": Author
+        "author": Author,
     }
     table = lookup_table[args["type"]]
     if table.get(name=args["name"]):
@@ -71,7 +70,9 @@ def add(args):
         if len(author) == 1:
             options["last_name"] = author[0]
         else:
-            options["first_name"], *options["middle_name"], options["last_name"] = author
+            options["first_name"], *options["middle_name"], options[
+                "last_name"
+            ] = author
         if options["middle_name"]:
             options["middle_name"] = " ".join(options["middle_name"])
         new_item = table(**{k: v for k, v in options.items() if v})
@@ -80,7 +81,4 @@ def add(args):
 
     commit()
 
-    return jsonify({
-        "id": new_item.id,
-        "name": args["name"]
-    })
+    return jsonify({"id": new_item.id, "name": args["name"]})

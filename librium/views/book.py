@@ -8,11 +8,7 @@ bp = Blueprint("book", __name__, url_prefix="/book")
 
 
 def add_or_update(book: Book, args):
-    lookup_table = {
-        "genres": Genre,
-        "publishers": Publisher,
-        "languages": Language
-    }
+    lookup_table = {"genres": Genre, "publishers": Publisher, "languages": Language}
 
     def parse(table, key):
         return table[key]
@@ -82,6 +78,8 @@ def add(args):
         "languages": Language.select().order_by(Language.name),
         "publishers": Publisher.select().order_by(Publisher.name),
         "series": Series.select().order_by(Series.name),
-        "authors": Author.select(lambda a: not a.books.is_empty()).order_by(Author.last_name),
+        "authors": Author.select(lambda a: not a.books.is_empty()).order_by(
+            Author.last_name
+        ),
     }
     return render_template("book/index.html", **options)
