@@ -63,26 +63,29 @@
                     <div class="field">
                         <div class="five wide field">
                             <label for="released">Year released</label>
-                            <input name="released" id="released" type="number" value="{{ book.released if book and book.released }}"
+                            <input name="released" id="released" type="number"
+                                   value="{{ book.released if book and book.released }}"
                                    min="0">
                         </div>
                         <div class="five wide field">
                             <label for="price">Original price</label>
-                            <input name="price" id="price" type="number" value="{{ book.price if book and book.price }}" min="0">
-                        </div>
-                        <div class="five wide field">
-                            <label for="page_count">Page count</label>
-                            <input name="page_count" id="page_count" type="number" value="{{ book.page_count if book and book.page_count }}"
+                            <input name="price" id="price" type="number" value="{{ book.price if book and book.price }}"
                                    min="0">
                         </div>
                         <div class="five wide field">
-                            <p></p>
-                            <div class="ui checkbox">
-                                <input name="read" id="read"
-                                       type="checkbox" {{ 'checked="checked"' if book and book.read }}
-                                       class="hidden" tabindex="0">
-                                <label for="read">Read</label>
-                            </div>
+                            <label for="page_count">Page count</label>
+                            <input name="page_count" id="page_count" type="number"
+                                   value="{{ book.page_count if book and book.page_count }}"
+                                   min="0">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <p></p>
+                        <div class="ui checkbox">
+                            <input name="read" id="read"
+                                   type="checkbox" {{ 'checked="checked"' if book and book.read }}
+                                   class="hidden" tabindex="0">
+                            <label for="read">Read</label>
                         </div>
                     </div>
                 </div>

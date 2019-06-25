@@ -25,11 +25,9 @@ def paginate(length: int) -> int:
 def get_raw(
         table: db.Entity, args: dict, filters: dict, attrib: str, order: LambdaType = lambda x: x.name
 ) -> Tuple[Union[list, Any], List[str], int]:
-    print(attrib)
     items = select(i for i in table)
     page = args.get("page", 1)
     start_filter = f"x.{attrib} for x in {table.__name__}"
-    print(start_filter)
 
     for k, v in filters.items():
         if (k == "default" and v) or args.get(k):

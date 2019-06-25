@@ -20,9 +20,15 @@ $ ->
     dropdown.append option
     dropdown.dropdown "refresh"
 
+  getVal = (f) ->
+    if f.name == "read"
+      f.checked
+    else
+      f.value
+
   class Values
     constructor: (@inputs) ->
-      @[f.name] = f.value for f in @inputs when f.name != "" and f.value != ""
+      @[f.name] = getVal f for f in @inputs when f.name != "" and f.value != ""
       delete @inputs
 
   $ "form#book"
@@ -148,4 +154,4 @@ $ ->
         values
         ,
         (data) ->
-          console.log data
+          window.location = data.url
