@@ -71,7 +71,6 @@ def index(args, id):
 def add(args):
     if request.method == "POST":
         book = Book(title="x")
-        commit()
         add_or_update(book, args)
         return jsonify({"url": url_for("book.index", id=book.id)})
     options = {

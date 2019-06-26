@@ -30,7 +30,7 @@ def get_raw(
     start_filter = f"x.{attrib} for x in {table.__name__}"
 
     for k, v in filters.items():
-        if (k == "default" and v) or args.get(k):
+        if (k == "default" and v) or k in args.keys():
             items = items.filter(v)
 
     length = count(x for x in items)
@@ -91,7 +91,7 @@ def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
                 count(
                     si
                     for si in Series.get(name=series).books_read
-                    if author in si.book.authors
+                    if author in si.book.authors.author
                 )
                 if Series.get(name=series)
                 else count(b for b in author.books_standalone if b.read)
@@ -102,7 +102,7 @@ def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
                 count(
                     si
                     for si in Series.get(name=series).books_unread
-                    if author in si.book.authors
+                    if author in si.book.authors.author
                 )
                 if Series.get(name=series)
                 else count(b for b in author.books_standalone if not b.read)
@@ -118,6 +118,8 @@ def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
         _ = {"author": author.name, "series": [_series(x, s[x]) for x in s]}
         _["series"].sort(key=lambda x: x["series"])
         options["authors"].append(_)
+
+    print(options)
 
     return options
 
