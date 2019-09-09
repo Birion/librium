@@ -1,0 +1,53 @@
+<div class="ui fixed inverted menu">
+    <div class="ui container">
+        <a href="{{ url_for("main.index") }}" class="header item">
+            <img class="logo" src="{{ url_for("static", filename="img/logo.png") }}" alt="Librium logo">
+        </a>
+        <a href="{{ url_for("main.index") }}" class="item">Home</a>
+        <a href="{{ url_for("book.add") }}" class="item" data-content="Add a new book" data-position="bottom center">
+            <i class="plus icon"></i>
+        </a>
+        {% set endpoint, current = request.endpoint.split(".") %}
+        {% if endpoint == "main" %}
+            <div class="item">
+                Order by&nbsp;
+                <div class="ui inline dropdown">
+                    <div class="text">{{ current if current else "types" }}</div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        {% for item in ["books", "authors", "series", "years"] %}
+                            <a href="{{ url_for("main." + item) }}" class="item">{{ item }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% if letters %}
+                {% set is_filtered = "start" in request.args.keys() %}
+                {% set filter = request.args.start %}
+                <div class="item">
+                    <label for="filter">Show {{ current }} starting with&nbsp;</label>
+                    <select name="filter" id="filter" class="ui inline text inverted three column dropdown" data-type="start" data-url="{{ url_for(request.endpoint) }}">
+                        <option value="">---</option>
+                        {% for letter in letters %}
+                            <option {{ "selected" if is_filtered and letter == filter }}>{{ letter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            {% if all_years %}
+                {% set is_filtered = "year" in request.args.keys() %}
+                {% set filter = request.args.year|int %}
+                <div class="item">
+                    <label for="filter">Show books published in&nbsp;</label>
+                    <select name="filter" id="filter" class="ui inline text inverted two column dropdown" data-type="year" data-url="{{ url_for(request.endpoint) }}">
+                        <option value="">---</option>
+                        {% for year in all_years %}
+                            <option {{ "selected" if is_filtered and year == filter }}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
