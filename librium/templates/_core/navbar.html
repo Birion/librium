@@ -5,7 +5,7 @@
         </a>
         <a href="{{ url_for("main.index") }}" class="item">Home</a>
         <a href="{{ url_for("book.add") }}" class="item" data-content="Add a new book" data-position="bottom center">
-            <i class="plus icon"></i>
+            <i class="large plus icon"></i>
         </a>
         {% set endpoint, current = request.endpoint.split(".") %}
         {% if endpoint == "main" %}
@@ -26,7 +26,8 @@
                 {% set filter = request.args.start %}
                 <div class="item">
                     <label for="filter">Show {{ current }} starting with&nbsp;</label>
-                    <select name="filter" id="filter" class="ui inline text inverted three column dropdown" data-type="start" data-url="{{ url_for(request.endpoint) }}">
+                    <select name="filter" id="filter" class="ui inline text inverted three column dropdown"
+                            data-type="start" data-url="{{ url_for(request.endpoint) }}">
                         <option value="">---</option>
                         {% for letter in letters %}
                             <option {{ "selected" if is_filtered and letter == filter }}>{{ letter }}</option>
@@ -39,15 +40,27 @@
                 {% set filter = request.args.year|int %}
                 <div class="item">
                     <label for="filter">Show books published in&nbsp;</label>
-                    <select name="filter" id="filter" class="ui inline text inverted two column dropdown" data-type="year" data-url="{{ url_for(request.endpoint) }}">
+                    <select name="filter" id="filter" class="ui inline text inverted two column dropdown"
+                            data-type="year" data-url="{{ url_for(request.endpoint) }}">
                         <option value="">---</option>
                         {% for year in all_years %}
                             <option {{ "selected" if is_filtered and year == filter }}>{{ year }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
             {% endif %}
+            {% set next_status, argument = request.args.get("read")|parse_read_arg %}
+            {% if next_status == "read" %}
+                {% set ico = "green check" %}
+            {% elif next_status == "unread" %}
+                {% set ico = "red times" %}
+            {% else %}
+                {% set ico = "book" %}
+            {% endif %}
+            <a href="{{ url_for_self(read=argument) }}" class="item" data-content="Show {{ next_status }} books"
+               data-position="bottom center">
+                <i class="large {{ ico }} icon"></i>
+            </a>
         {% endif %}
     </div>
 </div>

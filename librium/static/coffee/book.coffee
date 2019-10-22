@@ -13,11 +13,14 @@ $ ->
     $lastID = Number(s.attr("name")[s.attr("name").length - 1])
 
   updateDropdown = (id, value, text) ->
-    dropdown = $ "##{id}s"
-    option = $ "<option/>",
-      value: value
+    dropdown = $ "input[name=#{id}s]"
+      .parent()
+    menu = dropdown.find(".menu")
+    option = $ "<div/>",
+      class: "item"
       text: text
-    dropdown.append option
+    option.attr("data-value", value)
+    menu.append option
     dropdown.dropdown "refresh"
 
   getVal = (f) ->
@@ -142,6 +145,7 @@ $ ->
             type: $type
             ,
             (data) ->
+              $modal.find("#name").val(null)
               updateDropdown $type, data.id, data.name
 
   $ "img[alt$='cover']"
