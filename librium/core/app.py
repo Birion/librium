@@ -8,6 +8,7 @@ from pony.flask import Pony
 from librium.__version__ import __version__
 from librium.views import book, main, api, covers
 from .assets import assets
+from .utils import parse_read_arg
 
 load_dotenv(find_dotenv())
 
@@ -34,6 +35,7 @@ def create_app():
         return url_for(request.endpoint, **dict(request.args, **args))
 
     app.jinja_env.globals["url_for_self"] = url_for_self
+    app.jinja_env.filters["parse_read_arg"] = parse_read_arg
 
     app.register_blueprint(main.bp)
     app.register_blueprint(book.bp)
