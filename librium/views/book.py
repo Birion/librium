@@ -13,9 +13,6 @@ def add_or_update(book: Book, args):
     book.authors = []
     book.series = []
 
-    def parse(table, key):
-        return table[key]
-
     for k, v in lookup_table.items():
         if args.get(k):
             args[k] = [v[i] for i in args[k]]
