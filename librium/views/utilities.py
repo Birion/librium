@@ -14,9 +14,10 @@ class SeriesSchema(Schema):
     idx = fields.Float(missing=0.0)
 
     @pre_load
-    def clean(self, data):
+    def clean(self, data, **kwargs):
         if data["idx"] == "":
             data["idx"] = 0.0
+        return data
 
 
 class BookSchema(Schema):
@@ -34,12 +35,16 @@ class BookSchema(Schema):
     series = fields.Nested(SeriesSchema, many=True)
 
     @pre_load
-    def parse_series(self, in_data):
-        if "series" in in_data.keys():
-            in_data["series"] = json.loads(in_data.get("series"))
-        if "isbn" in in_data.keys():
-            in_data["isbn"] = in_data["isbn"].replace("-", "")
-        return in_data
+    def parse_series(self, data, **kwargs):
+        if "series" in data.keys():
+            data["series"] = json.loads(data.get("series"))
+        return data
 
-    class Meta:
-        strict = True
+    @pre_load
+    def parse_isbn(self, data, **kwargs):
+        if "isbn" in data.keys():
+            data["isbn"] = data["isbn"].replace("-", "")
+        return data
+
+    # class Meta:
+    #     strict = True
