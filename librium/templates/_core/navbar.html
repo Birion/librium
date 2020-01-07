@@ -15,7 +15,7 @@
                     <div class="text">{{ current if current else "types" }}</div>
                     <i class="dropdown icon"></i>
                     <div class="menu">
-                        {% for item in ["books", "authors", "series", "years"] %}
+                        {% for item in ["books", "authors", "series", "years", "genres"] %}
                             <a href="{{ url_for("main." + item) }}" class="item">{{ item }}</a>
                         {% endfor %}
                     </div>

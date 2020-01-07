@@ -19,6 +19,7 @@ cssutils = "*"
 libsass = "*"
 pyscss = ">=1.3"
 pony = "*"
+cython = "*"
 
 [dev-packages]
 alembic = "*"

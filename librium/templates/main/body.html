@@ -1,4 +1,4 @@
-{% from "main/definitions.html" import make_author_content, make_series_content, make_book_content, make_year_content, make_head, make_content %}
+{% from "main/definitions.html" import make_author_content, make_series_content, make_book_content, make_year_content, make_genre_content, make_head, make_content %}
 
 <div class="ui fluid styled accordion">
     {% if request.args.read is defined %}
@@ -54,6 +54,22 @@
             {{ make_head(title, active, False) }}
             {% call make_content(active) %}
                 {{ make_year_content(y) }}
+            {% endcall %}
+        {% endfor %}
+    {% elif genres is defined %}
+        {% set active = genres|length == 1 %}
+        {% for gr in genres %}
+            {% set title %}
+            <div class="ui grid">
+                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ gr.name }}</div>
+                <div class="two wide column">
+                    <div class="ui teal horizontal label">{{ gr.books|length }} book{{ "s" if gr.books|length > 1 }}</div>
+                </div>
+            </div>
+            {% endset %}
+            {{ make_head(title, active, False) }}
+            {% call make_content(active) %}
+                {{ make_genre_content(gr) }}
             {% endcall %}
         {% endfor %}
     {% endif %}
