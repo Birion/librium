@@ -174,6 +174,42 @@
     </table>
 {% endmacro %}
 
+{% macro make_genre_content(genre) %}
+    <table class="ui structured table">
+        <thead>
+        <tr>
+            <th class="six wide">Title</th>
+            <th class="four wide">Series</th>
+            <th class="six wide">Authors</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in genre.books %}
+            <tr>
+                <td>
+                    <a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a>
+                </td>
+                {% for series in book.series %}
+                    <td>
+                        {% if series.index %}
+                            {{ make_index(series.index) }}
+                        {% endif %}
+                        {{ make_series(series.series.name) }}
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endfor %}
+                <td>
+                    {% for author in book.authors.author %}
+                        {{ make_author(author.name) }}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
 {% macro make_head(title, active, icon=True, extra=False) %}
     <div class="{{ "active" if active }} title">
         {% if icon %}

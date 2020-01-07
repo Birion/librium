@@ -14,6 +14,7 @@ AuthorType = Dict[str, Union[str, List[Dict[str, Any]]]]
 SeriesType = Dict[str, Union[str, List[Dict[str, Any]]]]
 BookType = Dict[str, Iterable]
 YearType = Dict[str, Iterable]
+GenreType = Dict[str, Iterable]
 
 pagesize = 15
 
@@ -23,7 +24,7 @@ def paginate(length: int) -> int:
 
 
 def get_raw(
-        table: db.Entity, args: dict, filters: dict, attrib: str, order: LambdaType = lambda x: x.name
+        table: db.Entity, args: dict, filters: dict, attrib: str = "name", order: LambdaType = lambda x: x.name
 ) -> Tuple[Union[list, Any], List[str], int]:
     items = select(i for i in table)
     page = args.get("page", 1)
@@ -131,7 +132,7 @@ def get_series(args) -> Dict[str, Union[List[SeriesType], int]]:
     }
     options = {"series": [], "pagination": None, "letters": {}}
 
-    _series, options["letters"], options["pagination"] = get_raw(Series, args, filters, "name")
+    _series, options["letters"], options["pagination"] = get_raw(Series, args, filters)
 
     for si in _series:
         _ = {"series": si.name, "books": []}
@@ -185,6 +186,21 @@ def get_years(args) -> Dict[str, Union[List[YearType], int]]:
     return options
 
 
+def get_genres(args) -> Dict[str, Union[List[GenreType], int]]:
+    filters = {
+        "start": lambda x: x.name.lower().startswith(args.get("start").lower()),
+        "name": lambda x: x.name == args.get("name"),
+    }
+    _ = get_raw(Genre, args, filters)
+    options = {
+        "genres": _[0],
+        "pagination": _[2],
+        "letters": _[1]
+    }
+
+    return options
+
+
 user_args = {
     "page": fields.Integer(),
     "start": fields.String(required=False),
@@ -225,3 +241,9 @@ def books(args):
 @use_args({"page": fields.Integer(), "year": fields.Integer()})
 def years(args):
     return render_template("main/index.html", **get_years(args))
+
+
+@bp.route("/g")
+@use_args(user_args)
+def genres(args):
+    return render_template("main/index.html", **get_genres(args))
