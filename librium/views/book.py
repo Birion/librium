@@ -1,5 +1,5 @@
-from flask import Blueprint, redirect, render_template, request, url_for, jsonify
-from webargs.flaskparser import use_args
+from flask import Blueprint, jsonify, render_template, request, url_for
+from webargs.flaskparser import use_args, use_kwargs
 
 from librium.database.pony.db import *
 from librium.views.utilities import BookSchema
@@ -42,13 +42,13 @@ def add_or_update(book: Book, args):
 
 
 @bp.route("/<int:id>", methods=["GET", "POST"])
-@use_args(BookSchema)
-def index(args, id):
+@use_kwargs(BookSchema, location="form")
+def index(id, **kwargs):
     if request.method == "POST":
-        print(args)
+        print(kwargs)
         book = Book[id]
 
-        add_or_update(book, args)
+        add_or_update(book, kwargs)
 
         return jsonify({"url": url_for("book.index", id=id)})
     options = {

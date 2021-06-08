@@ -1,50 +1,56 @@
 import json
 
-from marshmallow import Schema, fields, pre_load
+import marshmallow as ma
 from webargs.fields import DelimitedList
 
 
-class MyBoolean(fields.Boolean):
-    truthy = fields.Boolean.truthy.union({"on"})
-    falsy = fields.Boolean.falsy.union({"off"})
+class MyBoolean(ma.fields.Boolean):
+    truthy = ma.fields.Boolean.truthy.union({"on"})
+    falsy = ma.fields.Boolean.falsy.union({"off"})
 
 
-class SeriesSchema(Schema):
-    series = fields.Integer(required=True)
-    idx = fields.Float(missing=0.0)
+class SeriesSchema(ma.Schema):
+    series = ma.fields.Integer(required=True)
+    idx = ma.fields.Float(missing=0.0)
 
-    @pre_load
+    @ma.pre_load
     def clean(self, data, **kwargs):
+        data = dict(data)
         if data["idx"] == "":
             data["idx"] = 0.0
         return data
 
+    class Meta:
+        unknown = ma.INCLUDE
 
-class BookSchema(Schema):
-    title = fields.String()
-    isbn = fields.String()
-    format = fields.Integer()
-    released = fields.Integer()
-    price = fields.Float()
-    page_count = fields.Integer()
+
+class BookSchema(ma.Schema):
+    title = ma.fields.String()
+    isbn = ma.fields.String()
+    format = ma.fields.Integer()
+    released = ma.fields.Integer()
+    price = ma.fields.Float()
+    page_count = ma.fields.Integer()
     read = MyBoolean(missing=False)
-    authors = DelimitedList(fields.Integer())
-    genres = fields.List(fields.Integer())
-    publishers = fields.List(fields.Integer())
-    languages = fields.List(fields.Integer())
-    series = fields.Nested(SeriesSchema, many=True)
+    authors = DelimitedList(ma.fields.Integer())
+    genres = ma.fields.List(ma.fields.Integer())
+    publishers = ma.fields.List(ma.fields.Integer())
+    languages = ma.fields.List(ma.fields.Integer())
+    series = ma.fields.Nested(SeriesSchema, many=True)
 
-    @pre_load
+    @ma.pre_load
     def parse_series(self, data, **kwargs):
+        data = dict(data)
         if "series" in data.keys():
             data["series"] = json.loads(data.get("series"))
         return data
 
-    @pre_load
+    @ma.pre_load
     def parse_isbn(self, data, **kwargs):
+        data = dict(data)
         if "isbn" in data.keys():
             data["isbn"] = data["isbn"].replace("-", "")
         return data
 
-    # class Meta:
-    #     strict = True
+    class Meta:
+        unknown = ma.EXCLUDE

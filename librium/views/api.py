@@ -70,9 +70,11 @@ def add(args):
         if len(author) == 1:
             options["last_name"] = author[0]
         else:
-            options["first_name"], *options["middle_name"], options[
-                "last_name"
-            ] = author
+            (
+                options["first_name"],
+                *options["middle_name"],
+                options["last_name"],
+            ) = author
         if options["middle_name"]:
             options["middle_name"] = " ".join(options["middle_name"])
         new_item = table(**{k: v for k, v in options.items() if v})

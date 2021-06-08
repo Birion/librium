@@ -3,7 +3,7 @@ from types import LambdaType
 from typing import Any, Dict, Iterable, List, Tuple, Union
 
 from flask import Blueprint, redirect, render_template, request, url_for
-from marshmallow import fields
+from marshmallow import Schema, fields
 from webargs.flaskparser import use_args
 
 from librium.database.pony.db import *
@@ -24,7 +24,11 @@ def paginate(length: int) -> int:
 
 
 def get_raw(
-        table: db.Entity, args: dict, filters: dict, attrib: str = "name", order: LambdaType = lambda x: x.name
+    table: db.Entity,
+    args: dict,
+    filters: dict,
+    attrib: str = "name",
+    order: LambdaType = lambda x: x.name,
 ) -> Tuple[Union[list, Any], List[str], int]:
     items = select(i for i in table)
     page = args.get("page", 1)
@@ -52,7 +56,7 @@ def get_authors(args) -> Dict[str, Union[List[AuthorType], int]]:
         "default": lambda x: not x.books.is_empty(),
         "start": lambda x: x.last_name.lower().startswith(args.get("start").lower()),
         "read": lambda x: len(x.books.filter(lambda b: b.book.read is args.get("read")))
-                          > 0,
+        > 0,
         "name": lambda x: x.name == args.get("name"),
     }
     options = {"authors": [], "pagination": None, "letters": {}}
@@ -153,11 +157,7 @@ def get_books(args) -> Dict[str, Union[List[BookType], int]]:
         "read": lambda x: x.read is args.get("read"),
     }
     _ = get_raw(Book, args, filters, "title")
-    options = {
-        "books": _[0],
-        "pagination": _[2],
-        "letters": _[1]
-    }
+    options = {"books": _[0], "pagination": _[2], "letters": _[1]}
 
     return options
 
@@ -168,12 +168,15 @@ def get_years(args) -> Dict[str, Union[List[YearType], int]]:
     options = {
         "years": [],
         "pagination": paginate((count(x.released for x in Book))),
-        "all_years": {x for x in select(b.released for b in Book if b.released)}
+        "all_years": {x for x in select(b.released for b in Book if b.released)},
     }
 
     if args.get("year"):
         options["years"] = [
-            {"year": args.get("year"), "books": Book.select(lambda b: b.released == args.get("year"))}
+            {
+                "year": args.get("year"),
+                "books": Book.select(lambda b: b.released == args.get("year")),
+            }
         ]
     else:
         options["years"] = [
@@ -181,7 +184,7 @@ def get_years(args) -> Dict[str, Union[List[YearType], int]]:
             for y in {x.released for x in Book.select().order_by(Book.released)}
         ]
 
-    options["years"] = options["years"][pagesize * page: pagesize * (page + 1)]
+    options["years"] = options["years"][pagesize * page : pagesize * (page + 1)]
 
     return options
 
@@ -192,26 +195,21 @@ def get_genres(args) -> Dict[str, Union[List[GenreType], int]]:
         "name": lambda x: x.name == args.get("name"),
     }
     _ = get_raw(Genre, args, filters)
-    options = {
-        "genres": _[0],
-        "pagination": _[2],
-        "letters": _[1]
-    }
+    options = {"genres": _[0], "pagination": _[2], "letters": _[1]}
 
     return options
 
 
-user_args = {
-    "page": fields.Integer(),
-    "start": fields.String(required=False),
-    "read": fields.Boolean(),
-    "id": fields.Integer(),
-    "name": fields.String(),
-}
+class UserArgs(Schema):
+    page = fields.Integer()
+    start = fields.String(required=False)
+    read = fields.Boolean()
+    id = fields.Integer()
+    name = fields.String()
 
 
 @bp.route("/")
-@use_args(user_args)
+@use_args(UserArgs, location="query")
 def index(args):
     def url_for_self(target, **args):
         return url_for(target, **dict(request.args, **args))
@@ -220,30 +218,30 @@ def index(args):
 
 
 @bp.route("/a")
-@use_args(user_args)
+@use_args(UserArgs, location="query")
 def authors(args):
     return render_template("main/index.html", **get_authors(args))
 
 
 @bp.route("/s")
-@use_args(user_args)
+@use_args(UserArgs, location="query")
 def series(args):
     return render_template("main/index.html", **get_series(args))
 
 
 @bp.route("/b")
-@use_args(user_args)
+@use_args(UserArgs, location="query")
 def books(args):
     return render_template("main/index.html", **get_books(args))
 
 
 @bp.route("/y")
-@use_args({"page": fields.Integer(), "year": fields.Integer()})
+@use_args({"page": fields.Integer(), "year": fields.Integer()}, location="query")
 def years(args):
     return render_template("main/index.html", **get_years(args))
 
 
 @bp.route("/g")
-@use_args(user_args)
+@use_args(UserArgs, location="query")
 def genres(args):
     return render_template("main/index.html", **get_genres(args))

@@ -37,7 +37,7 @@
             {% endif %}
             {% if all_years %}
                 {% set is_filtered = "year" in request.args.keys() %}
-                {% set filter = request.args.year|int %}
+                {% set filter = request.args.year|int if is_filtered %}
                 <div class="item">
                     <label for="filter">Show books published in&nbsp;</label>
                     <select name="filter" id="filter" class="ui inline text inverted two column dropdown"
