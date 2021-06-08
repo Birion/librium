@@ -59,7 +59,9 @@ def run():
         writer.writeheader()
         for book in Book.select().order_by(Book.id):
             _data = template.copy()
-            _data["author_details"] = "|".join(make_author(author.author) for author in book.authors)
+            _data["author_details"] = "|".join(
+                make_author(author.author) for author in book.authors
+            )
             _data["title"] = book.title
             _data["isbn"] = book.isbn
             _data["publisher"] = "|".join(pub.name for pub in book.publishers)
@@ -68,7 +70,9 @@ def run():
             # _data["bookshelf_id"] = 1
             # _data["bookshelf"] = "Default"
             _data["read"] = 1 if book.read else 0
-            _data["series_details"] = "|".join(make_series(series) for series in book.series)
+            _data["series_details"] = "|".join(
+                make_series(series) for series in book.series
+            )
             _data["pages"] = book.page_count
             # "notes",
             _data["list_price"] = book.price
@@ -91,5 +95,5 @@ def run():
             writer.writerow(_data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
