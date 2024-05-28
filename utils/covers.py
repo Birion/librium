@@ -4,24 +4,31 @@ from uuid import UUID
 
 from librium.database.pony.db import *
 
+load_dotenv(find_dotenv())
+
+
+def get_directory(directory):
+    p = Path.cwd() / directory
+    p.mkdir(exist_ok=True)
+    return p
+
 
 @db_session
 def run():
-    p = Path("/home/ondra/Stažené")
-    pc = Path(".") / ".."
-    print(pc.resolve())
+    downloads_dir = Path(os.getenv("DOWNLOADS"))
+    covers_dir = get_directory("covers")
+    covers_new_dir = get_directory("covers_new")
+    parent_dir = Path.cwd().parent
 
     for book in Book.select():
-        file = p / f"{book.isbn}.jpg"
+        file = downloads_dir / f"{book.isbn}.jpg"
         if file.exists():
-            new_file = pc / "covers" / f"{book.uuid}.jpg"
-            new_file2 = pc / f"{book.uuid}.jpg"
-            new_file_temp = pc / "covers_new" / f"{UUID(book.uuid).hex}.jpg"
-            shutil.copy(file, new_file)
-            shutil.copy(file, new_file2)
-            shutil.copy(file, new_file_temp)
+            shutil.copy(file, covers_dir / f"{book.uuid}.jpg")
+            shutil.copy(file, covers_new_dir / f"{UUID(book.uuid).hex}.jpg")
+            shutil.copy(file, parent_dir / f"{book.uuid}.jpg")
             if not book.has_cover:
                 book.has_cover = True
+
     commit()
 
 

@@ -34,7 +34,7 @@ class BookSchema(ma.Schema):
     read = MyBoolean(missing=False)
     authors = DelimitedList(ma.fields.Integer())
     genres = ma.fields.List(ma.fields.Integer())
-    publishers = ma.fields.List(ma.fields.Integer())
+    publishers = DelimitedList(ma.fields.Integer())
     languages = ma.fields.List(ma.fields.Integer())
     series = ma.fields.Nested(SeriesSchema, many=True)
 

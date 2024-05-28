@@ -10,9 +10,7 @@ bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 def get_data(table):
-    return jsonify(
-        [{"name": item.name, "id": item.id} for item in select(i for i in table)]
-    )
+    return jsonify([{"name": item.name, "id": item.id} for item in table.select()])
 
 
 @bp.route("/series")
@@ -36,7 +34,10 @@ def publishers():
 
 
 @bp.route("/add", methods=["POST"])
-@use_args({"type": fields.String(required=True), "name": fields.String(required=True)})
+@use_args(
+    {"type": fields.String(required=True), "name": fields.String(required=True)},
+    location="form",
+)
 def add(args):
     print(args)
     if args["name"] == "":

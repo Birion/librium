@@ -35,7 +35,7 @@ $ ->
       delete @inputs
 
   $ "form#book"
-    .submit (event) ->
+    .submit (_event) ->
       $series = $ "#series"
       seriesArray = []
       for s in $ "input[name^=series-name]"

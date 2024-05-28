@@ -8,6 +8,7 @@ bp = Blueprint("book", __name__, url_prefix="/book")
 
 
 def add_or_update(book: Book, args):
+    print(args)
     lookup_table = {"genres": Genre, "publishers": Publisher, "languages": Language}
 
     book.authors = []
@@ -64,8 +65,9 @@ def index(id, **kwargs):
 
 
 @bp.route("/add", methods=["GET", "POST"])
-@use_args(BookSchema)
+@use_args(BookSchema, location="form")
 def add(args):
+    print(args)
     if request.method == "POST":
         book = Book(title="x")
         add_or_update(book, args)
@@ -76,8 +78,6 @@ def add(args):
         "languages": Language.select().order_by(Language.name),
         "publishers": Publisher.select().order_by(Publisher.name),
         "series": Series.select().order_by(Series.name),
-        "authors": Author.select(lambda a: not a.books.is_empty()).order_by(
-            Author.last_name
-        ),
+        "authors": Author.select().order_by(Author.last_name),
     }
     return render_template("book/index.html", **options)

@@ -7,8 +7,8 @@ from pony.flask import Pony
 
 from librium.__version__ import __version__
 from librium.views import book, main, api, covers
-from .assets import assets
-from .utils import parse_read_arg
+from librium.core.assets import assets
+from librium.core.utils import parse_read_arg
 
 load_dotenv(find_dotenv())
 

@@ -43,33 +43,27 @@ class Book(db.Entity):
 
     @property
     def authors_deep(self):
-        return [
-            a.author
-            for a in select(a for a in self.authors).order_by(AuthorOrdering.idx)
-        ]
+        return [a.author for a in self.authors.select().order_by(AuthorOrdering.idx)]
 
     @property
     def a_id(self):
-        return [
-            a.author.id
-            for a in select(a for a in self.authors).order_by(AuthorOrdering.idx)
-        ]
+        return [a.author.id for a in self.authors.select().order_by(AuthorOrdering.idx)]
 
     @property
     def g_id(self):
-        return select(g.id for g in self.genres)
+        return [g.id for g in self.genres.select()]
 
     @property
     def p_id(self):
-        return select(p.id for p in self.publishers)
+        return [p.id for p in self.publishers.select()]
 
     @property
     def l_id(self):
-        return select(l.id for l in self.languages)
+        return [l.id for l in self.languages.select()]
 
     @property
     def s_id(self):
-        return select(s.series.id for s in self.series)
+        return [s.series.id for s in self.series.select()]
 
 
 class Author(db.Entity):
