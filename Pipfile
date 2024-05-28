@@ -23,4 +23,4 @@ urllib3 = ">=2"
 webargs = ">=8"
 
 [requires]
-python_version = "3.12"
+python_version = "3.11"
