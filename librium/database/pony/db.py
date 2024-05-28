@@ -7,7 +7,9 @@ from pony.orm import *
 
 load_dotenv(find_dotenv())
 
-db = Database(provider="sqlite", filename=os.getenv("PONY_SQLDATABASE"), create_db=True)
+db_file = os.getenv("PONY_SQLDATABASE")
+
+db = Database(provider="sqlite", filename=db_file, create_db=True)
 
 
 class Book(db.Entity):

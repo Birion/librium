@@ -187,3 +187,4 @@ gunicorn_config.py
 *.jpg
 /librium-bck.sqlite
 /librium/static/sass/personal.css
+*.sqlite

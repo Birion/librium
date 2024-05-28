@@ -39,7 +39,6 @@ def publishers():
     location="form",
 )
 def add(args):
-    print(args)
     if args["name"] == "":
         return abort(403, "Missing name")
     lookup_table = {

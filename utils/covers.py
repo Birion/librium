@@ -1,6 +1,5 @@
 import shutil
 from pathlib import Path
-from uuid import UUID
 
 from librium.database.pony.db import *
 
@@ -17,14 +16,12 @@ def get_directory(directory):
 def run():
     downloads_dir = Path(os.getenv("DOWNLOADS"))
     covers_dir = get_directory("covers")
-    covers_new_dir = get_directory("covers_new")
     parent_dir = Path.cwd().parent
 
     for book in Book.select():
         file = downloads_dir / f"{book.isbn}.jpg"
         if file.exists():
             shutil.copy(file, covers_dir / f"{book.uuid}.jpg")
-            shutil.copy(file, covers_new_dir / f"{UUID(book.uuid).hex}.jpg")
             shutil.copy(file, parent_dir / f"{book.uuid}.jpg")
             if not book.has_cover:
                 book.has_cover = True
