@@ -19,3 +19,18 @@ $ ->
         "#{key}": val
       url.query data
       window.location = url.toString()
+
+#  Cover Toggle
+
+  $ "#cover-toggle"
+    .click ->
+      if @.dataset["toggled"] == "false"
+        @.dataset["toggled"] = "true"
+        @.innerText = "Show cover art"
+        $ "img.ui.bordered.fluid.image"
+        .addClass "hidden"
+      else
+        @.dataset["toggled"] = "false"
+        @.innerText = "Hide cover art"
+        $ "img.ui.bordered.fluid.image"
+        .removeClass "hidden"

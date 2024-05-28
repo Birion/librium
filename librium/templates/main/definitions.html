@@ -29,34 +29,44 @@
 
 {% macro make_author_book(book) %}
     <tr>
-        <td class="one wide">
-            <i class="{{ "green check" if book.read else "red times" }} icon"></i>
+        <td class="two wide">
+            <img class="ui bordered fluid image" src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
+                 alt="{{ book.title }} cover">
         </td>
-        <td class="ten wide">
+        <td class="eight wide">
             <a href="{{ url_for("book.index", id=book.id) }}">{{ book.book }}</a>
         </td>
-        <td class="two wide">
-            {{ label("horizontal basic year", book.year) }}
+        <td class="two wide center aligned">
+            {{ book.year }}
         </td>
         <td class="three wide center aligned">
             {{ make_index(book.idx) }}
         </td>
+        <td class="one wide center aligned">
+            <i class="{{ "green check" if book.read else "red times" }} icon"></i>
+        </td>
     </tr>
 {% endmacro %}
 {% macro make_author_content(series, read) %}
+    {% if series.series != "0" %}
+        <div class="ui medium header">
+            {{ make_series(series.series) }}
+        </div>
+    {% endif %}
     <table class="ui structured table">
-        {% if series.series != "0" %}
-            <thead>
-            <tr>
-                <th colspan="3">
-                    {{ make_series(series.series) }}
-                </th>
-                <th class="center aligned">
-                    {{ label("basic horizontal", "Index") }}
-                </th>
-            </tr>
-            </thead>
-        {% endif %}
+        <thead>
+        <tr>
+            <th class="one wide"></th>
+            <th>Title</th>
+            <th class="center aligned">Published</th>
+            <th class="center aligned">
+                {% if series.series != "0" %}
+                    Index
+                {% endif %}
+            </th>
+            <th class="center aligned">Read</th>
+        </tr>
+        </thead>
         <tbody>
         {% for book in series.books %}
             {{ make_author_book(book) if read[0] is undefined or book.read == read[1] }}
@@ -69,14 +79,20 @@
     <table class="ui structured table">
         <thead>
         <tr>
-            <th class="right aligned one wide">{{ label("basic horizontal", "Index") }}</th>
-            <th class="seven wide">Title</th>
-            <th class="seven wide">Authors</th>
+            <th class="two wide"></th>
+            <th class="right aligned one wide">Index</th>
+            <th class="six wide">Title</th>
+            <th class="six wide">Authors</th>
+            <th class="one wide center aligned">Published</th>
         </tr>
         </thead>
         <tbody>
         {% for book in series.books %}
             <tr>
+                <td>
+                    <img class="ui bordered fluid image"
+                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+                </td>
                 <td class="right aligned">
                     {{ make_index(book.idx) }}
                 </td>
@@ -88,6 +104,7 @@
                         {{ make_author(author.name) }}
                     {% endfor %}
                 </td>
+                <td class="center aligned">{{ book.published }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -147,15 +164,20 @@
     <table class="ui structured table">
         <thead>
         <tr>
-            <th class="five wide">Title</th>
-            <th class="five wide">Authors</th>
+            <th class="two wide"></th>
+            <th class="four wide">Title</th>
+            <th class="four wide">Authors</th>
             <th class="five wide">Series</th>
-            <th class="center aligned one wide">{{ label("basic horizontal", "Index") }}</th>
+            <th class="center aligned one wide">Index</th>
         </tr>
         </thead>
         <tbody>
         {% for book in year.books %}
             <tr>
+                <td>
+                    <img class="ui bordered fluid image"
+                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+                </td>
                 <td><a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a></td>
                 <td>{% for author in book.authors %}{{ make_author(author.author.name) }}{% endfor %}</td>
                 <td>
@@ -174,31 +196,35 @@
     </table>
 {% endmacro %}
 
-{% macro make_genre_content(genre) %}
+{% macro make_genre_content(books) %}
     <table class="ui structured table">
         <thead>
         <tr>
-            <th class="six wide">Title</th>
+            <th class="two wide"></th>
+            <th class="five wide">Title</th>
             <th class="four wide">Series</th>
-            <th class="six wide">Authors</th>
+            <th class="five wide">Authors</th>
         </tr>
         </thead>
         <tbody>
-        {% for book in genre.books %}
+        {% for book in books %}
             <tr>
+                <td>
+                    <img class="ui bordered fluid image"
+                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+                </td>
                 <td>
                     <a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a>
                 </td>
-                {% for series in book.series %}
-                    <td>
-                        {% if series.index %}
-                            {{ make_index(series.index) }}
-                        {% endif %}
-                        {{ make_series(series.series.name) }}
-                    </td>
-                {% else %}
-                    <td></td>
-                {% endfor %}
+                <td>
+                    {% for series in book.series %}
+                        <div class="ui row">
+                            {% if series.index %}
+                                {{ make_index(series.index) }}
+                            {% endif %}
+                            {{ make_series(series.series.name) }}
+                        </div>
+                    {% endfor %}
                 <td>
                     {% for author in book.authors.author %}
                         {{ make_author(author.name) }}

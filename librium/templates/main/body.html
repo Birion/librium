@@ -7,7 +7,15 @@
     {% if authors is defined %}
         {% set active = authors|length == 1 %}
         {% for a in authors %}
-            {{ make_head(a.author, active) }}
+            {% set title %}
+            <div class="ui grid">
+                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ a.author }}</div>
+                <div class="two wide column">
+                    <div class="ui teal horizontal label">{{ a.books|length }} book{{ "s" if a.books|length > 1 }}</div>
+                </div>
+            </div>
+            {% endset %}
+            {{ make_head(title, active, False) }}
             {% call make_content(active) %}
                 {% for series in a.series %}
                     {% if (request.args.read is undefined) or (read_only and series.status.read > 0) or (read_only or series.status.unread > 0) %}
@@ -21,7 +29,15 @@
     {% elif series is defined %}
         {% set active = series|length == 1 %}
         {% for s in series %}
-            {{ make_head(s.series, active) }}
+            {% set title %}
+            <div class="ui grid">
+                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ s.series }}</div>
+                <div class="two wide column">
+                    <div class="ui teal horizontal label">{{ s.books|length }} book{{ "s" if s.books|length > 1 }}</div>
+                </div>
+            </div>
+            {% endset %}
+            {{ make_head(title, active, False) }}
             {% call make_content(active) %}
                 {{ make_series_content(s) }}
             {% endcall %}
@@ -58,18 +74,18 @@
         {% endfor %}
     {% elif genres is defined %}
         {% set active = genres|length == 1 %}
-        {% for gr in genres %}
+        {% for gr, books in genres.items() %}
             {% set title %}
             <div class="ui grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ gr.name }}</div>
+                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ gr }}</div>
                 <div class="two wide column">
-                    <div class="ui teal horizontal label">{{ gr.books|length }} book{{ "s" if gr.books|length > 1 }}</div>
+                    <div class="ui teal horizontal label">{{ books|length }} book{{ "s" if books|length > 1 }}</div>
                 </div>
             </div>
             {% endset %}
             {{ make_head(title, active, False) }}
             {% call make_content(active) %}
-                {{ make_genre_content(gr) }}
+                {{ make_genre_content(books) }}
             {% endcall %}
         {% endfor %}
     {% endif %}
