@@ -30,6 +30,14 @@
             {% if book and book.has_cover %}
                 <img class="ui bordered rounded centered image"
                      src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+            {% else %}
+                <input id="fileinput" type="file" class="ui invisible file input" accept="image/*" data-url="{{ url_for("api.add_cover") }}">
+                <label for="fileinput" class="ui placeholder segment">
+                    <div class="ui icon header">
+                        <i class="upload icon"></i>
+                        Click here to upload
+                    </div>
+                </label>
             {% endif %}
         </div>
         <div class="ten wide column">
@@ -179,7 +187,7 @@
             </div>
         </div>
     </div>
-    {% if book %}
+    {% if book and book.has_cover %}
         <div class="ui modal" id="cover-modal">
             <div class="image content">
                 <img src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover"

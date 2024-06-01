@@ -1,8 +1,10 @@
 import re
+from pathlib import Path
 
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, abort, jsonify
 from marshmallow import fields
-from webargs.flaskparser import use_args
+from webargs.flaskparser import use_args, use_kwargs
+from werkzeug.datastructures import FileStorage
 
 from librium.database.pony.db import *
 
@@ -84,3 +86,31 @@ def add(args):
     commit()
 
     return jsonify({"id": new_item.id, "name": args["name"]})
+
+
+def get_directory(directory):
+    p = Path.cwd() / directory
+    p.mkdir(exist_ok=True)
+    return p
+
+
+@bp.route("/add/cover", methods=["POST"])
+@use_kwargs(
+    {"cover": fields.Raw(required=True)},
+    location="files"
+)
+@use_kwargs(
+    {"uuid": fields.String(required=True)},
+    location="form"
+)
+def add_cover(cover: FileStorage, uuid):
+    book = Book.get(uuid=uuid)
+    covers_dir = get_directory("covers")
+
+    with open(covers_dir / f"{book.uuid}.jpg", "wb") as fp:
+        cover.save(fp)
+
+    if not book.has_cover:
+        book.has_cover = True
+
+    return jsonify({"response": "OK"})

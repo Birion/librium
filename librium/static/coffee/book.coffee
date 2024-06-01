@@ -148,8 +148,6 @@ $ ->
               $modal.find("#name").val(null)
               updateDropdown $type, data.id, data.name
 
-  $ "img[alt$='cover']"
-
   $ "#book"
     .submit (event) ->
       event.preventDefault()
@@ -159,3 +157,20 @@ $ ->
         ,
         (data) ->
           window.location = data.url
+
+  $ "#fileinput"
+    .change ->
+     url = @.dataset["url"]
+     if @.files? and @.files.length > 0
+       file = @.files[0]
+       formData = new FormData
+       formData.append "cover", file
+       formData.append "uuid", $("#uuid").val()
+       $.ajax
+         url: url
+         type: "POST"
+         data: formData
+         processData: false
+         contentType: false
+       .done ->
+         window.location.reload()
