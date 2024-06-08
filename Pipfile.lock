@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "18828c674ffab5d470188c0c32be9d54081cd06f53b315e39db5022da0b40861"
+            "sha256": "37286e0d24381e5c07d32abce6348ec797772853840f82933891e1989a81ed88"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -60,12 +60,12 @@
         },
         "cssutils": {
             "hashes": [
-                "sha256:220816dc6d413e81281bbd568c473a8ae28f73b1af008b1bacf3a7ebd21e0334",
-                "sha256:cd24a30b9a848ca92d80f0d1b362139c0b69de31394d585dbf1b17a5dc4aa627"
+                "sha256:0563a76513b6af6eebbe788c3bf3d01c920e46b3f90c8416738c5cfc773ff8e2",
+                "sha256:a67bfdfdff4f3867fab43698ec4897c1a828eca5973f4073321b3bccaf1199b1"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==2.11.0"
+            "version": "==2.11.1"
         },
         "cython": {
             "hashes": [
@@ -271,11 +271,19 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:70b54a6282f4704d12c0a41599682c5c5450e843b9ec406308653b47c59648a1",
-                "sha256:82408deadd8b33d56338d2182d455db632c6313aa2af61916672146bb32edc56"
+                "sha256:4f57c5e050a54d66361e826f94fba213eb10b67b2fdb02c3e0343ce207ba1662",
+                "sha256:86ce7fb914aa865001a4b2092c4c2872d13bc347f3d42673272cabfdbad386f1"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==3.21.2"
+            "version": "==3.21.3"
+        },
+        "more-itertools": {
+            "hashes": [
+                "sha256:686b06abe565edfab151cb8fd385a05651e1fdf8f0a14191e4439283421f8684",
+                "sha256:8fccb480c43d3e99a00087634c06dd02b0d50fbf088b380de5a41a015ec239e1"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==10.2.0"
         },
         "orderedmultidict": {
             "hashes": [
