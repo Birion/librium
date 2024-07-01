@@ -16,7 +16,6 @@ load_dotenv(find_dotenv())
 def create_app():
     app = Flask("librium")
 
-    app.secret_key = os.getenv("SECRET_KEY")
     app.config.from_object(os.getenv("CONFIGURATION"))
     app.config["VERSION"] = __version__
 
