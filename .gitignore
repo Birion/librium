@@ -188,3 +188,4 @@ gunicorn_config.py
 /librium-bck.sqlite
 /librium/static/sass/personal.css
 *.sqlite
+/uwsgi.ini

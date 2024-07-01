@@ -16,7 +16,6 @@ load_dotenv(find_dotenv())
 def create_app():
     app = Flask("librium")
 
-    app.config.from_object(os.getenv("CONFIGURATION"))
     app.config["VERSION"] = __version__
 
     app.jinja_env.add_extension("jinja2.ext.do")
