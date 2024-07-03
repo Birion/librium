@@ -1,12 +1,14 @@
 import re
 from pathlib import Path
 
-from flask import Blueprint, abort, jsonify
+from flask import Blueprint, abort, jsonify, send_file
 from marshmallow import fields
 from webargs.flaskparser import use_args, use_kwargs
 from werkzeug.datastructures import FileStorage
 
 from librium.database.pony.db import *
+
+from utils.export import run as export_func
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -114,3 +116,9 @@ def add_cover(cover: FileStorage, uuid):
         book.has_cover = True
 
     return jsonify({"response": "OK"})
+
+
+@bp.route("/export")
+def export():
+    tempfile = export_func()
+    return send_file(tempfile, as_attachment=True, download_name="export.csv")
