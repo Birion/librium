@@ -34,6 +34,8 @@ def create_app():
 
     app.jinja_env.globals["url_for_self"] = url_for_self
     app.jinja_env.filters["parse_read_arg"] = parse_read_arg
+    app.jinja_env.globals["version"] = __version__
+    app.jinja_env.globals["app_name"] = os.getenv("APPLICATION_NAME")
 
     app.register_blueprint(main.bp)
     app.register_blueprint(book.bp)
