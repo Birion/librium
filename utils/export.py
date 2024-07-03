@@ -1,3 +1,4 @@
+import tempfile
 from csv import DictWriter
 
 from librium.database.pony.db import *
@@ -71,12 +72,14 @@ def process_book_info(book):
 
 
 @db_session
-def run():
-    with open("export.csv", "w", newline="\n") as fp:
+def run() -> str:
+    export_file = tempfile.mkstemp(suffix=".csv")[1]
+    with open(export_file, "w", newline="\n") as fp:
         writer = DictWriter(fp, HEADERS)
         writer.writeheader()
         for book in Book.select().order_by(Book.id):
             writer.writerow(process_book_info(book))
+    return export_file
 
 
 if __name__ == "__main__":
