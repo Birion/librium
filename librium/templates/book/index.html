@@ -151,7 +151,9 @@
                 {% endif %}
 
                 <div class="field">
-                    <a id="add-series" class="ui basic fluid icon button"><i class="plus icon"></i></a>
+                    <a id="add-series" class="ui basic fluid icon button" data-url="{{ url_for("api.series") }}">
+                        <i class="plus icon"></i>
+                    </a>
                 </div>
 
                 <div class="ui divider"></div>

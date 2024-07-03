@@ -120,7 +120,7 @@ $ ->
       $removeLink = makeLink "remove", "minus"
       $removeLink.appendTo $buttonsDiv
 
-      $.getJSON "/api/series",
+      $.getJSON $(@).data("url"),
         [],
         (data) ->
           for item in data
