@@ -14,7 +14,7 @@ def get_books(args) -> dict[str, list[BookType] | int]:
         filters["start"] = lambda x: x.title.lower().startswith(s)
     if n:
         filters["name"] = lambda x: x.title == n
-    _ = get_raw(Book, args, filters, "title")
-    options = {"books": _[0], "pagination": _[2], "letters": _[1]}
+    results = get_raw(Book, args, filters, "title")
+    options = {"books": results[0], "pagination": results[2], "letters": results[1]}
 
     return options

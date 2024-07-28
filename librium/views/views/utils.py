@@ -9,7 +9,7 @@ BookType = dict[str, Iterable]
 YearType = dict[str, Iterable]
 GenreType = dict[str, Iterable]
 
-pagesize = 15
+pagesize = 30
 
 
 def paginate(length: int) -> int:

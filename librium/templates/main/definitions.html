@@ -27,11 +27,19 @@
     {% endif %}
 {% endmacro %}
 
+{% macro make_book_cover(book) %}
+    <a href="{{ url_for("book.index", id=book.id) }}">
+        <img class="ui bordered fluid image" src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
+             alt="{{ book.title }} cover">
+    </a>
+{% endmacro %}
+
+
+
 {% macro make_author_book(book) %}
     <tr>
         <td class="two wide">
-            <img class="ui bordered fluid image" src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
-                 alt="{{ book.title }} cover">
+            {{ make_book_cover(book) }}
         </td>
         <td class="eight wide">
             <a href="{{ url_for("book.index", id=book.id) }}">{{ book.book }}</a>
@@ -90,8 +98,7 @@
         {% for book in series.books %}
             <tr>
                 <td>
-                    <img class="ui bordered fluid image"
-                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+                    {{ make_book_cover(book) }}
                 </td>
                 <td class="right aligned">
                     {{ make_index(book.idx) }}
@@ -114,8 +121,7 @@
 {% macro make_book_content(book) %}
     <div class="ui grid">
         <div class="four wide column">
-            <img class="ui bordered fluid image" src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
-                 alt="{{ book.title }} cover">
+            {{ make_book_cover(book) }}
         </div>
         <div class="twelve wide column">
             <table class="ui structured table">
@@ -175,8 +181,7 @@
         {% for book in year.books %}
             <tr>
                 <td>
-                    <img class="ui bordered fluid image"
-                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+                    {{ make_book_cover(book) }}
                 </td>
                 <td><a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a></td>
                 <td>{% for author in book.authors %}{{ make_author(author.author.name) }}{% endfor %}</td>
@@ -210,8 +215,7 @@
         {% for book in books %}
             <tr>
                 <td>
-                    <img class="ui bordered fluid image"
-                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
+                    {{ make_book_cover(book) }}
                 </td>
                 <td>
                     <a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a>
