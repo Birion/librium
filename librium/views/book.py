@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request, url_for
+from flask import Blueprint, jsonify, redirect, render_template, request, url_for
 from webargs.flaskparser import use_args, use_kwargs
 
 from librium.database.pony.db import *
@@ -51,7 +51,7 @@ def index(id, **kwargs):
 
         return jsonify({"url": url_for("book.index", id=id)})
     options = {
-        "book": Book[id],
+        "book": Book.get(id=id),
         "genres": Genre.select().order_by(Genre.name),
         "formats": Format.select().order_by(Format.name),
         "languages": Language.select().order_by(Language.name),
@@ -59,7 +59,10 @@ def index(id, **kwargs):
         "series": Series.select().order_by(Series.name),
         "authors": Author.select().order_by(Author.last_name),
     }
-    return render_template("book/index.html", **options)
+    if options["book"]:
+        return render_template("book/index.html", **options)
+    else:
+        return redirect(url_for("main.index"))
 
 
 @bp.route("/add", methods=["GET", "POST"])
