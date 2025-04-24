@@ -1,29 +1,34 @@
 import os
 import uuid
 from decimal import Decimal
+from typing import List
 
 from dotenv import find_dotenv, load_dotenv
 from pony.orm import *
 
+# Load environment and setup database
 load_dotenv(find_dotenv())
-
 db_file = os.getenv("PONY_SQLDATABASE")
-
 db = Database(provider="sqlite", filename=db_file, create_db=True)
+
+# Common constants
+MAX_NAME_LENGTH = 50
+MAX_AFFIX_LENGTH = 20
+ISBN_LENGTH = 13
+DEFAULT_INT_SIZE = 64
 
 
 class Book(db.Entity):
     _table_ = "book"
     id = PrimaryKey(int, auto=True)
     title = Required(str)
-    isbn = Optional(str, 13)
-    released = Optional(int, size=64)
-    page_count = Optional(int, size=64)
+    isbn = Optional(str, ISBN_LENGTH)
+    released = Optional(int, size=DEFAULT_INT_SIZE)
+    page_count = Optional(int, size=DEFAULT_INT_SIZE)
     price = Optional(Decimal)
     read = Required(bool, default=False)
     has_cover = Required(bool, default=False)
     uuid = Required(str, unique=True, default=lambda: str(uuid.uuid4()))
-
     authors = Set("AuthorOrdering")
     publishers = Set("Publisher", table="book_publishers")
     format = Required("Format", default=1)
@@ -32,57 +37,53 @@ class Book(db.Entity):
     series = Set("SeriesIndex")
 
     @property
-    def hex_uuid(self):
+    def hex_uuid(self) -> str:
         return uuid.UUID(self.uuid).hex
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.title
 
     @name.setter
-    def name(self, value):
+    def name(self, value: str) -> None:
         self.title = value
 
     @property
-    def authors_deep(self):
+    def ordered_authors(self) -> List["Author"]:
         return [a.author for a in self.authors.select().order_by(AuthorOrdering.idx)]
 
     @property
-    def a_id(self):
+    def author_ids(self) -> List[int]:
         return [a.author.id for a in self.authors.select().order_by(AuthorOrdering.idx)]
 
     @property
-    def g_id(self):
+    def genre_ids(self) -> List[int]:
         return [g.id for g in self.genres.select()]
 
     @property
-    def p_id(self):
+    def publisher_ids(self) -> List[int]:
         return [p.id for p in self.publishers.select()]
 
     @property
-    def l_id(self):
+    def language_ids(self) -> List[int]:
         return [l.id for l in self.languages.select()]
 
     @property
-    def s_id(self):
+    def series_ids(self) -> List[int]:
         return [s.series.id for s in self.series.select()]
 
 
 class Author(db.Entity):
     _table_ = "author"
     id = PrimaryKey(int, auto=True)
-    first_name = Optional(str, 50, default=None, nullable=True)
-    middle_name = Optional(str, 50, default=None, nullable=True)
-    last_name = Optional(str, 50, default=None, nullable=True)
-    prefix = Optional(str, 20, default=None, nullable=True)
-    suffix = Optional(str, 20, default=None, nullable=True)
+    first_name = Optional(str, MAX_NAME_LENGTH)
+    middle_name = Optional(str, MAX_NAME_LENGTH)
+    last_name = Optional(str, MAX_NAME_LENGTH)
+    prefix = Optional(str, MAX_AFFIX_LENGTH)
+    suffix = Optional(str, MAX_AFFIX_LENGTH)
     name = Optional(str)
     uuid = Required(str, unique=True, default=lambda: str(uuid.uuid4()))
-
     books = Set("AuthorOrdering")
-
-    def make_uuid(self):
-        self.uuid = str(uuid.uuid4())
 
     @property
     def books_in_series(self):
@@ -133,12 +134,12 @@ class Series(db.Entity):
     books = Set("SeriesIndex")
 
     @property
-    def has_unread_books(self):
-        return len(self.books.filter(lambda si: si.book.read is False)) > 0
+    def has_unread_books(self) -> bool:
+        return len(self.books.filter(lambda si: not si.book.read)) > 0
 
     @property
-    def has_read_books(self):
-        return len(self.books.filter(lambda si: si.book.read is True)) > 0
+    def has_read_books(self) -> bool:
+        return len(self.books.filter(lambda si: si.book.read)) > 0
 
     @property
     def books_read(self):
@@ -155,9 +156,10 @@ class SeriesIndex(db.Entity):
     series = Required(Series)
     idx = Required(Decimal, default=0)
     PrimaryKey(book, series, idx)
+    composite_index(book, idx)
 
     @property
-    def index(self):
+    def index(self) -> Decimal:
         return int(self.idx) if not self.idx * 10 % 10 else self.idx
 
 
