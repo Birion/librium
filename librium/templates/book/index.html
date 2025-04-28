@@ -112,12 +112,12 @@
                         </div>
                     </div>
                     <div class="two fields">
-                        {{ make_select(book.a_id if book else None, authors, "author") }}
-                        {{ make_select(book.g_id if book else None, genres, "genre") }}
+                        {{ make_select(book.author_ids if book else None, authors, "author") }}
+                        {{ make_select(book.genre_ids if book else None, genres, "genre") }}
                     </div>
                     <div class="two fields">
-                        {{ make_select(book.p_id if book else None, publishers, "publisher") }}
-                        {{ make_select(book.l_id if book else None, languages, "language") }}
+                        {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
+                        {{ make_select(book.language_ids if book else None, languages, "language") }}
                     </div>
 
                     <h4 class="ui dividing header">
