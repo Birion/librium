@@ -3,53 +3,20 @@
         <a href="{{ url_for("main.index") }}" class="header item">
             <img class="logo" src="{{ url_for("static", filename="img/logo.svg") }}" alt="Librium logo">
         </a>
-        <div class="item">{{ version }}</div>
-        <a href="{{ url_for("main.index") }}" class="item">Home</a>
         <a href="{{ url_for("book.add") }}" class="item" data-content="Add a new book" data-position="bottom center">
             <i class="large plus icon"></i>
         </a>
         {% set endpoint, current = request.endpoint.split(".") %}
         {% if endpoint == "main" %}
-            <div class="item">
-                Order by&nbsp;
-                <div class="ui inline dropdown">
-                    <div class="text">{{ current if current else "types" }}</div>
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        {% for item in ["books", "authors", "series", "years", "genres"] %}
-                            <a href="{{ url_for("main." + item) }}" class="item">{{ item }}</a>
-                        {% endfor %}
-                    </div>
+            <div class="ui dropdown icon item">
+                Browse by
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    {% for item in ["Books", "Authors", "Series", "Years", "Genres"] %}
+                        <a href="{{ url_for("main." + item|lower) }}" class="item">{{ item }}</a>
+                    {% endfor %}
                 </div>
             </div>
-            {% if letters %}
-                {% set is_filtered = "start" in request.args.keys() %}
-                {% set filter = request.args.start %}
-                <div class="item">
-                    <label for="filter">Show {{ current }} starting with&nbsp;</label>
-                    <select name="filter" id="filter" class="ui inline text inverted three column dropdown"
-                            data-type="start" data-url="{{ url_for(request.endpoint) }}">
-                        <option value="">---</option>
-                        {% for letter in letters %}
-                            <option {{ "selected" if is_filtered and letter == filter }}>{{ letter }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% endif %}
-            {% if all_years %}
-                {% set is_filtered = "year" in request.args.keys() %}
-                {% set filter = request.args.year|int if is_filtered %}
-                <div class="item">
-                    <label for="filter">Show books published in&nbsp;</label>
-                    <select name="filter" id="filter" class="ui inline text inverted two column dropdown"
-                            data-type="year" data-url="{{ url_for(request.endpoint) }}">
-                        <option value="">---</option>
-                        {% for year in all_years %}
-                            <option {{ "selected" if is_filtered and year == filter }}>{{ year }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% endif %}
             {% set next_status, argument = request.args.get("read")|parse_read_arg %}
             {% if next_status == "read" %}
                 {% set ico = "green check" %}
@@ -62,11 +29,21 @@
                data-position="bottom center">
                 <i class="large {{ ico }} icon"></i>
             </a>
-            <div class="item">
-                <button class="ui tertiary teal button" id="cover-toggle" data-toggled="false">Hide cover art</button>
-            </div>
-            <div class="item">
-                <a href="{{ url_for("api.export") }}" class="ui tertiary teal button">Export</a>
+            <a class="item">
+                <i class="large green book icon" id="cover-toggle" data-content="Hide cover art" data-position="bottom center" data-toggled="false"></i>
+            </a>
+            <div class="right menu">
+                <a href="{{ url_for("api.export") }}" class="item" data-content="Export data" data-position="bottom center">
+                    <i class="large teal arrow alternate circle down icon"></i>
+                </a>
+                <div class="item">
+                    <form action="" method="get">
+                        <div class="ui icon input">
+                            <input name="search" type="text" placeholder="Search...">
+                            <i class="circular search link icon"></i>
+                        </div>
+                    </form>
+                </div>
             </div>
         {% endif %}
     </div>

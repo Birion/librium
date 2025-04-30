@@ -26,11 +26,13 @@ $ ->
     .click ->
       if @.dataset["toggled"] == "false"
         @.dataset["toggled"] = "true"
-        @.innerText = "Show cover art"
+        @.dataset["content"] = "Show cover art"
+        @.classList.replace "green", "red"
         $ "img.ui.bordered.fluid.image"
-        .addClass "hidden"
+          .addClass "hidden"
       else
         @.dataset["toggled"] = "false"
-        @.innerText = "Hide cover art"
+        @.dataset["content"] = "Hide cover art"
+        @.classList.replace "red", "green"
         $ "img.ui.bordered.fluid.image"
-        .removeClass "hidden"
+          .removeClass "hidden"
