@@ -1,8 +1,9 @@
 import re
 from pathlib import Path
 
-from flask import Blueprint, abort, jsonify, send_file
+from flask import Blueprint, abort, jsonify, send_file, url_for
 from marshmallow import fields
+from marshmallow.fields import Integer
 from webargs.flaskparser import use_args, use_kwargs
 from werkzeug.datastructures import FileStorage
 
@@ -88,6 +89,20 @@ def add(args):
     commit()
 
     return jsonify({"id": new_item.id, "name": args["name"]})
+
+
+@bp.route("/delete", methods=["POST"])
+@use_args({"id": Integer()}, location="form")
+def delete(args):
+    book = Book.get(id=args["id"])
+    if book:
+        covers_dir = get_directory("covers")
+        cover_file = covers_dir / f"{book.uuid}.jpg"
+        if cover_file.exists():
+            cover_file.unlink()
+        book.delete()
+        flush()
+    return jsonify({"url": url_for("main.index")})
 
 
 def get_directory(directory):

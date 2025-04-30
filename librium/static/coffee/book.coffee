@@ -7,6 +7,22 @@ $ ->
     .modal "attach events", ".new-link", "show"
   $ "#cover-modal"
     .modal "attach events", "img[alt$='cover']", "show"
+  $ "#delete-modal"
+    .modal "attach events", "#delete-book", "show"
+    .modal onApprove: ->
+      url = @.dataset["url"]
+      id = parseInt @.dataset["id"]
+      formData = new FormData
+      formData.append "id", id
+      $.ajax
+        url: url
+        type: "POST"
+        data: formData
+        processData: false
+        contentType: false
+      .done (response) ->
+        window.location = response.url
+
 
   if $seriesInputs.length
     s = $seriesInputs.last()
