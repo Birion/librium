@@ -13,6 +13,7 @@ class UserArgs(Schema):
     read = fields.Boolean()
     id = fields.Integer()
     name = fields.String()
+    search = fields.String()
 
 
 @bp.route("/")

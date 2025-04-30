@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for
+from marshmallow.fields import Integer
 from webargs.flaskparser import use_args, use_kwargs
 
 from librium.database.pony.db import *
@@ -81,3 +82,4 @@ def add(args):
         "authors": Author.select().order_by(Author.last_name),
     }
     return render_template("book/index.html", **options)
+
