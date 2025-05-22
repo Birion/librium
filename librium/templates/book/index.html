@@ -33,7 +33,7 @@
                          src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
                     <div class="ui center aligned">
                         <input id="fileinput" type="file" class="ui invisible file input" accept="image/*"
-                               data-url="{{ url_for("api.api_v1.add_cover") }}">
+                               data-url="{{ url_for("api.add_cover") }}">
                         <label for="fileinput">
                             <a class="ui right icon label bottom right attached">
                                 Replace cover
@@ -43,7 +43,7 @@
                     </div>
                 {% else %}
                     <input id="fileinput" type="file" class="ui invisible file input" accept="image/*"
-                           data-url="{{ url_for("api.api_v1.add_cover") }}">
+                           data-url="{{ url_for("api.add_cover") }}">
                     <label for="fileinput" class="ui placeholder segment">
                         <div class="ui icon header">
                             <i class="upload icon"></i>
@@ -166,7 +166,7 @@
                     {% endif %}
 
                     <div class="field">
-                        <a id="add-series" class="ui basic fluid icon button" data-url="{{ url_for("api.api_v1.series") }}">
+                        <a id="add-series" class="ui basic fluid icon button" data-url="{{ url_for("api.series") }}">
                             <i class="plus icon"></i>
                         </a>
                     </div>
@@ -181,12 +181,14 @@
                             </button>
                         </div>
                         <div class="right floated center aligned column">
+                            {% if book %}
                             <button class="ui negative animated fade button" type="button" id="delete-book">
                             <span class="hidden content">
                                 <i class="trash alternate icon"></i>
                             </span>
                                 <span class="visible content">Delete</span>
                             </button>
+                            {% endif %}
                         </div>
                     </div>
                 </form>
@@ -196,7 +198,7 @@
 {% endblock %}
 
 {% block modal %}
-    <div id="new-modal" class="ui mini modal" data-url="{{ url_for("api.api_v1.add") }}">
+    <div id="new-modal" class="ui mini modal" data-url="{{ url_for("api.add") }}">
         <div class="header"></div>
         <div class="content">
             <div class="ui fluid input">
@@ -230,7 +232,7 @@
         </div>
     {% endif %}
     {% if book %}
-    <div class="ui mini inverted modal" id="delete-modal" data-url="{{ url_for("api.api_v1.delete") }}" data-id="{{ book.id }}">
+    <div class="ui mini inverted modal" id="delete-modal" data-url="{{ url_for("api.delete") }}" data-id="{{ book.id }}">
         <div class="content">Do you really want to delete this book?</div>
         <div class="actions">
             <div class="ui positive right labeled icon button">
