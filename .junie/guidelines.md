@@ -46,6 +46,8 @@ This document provides essential information for developers working on the Libri
 
 1. **Test Database**: Tests should use an in-memory SQLite database to avoid affecting the production database.
    ```python
+   import os
+   
    os.environ["PONY_SQLDATABASE"] = ":memory:"
    ```
 
@@ -93,27 +95,27 @@ from librium.database.pony.db import Book, Format, db
 class TestBook(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Create test database in memory
+        # Create a test database in memory
         db.drop_all_tables(with_all_data=True)
         db.create_tables()
-        
+
         # Create a test format
         with db_session:
             Format(id=1, name="Paperback")
-    
+
     @db_session
     def test_create_book(self):
         # Create a new book
         Book(title="Test Book", format=Format[1])
-        
+
         # Query all books
         books = list(select(b for b in Book))
-        
+
         # Verify a book was created
         self.assertEqual(len(books), 1)
         self.assertEqual(books[0].title, "Test Book")
         self.assertEqual(books[0].format.name, "Paperback")
-        
+
 if __name__ == "__main__":
     unittest.main()
 ```
@@ -138,6 +140,8 @@ Librium uses Pony ORM for database operations. Key points:
 
 3. **Queries**: Use Pony's query language for database operations:
    ```python
+   from librium.database.pony.db import Book, select
+   
    # Get a book by ID
    book = Book[id]
    
@@ -170,5 +174,6 @@ The project uses Flask-Assets for managing static assets:
 2. **Database Logging**: Enable Pony ORM's SQL logging for debugging database operations:
    ```python
    from pony.orm import set_sql_debug
+
    set_sql_debug(True)
    ```
