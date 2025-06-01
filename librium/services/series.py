@@ -181,4 +181,11 @@ class SeriesService:
         if not series:
             return []
 
-        return [si.book for si in series.books.order_by(SeriesIndex.idx)]
+        books = (
+            Session.query(Book)
+            .filter(Book.id.in_([b.book.id for b in series.books]))
+            # .order_by(SeriesIndex.idx)
+            .all()
+        )
+
+        return books

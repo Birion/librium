@@ -23,6 +23,13 @@
         {% set class = "horizontal blue" %}
     {% endif %}
     {% if idx and idx != -1 %}
+        {% if idx|int == idx %}
+            {% set idx = idx|int %}
+        {% else %}
+            {% set idx = idx * 10 %}
+            {% set idx = idx|int %}
+            {% set idx = idx / 10 %}
+        {% endif %}
         {{ label(class, idx) }}
     {% endif %}
 {% endmacro %}
@@ -221,17 +228,17 @@
                     <a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a>
                 </td>
                 <td>
-                    {% for series in book.series %}
+                    {% for series in book["series"] %}
                         <div class="ui row">
-                            {% if series.index %}
-                                {{ make_index(series.index) }}
+                            {% if series["idx"] %}
+                                {{ make_index(series["idx"]) }}
                             {% endif %}
-                            {{ make_series(series.series.name) }}
+                            {{ make_series(series["name"]) }}
                         </div>
                     {% endfor %}
                 <td>
-                    {% for author in book.authors.author %}
-                        {{ make_author(author.name) }}
+                    {% for author in book["authors"] %}
+                        {{ make_author(author["name"]) }}
                     {% endfor %}
                 </td>
             </tr>

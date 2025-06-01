@@ -1,10 +1,22 @@
+// Navigation bar styles
+// Defines styles for the main navigation bar and related elements
+
+// Logo styling in the navigation menu
 .ui
   &.menu
     .item
       img
         &.logo
           margin-right: 1.5em
+          max-height: 2.5rem
+          transition: transform 0.2s ease-in-out
 
+          &:hover
+            transform: scale(1.05)
+
+// Main content container positioning
 .main
   &.container
     margin-top: 7em
+    flex: 1 0 auto  // Allow container to grow but not shrink
+    padding-bottom: 2em  // Add space at the bottom

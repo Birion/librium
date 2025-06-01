@@ -19,11 +19,14 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [x] Implement API versioning for better maintainability
 
 ### Security
-- [ ] Implement authentication and authorization
+
+[//]: # (- [ ] Implement authentication and authorization)
+
 - [ ] Add CSRF protection for forms
 - [ ] Implement input validation for all user inputs
 - [ ] Add rate limiting for API endpoints
-- [ ] Implement secure password storage if user accounts are added
+
+[//]: # (- [ ] Implement secure password storage if user accounts are added)
 
 ## Code-Level Improvements
 

@@ -24,7 +24,7 @@ def get_read(author, series_name) -> int:
         books = [
             b
             for b in books_in_series
-            if b.read and any(a.id == author.id for a in b.authors)
+            if b.read and any(a.author_id == author.id for a in b.authors)
         ]
     else:
         # Get standalone books by this author that are read
@@ -47,7 +47,7 @@ def get_unread(author, series_name) -> int:
         books = [
             b
             for b in books_in_series
-            if not b.read and any(a.id == author.id for a in b.authors)
+            if not b.read and any(a.author_id == author.id for a in b.authors)
         ]
     else:
         # Get standalone books by this author that are unread
