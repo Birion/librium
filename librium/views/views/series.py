@@ -1,4 +1,4 @@
-from librium.database.pony.db import *
+from librium.database import *
 from librium.views.views.utils import SeriesType, get_raw
 
 
@@ -16,8 +16,14 @@ def get_series(args) -> dict[str, list[SeriesType] | int]:
     for si in _series:
         _ = {"series": si.name, "books": []}
         for s in si.books.order_by(SeriesIndex.idx):
-            _2 = {"name": s.book.name, "id": s.book.id, "idx": s.index, "authors": [], "published": s.book.released,
-                  "uuid": s.book.uuid}
+            _2 = {
+                "name": s.book.name,
+                "id": s.book.id,
+                "idx": s.index,
+                "authors": [],
+                "published": s.book.released,
+                "uuid": s.book.uuid,
+            }
             for a in s.book.authors.order_by(AuthorOrdering.idx):
                 _2["authors"].append({"name": a.author.name, "id": a.author.id})
             _["books"].append(_2)

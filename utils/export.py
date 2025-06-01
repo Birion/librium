@@ -1,7 +1,9 @@
 import tempfile
 from csv import DictWriter
 
-from librium.database.pony.db import *
+from sqlalchemy import select
+
+from librium.database import *
 
 HEADERS = [
     "_id",
@@ -55,7 +57,9 @@ def make_series(series: SeriesIndex, decimal_places: int = 0) -> str:
 
 def process_book_info(book):
     _data: dict[str, None | str | int | float] = {k: None for k in HEADERS}
-    _data["author_details"] = "|".join(make_author(author.author) for author in book.authors)
+    _data["author_details"] = "|".join(
+        make_author(author.author) for author in book.authors
+    )
     _data["title"] = book.title
     _data["isbn"] = book.isbn
     _data["publisher"] = "|".join(pub.name for pub in book.publishers)
@@ -71,13 +75,12 @@ def process_book_info(book):
     return _data
 
 
-@db_session
 def run() -> str:
     export_file = tempfile.mkstemp(suffix=".csv")[1]
     with open(export_file, "w", newline="\n") as fp:
         writer = DictWriter(fp, HEADERS)
         writer.writeheader()
-        for book in Book.select().order_by(Book.id):
+        for book in Session.scalars(select(Book).order_by(Book.id)):
             writer.writerow(process_book_info(book))
     return export_file
 

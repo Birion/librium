@@ -5,14 +5,15 @@ This document contains a prioritized list of tasks for improving the Librium cod
 ## Architecture Improvements
 
 ### Database and ORM
-- [ ] Implement database migrations using Alembic to manage schema changes
-- [ ] Add database indexing for frequently queried fields to improve performance
-- [ ] Implement connection pooling for better database performance
-- [ ] Add database transaction management for critical operations
-- [ ] Create a database backup and restore functionality
+- [x] Implement database migrations using Alembic to manage schema changes
+- [x] Add database indexing for frequently queried fields to improve performance
+- [x] Implement connection pooling for better database performance
+- [x] Migrate from Pony.ORM to SqlAlchemy
+- [x] Add database transaction management for critical operations
+- [x] Create a database backup and restore functionality
 
 ### Application Structure
-- [ ] Implement a service layer between views and database models
+- [x] Implement a service layer between views and database models
 - [ ] Refactor to use dependency injection for better testability
 - [ ] Implement proper error handling and logging throughout the application
 - [ ] Create a configuration management system for different environments (dev, test, prod)
@@ -30,7 +31,7 @@ This document contains a prioritized list of tasks for improving the Librium cod
 ### Models
 - [ ] Add data validation in model properties
 - [ ] Implement soft delete functionality for books and other entities
-- [ ] Add created_at and updated_at timestamps to all models
+- [x] Add created_at and updated_at timestamps to all models
 - [ ] Implement full-text search for books
 - [ ] Add more helper methods for common queries
 

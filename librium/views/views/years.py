@@ -1,4 +1,4 @@
-from librium.database.pony.db import *
+from librium.database import *
 from librium.views.views.utils import YearType, pagesize, paginate
 
 
@@ -23,6 +23,6 @@ def get_years(args) -> dict[str, list[YearType] | int]:
             for y in {x.released for x in Book.select().order_by(Book.released)}
         ]
 
-    options["years"] = options["years"][pagesize * page: pagesize * (page + 1)]
+    options["years"] = options["years"][pagesize * page : pagesize * (page + 1)]
 
     return options

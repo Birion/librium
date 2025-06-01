@@ -32,7 +32,9 @@ def create_vendor_bundles() -> tuple[Bundle, Bundle, Bundle, Bundle]:
 
 def create_personal_bundles() -> tuple[Bundle, Bundle]:
     """Create bundles for personal assets."""
-    sass_bundle = Bundle(SASS_PERSONAL_PATH, filters=SASS_FILTER, depends="sass/**/*.sass")
+    sass_bundle = Bundle(
+        SASS_PERSONAL_PATH, filters=SASS_FILTER, depends="sass/**/*.sass"
+    )
     js_bundle = Bundle(COFFEE_PERSONAL_PATH, filters=COFFEE_FILTER)
     return sass_bundle, js_bundle
 
@@ -44,10 +46,7 @@ def create_asset_bundles() -> Dict[str, Bundle]:
 
     return {
         "all-js": Bundle(
-            vendor_js,
-            personal_js,
-            filters=JS_FILTER,
-            output=JS_OUTPUT_PATH
+            vendor_js, personal_js, filters=JS_FILTER, output=JS_OUTPUT_PATH
         ),
         "all-css": Bundle(
             vendor_sass,
@@ -56,8 +55,8 @@ def create_asset_bundles() -> Dict[str, Bundle]:
             personal_sass,
             filters=CSS_FILTER,
             output=CSS_OUTPUT_PATH,
-            depends="sass/**/*.sass"
-        )
+            depends="sass/**/*.sass",
+        ),
     }
 
 

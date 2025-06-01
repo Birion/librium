@@ -4,13 +4,14 @@ import unittest
 from pony.orm import db_session, select
 
 # Add the project directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Set environment variable for testing
 os.environ["PONY_SQLDATABASE"] = ":memory:"
 
 # Import after setting environment variable
 from librium.database.pony.db import Book, Format, db
+
 
 class TestBook(unittest.TestCase):
     @classmethod
@@ -35,6 +36,7 @@ class TestBook(unittest.TestCase):
         self.assertEqual(len(books), 1)
         self.assertEqual(books[0].title, "Test Book")
         self.assertEqual(books[0].format.name, "Paperback")
+
 
 if __name__ == "__main__":
     unittest.main()

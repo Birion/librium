@@ -229,6 +229,7 @@
             </div>
         </div>
     {% endif %}
+    {% if book %}
     <div class="ui mini inverted modal" id="delete-modal" data-url="{{ url_for("api.delete") }}" data-id="{{ book.id }}">
         <div class="content">Do you really want to delete this book?</div>
         <div class="actions">
@@ -242,4 +243,5 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}
