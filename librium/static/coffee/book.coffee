@@ -168,11 +168,16 @@ $ ->
     .submit (event) ->
       event.preventDefault()
       values = new Values $( @ ).find("input, select#format")
-      $.post @.action,
-        values
+
+      $.ajax
+        type: "POST"
+        url: @.action
+        data: values
         ,
-        (data) ->
+        success: (data) ->
           window.location = data.url
+        error: (data) ->
+          showWarning(data.responseJSON.error)
 
   $ "#fileinput"
     .change ->

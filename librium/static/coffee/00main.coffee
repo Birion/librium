@@ -1,5 +1,4 @@
 $ ->
-#  M.AutoInit()
   $ ".ui.accordion"
     .accordion()
   $ "select.dropdown, .ui.dropdown"
@@ -14,10 +13,8 @@ $ ->
     .change ->
       key = $(@).data "type"
       val = @.value
-      url = new URI $(@).data "url"
-      data =
-        "#{key}": val
-      url.query data
+      url = new URL $(@).data "url"
+      url.searchParams.append key, val
       window.location = url.toString()
 
 #  Cover Toggle
@@ -36,3 +33,10 @@ $ ->
         @.classList.replace "red", "green"
         $ "img.ui.bordered.fluid.image"
           .removeClass "hidden"
+
+showWarning = (message) ->
+  console.log message
+  $.toast
+    class: "error"
+    position: "top attached"
+    message: message

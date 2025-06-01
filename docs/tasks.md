@@ -14,10 +14,9 @@ This document contains a prioritized list of tasks for improving the Librium cod
 
 ### Application Structure
 - [x] Implement a service layer between views and database models
-- [ ] Refactor to use dependency injection for better testability
-- [ ] Implement proper error handling and logging throughout the application
-- [ ] Create a configuration management system for different environments (dev, test, prod)
-- [ ] Implement API versioning for better maintainability
+- [x] Implement proper error handling and logging throughout the application
+- [x] Create a configuration management system for different environments (dev, test, prod)
+- [x] Implement API versioning for better maintainability
 
 ### Security
 - [ ] Implement authentication and authorization
@@ -29,7 +28,7 @@ This document contains a prioritized list of tasks for improving the Librium cod
 ## Code-Level Improvements
 
 ### Models
-- [ ] Add data validation in model properties
+- [x] Add data validation in model properties
 - [ ] Implement soft delete functionality for books and other entities
 - [x] Add created_at and updated_at timestamps to all models
 - [ ] Implement full-text search for books

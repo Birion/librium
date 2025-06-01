@@ -207,7 +207,7 @@ class Book(Base):
         return [s.series.id for s in self.series]
 
     @staticmethod
-    def _validate_isbn(isbn):
+    def validate_isbn(isbn):
         """Validate ISBN format."""
         if isbn is None:
             return True
@@ -224,7 +224,7 @@ class Book(Base):
         return int(isbn[12]) == check_digit
 
     @staticmethod
-    def _validate_released(released):
+    def validate_released(released):
         """Validate release year."""
         if released is None:
             return True
@@ -258,12 +258,12 @@ class Author(Base):
         back_populates="author", cascade="all, delete-orphan"
     )
 
-    def _check_author_has_name(self):
+    def check_author_has_name(self):
         """Ensure that at least one name field is provided."""
         return bool(self.first_name or self.last_name or self.name)
 
     @staticmethod
-    def _validate_name_length(attr, value):
+    def validate_name_length(attr, value):
         """Validate that name fields are not too long."""
         if value is None:
             return True
@@ -277,7 +277,7 @@ class Author(Base):
         return True
 
     @staticmethod
-    def _validate_affix_length(attr, value):
+    def validate_affix_length(attr, value):
         """Validate that prefix and suffix are not too long."""
         if value is None:
             return True
@@ -319,7 +319,7 @@ class Publisher(Base):
     )
 
     @staticmethod
-    def _validate_name(name):
+    def validate_name(name):
         """Validate publisher name."""
         if not name or not name.strip():
             return False
@@ -345,7 +345,7 @@ class Format(Base):
     books: Mapped[List["Book"]] = relationship(back_populates="format")
 
     @staticmethod
-    def _validate_name(name):
+    def validate_name(name):
         """Validate format name."""
         if not name or not name.strip():
             return False
@@ -373,7 +373,7 @@ class Language(Base):
     )
 
     @staticmethod
-    def _validate_name(name):
+    def validate_name(name):
         """Validate language name."""
         if not name or not name.strip():
             return False
@@ -506,46 +506,189 @@ Index("idx_series_index_idx", SeriesIndex.book_id, SeriesIndex.idx)
 @event.listens_for(Book, "before_update")
 def book_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_book(target)
+
+
+@event.listens_for(Book, "before_insert")
+def book_before_insert(mapper, connection, target):
+    validate_book(target)
 
 
 @event.listens_for(Author, "before_update")
 def author_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_author(target)
+
+
+@event.listens_for(Author, "before_insert")
+def author_before_insert(mapper, connection, target):
+    validate_author(target)
 
 
 @event.listens_for(Publisher, "before_update")
 def publisher_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_publisher(target)
+
+
+@event.listens_for(Publisher, "before_insert")
+def publisher_before_insert(mapper, connection, target):
+    validate_publisher(target)
 
 
 @event.listens_for(Format, "before_update")
 def format_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_format(target)
+
+
+@event.listens_for(Format, "before_insert")
+def format_before_insert(mapper, connection, target):
+    validate_format(target)
 
 
 @event.listens_for(Language, "before_update")
 def language_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_language(target)
+
+
+@event.listens_for(Language, "before_insert")
+def language_before_insert(mapper, connection, target):
+    validate_language(target)
 
 
 @event.listens_for(Genre, "before_update")
 def genre_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_genre(target)
+
+
+@event.listens_for(Genre, "before_insert")
+def genre_before_insert(mapper, connection, target):
+    validate_genre(target)
 
 
 @event.listens_for(Series, "before_update")
 def series_before_update(mapper, connection, target):
     target.updated_at = datetime.now()
+    validate_series(target)
+
+
+@event.listens_for(Series, "before_insert")
+def series_before_insert(mapper, connection, target):
+    validate_series(target)
 
 
 @event.listens_for(SeriesIndex, "before_update")
 def series_index_before_update(mapper, connection, target):
-    target.updated_at = datetime.now()
+    validate_series_index(target)
+
+
+@event.listens_for(SeriesIndex, "before_insert")
+def series_index_before_insert(mapper, connection, target):
+    validate_series_index(target)
 
 
 @event.listens_for(AuthorOrdering, "before_update")
 def author_ordering_before_update(mapper, connection, target):
-    target.updated_at = datetime.now()
+    validate_author_ordering(target)
+
+
+@event.listens_for(AuthorOrdering, "before_insert")
+def author_ordering_before_insert(mapper, connection, target):
+    validate_author_ordering(target)
+
+
+# Validation functions
+def validate_book(book):
+    """Validate book data before insert or update."""
+    # Validate title
+    if not book.title or not book.title.strip():
+        raise ValueError("Book title cannot be empty")
+
+    # Validate ISBN
+    if book.isbn and not Book.validate_isbn(book.isbn):
+        raise ValueError(f"Invalid ISBN format: {book.isbn}")
+
+    # Validate release year
+    if book.released is not None and not Book.validate_released(book.released):
+        raise ValueError(f"Invalid release year: {book.released}")
+
+    # Validate page count
+    if book.page_count is not None and book.page_count <= 0:
+        raise ValueError(f"Page count must be positive: {book.page_count}")
+
+    # Validate price
+    if book.price is not None and book.price < 0:
+        raise ValueError(f"Price cannot be negative: {book.price}")
+
+
+def validate_author(author):
+    """Validate author data before insert or update."""
+    # Ensure author has at least one name field
+    if not author.check_author_has_name():
+        raise ValueError("Author must have at least one name field")
+
+    # Validate name lengths
+    for attr in ["first_name", "middle_name", "last_name"]:
+        value = getattr(author, attr)
+        if value and not Author.validate_name_length(attr, value):
+            raise ValueError(f"Author {attr} is too long: {value}")
+
+    # Validate affix lengths
+    for attr in ["prefix", "suffix"]:
+        value = getattr(author, attr)
+        if value and not Author.validate_affix_length(attr, value):
+            raise ValueError(f"Author {attr} is too long: {value}")
+
+
+def validate_publisher(publisher):
+    """Validate publisher data before insert or update."""
+    if not Publisher.validate_name(publisher.name):
+        raise ValueError(f"Invalid publisher name: {publisher.name}")
+
+
+def validate_format(format):
+    """Validate format data before insert or update."""
+    if not Format.validate_name(format.name):
+        raise ValueError(f"Invalid format name: {format.name}")
+
+
+def validate_language(language):
+    """Validate language data before insert or update."""
+    if not Language.validate_name(language.name):
+        raise ValueError(f"Invalid language name: {language.name}")
+
+
+def validate_genre(genre):
+    """Validate genre data before insert or update."""
+    if not genre.name or not genre.name.strip():
+        raise ValueError("Genre name cannot be empty")
+    if len(genre.name) > MAX_NAME_LENGTH:
+        raise ValueError(f"Genre name is too long: {genre.name}")
+
+
+def validate_series(series):
+    """Validate series data before insert or update."""
+    if not series.name or not series.name.strip():
+        raise ValueError("Series name cannot be empty")
+    if len(series.name) > MAX_NAME_LENGTH:
+        raise ValueError(f"Series name is too long: {series.name}")
+
+
+def validate_series_index(series_index):
+    """Validate series index data before insert or update."""
+    if series_index.idx < 0:
+        raise ValueError(f"Series index cannot be negative: {series_index.idx}")
+
+
+def validate_author_ordering(author_ordering):
+    """Validate author ordering data before insert or update."""
+    if author_ordering.idx < 0:
+        raise ValueError(
+            f"Author ordering index cannot be negative: {author_ordering.idx}"
+        )
 
 
 # Create all tables

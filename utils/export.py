@@ -80,7 +80,7 @@ def run() -> str:
     with open(export_file, "w", newline="\n") as fp:
         writer = DictWriter(fp, HEADERS)
         writer.writeheader()
-        for book in Session.scalars(select(Book).order_by(Book.id)):
+        for book in Session.scalars(select(Book).order_by(Book.id)).unique():
             writer.writerow(process_book_info(book))
     return export_file
 
