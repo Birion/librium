@@ -38,7 +38,7 @@ class PublisherService:
         Returns:
             The publisher if found, None otherwise
         """
-        return Session.get(Publisher, {"name": name})
+        return Session.query(Publisher).where(Publisher.name == name).one_or_none()
 
     @staticmethod
     @read_only
@@ -49,7 +49,7 @@ class PublisherService:
         Returns:
             A list of all publishers
         """
-        return list(Session.query(Publisher).order_by(Publisher.name))
+        return Session.query(Publisher).order_by(Publisher.name).all()
 
     @staticmethod
     @transactional

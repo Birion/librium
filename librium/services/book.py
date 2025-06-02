@@ -4,6 +4,7 @@ Book service for the Librium application.
 This module provides a service for interacting with the Book model.
 """
 
+from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy import select
@@ -18,6 +19,7 @@ from librium.database import (
     read_only,
     transactional,
 )
+from librium.database.sqlalchemy.db import book_genres, book_publishers
 from librium.services.author import AuthorService
 from librium.services.format import FormatService
 from librium.services.genre import GenreService
@@ -43,16 +45,20 @@ class BookService:
             book_id: The ID of the book
 
         Returns:
-            The book if found, None otherwise
+            The book if found and not deleted, None otherwise
         """
         try:
             logger.debug(f"Getting book with ID: {book_id}")
             book = Session.get(Book, book_id)
-            if book:
+            if book and not book.deleted:
                 logger.debug(f"Found book: {book.title} (ID: {book.id})")
+                return book
             else:
-                logger.info(f"Book with ID {book_id} not found")
-            return book
+                if book and book.deleted:
+                    logger.info(f"Book with ID {book_id} is marked as deleted")
+                else:
+                    logger.info(f"Book with ID {book_id} not found")
+                return None
         except SQLAlchemyError as e:
             logger.error(f"Error getting book with ID {book_id}: {e}")
             return None
@@ -67,20 +73,23 @@ class BookService:
             uuid: The UUID of the book
 
         Returns:
-            The book if found, None otherwise
+            The book if found and not deleted, None otherwise
         """
         try:
             logger.debug(f"Getting book with UUID: {uuid}")
             book = (
-                Session.scalars(select(Book).where(Book.uuid == uuid))
+                Session.scalars(
+                    select(Book).where(Book.uuid == uuid, Book.deleted.is_(False))
+                )
                 .unique()
                 .one_or_none()
             )
             if book:
                 logger.debug(f"Found book: {book.title} (ID: {book.id})")
+                return book
             else:
-                logger.info(f"Book with UUID {uuid} not found")
-            return book
+                logger.info(f"Book with UUID {uuid} not found or is deleted")
+                return None
         except SQLAlchemyError as e:
             logger.error(f"Error getting book with UUID {uuid}: {e}")
             return None
@@ -89,18 +98,22 @@ class BookService:
     @read_only
     def get_all() -> List[Book]:
         """
-        Get all books.
+        Get all non-deleted books.
 
         Returns:
-            A list of all books
+            A list of all non-deleted books
 
         Raises:
             SQLAlchemyError: If there's an error during database operations
         """
         try:
-            logger.debug("Getting all books")
-            books = list(Session.query(Book))
-            logger.debug(f"Found {len(books)} books")
+            logger.debug("Getting all non-deleted books")
+            books = (
+                Session.scalars(select(Book).where(Book.deleted.is_(False)))
+                .unique()
+                .all()
+            )
+            logger.debug(f"Found {len(books)} non-deleted books")
             return books
         except SQLAlchemyError as e:
             logger.error(f"Error getting all books: {e}")
@@ -110,18 +123,18 @@ class BookService:
     @read_only
     def get_read() -> List[Book]:
         """
-        Get all read books.
+        Get all read books that are not deleted.
 
         Returns:
-            A list of all read books
+            A list of all read books that are not deleted
 
         Raises:
             SQLAlchemyError: If there's an error during database operations
         """
         try:
-            logger.debug("Getting all read books")
-            books = list(Session.query(Book).where(Book.read))
-            logger.debug(f"Found {len(books)} read books")
+            logger.debug("Getting all read books that are not deleted")
+            books = list(Session.query(Book).where(Book.read, Book.deleted.is_(False)))
+            logger.debug(f"Found {len(books)} read books that are not deleted")
             return books
         except SQLAlchemyError as e:
             logger.error(f"Error getting read books: {e}")
@@ -131,21 +144,262 @@ class BookService:
     @read_only
     def get_unread() -> List[Book]:
         """
-        Get all unread books.
+        Get all unread books that are not deleted.
 
         Returns:
-            A list of all unread books
+            A list of all unread books that are not deleted
 
         Raises:
             SQLAlchemyError: If there's an error during database operations
         """
         try:
-            logger.debug("Getting all unread books")
-            books = list(Session.query(Book).where(Book.read.is_(False)))
-            logger.debug(f"Found {len(books)} unread books")
+            logger.debug("Getting all unread books that are not deleted")
+            books = Session.scalars(
+                select(Book).where(Book.read.is_(False), Book.deleted.is_(False))
+            ).all()
+            logger.debug(f"Found {len(books)} unread books that are not deleted")
             return books
         except SQLAlchemyError as e:
             logger.error(f"Error getting unread books: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_by_title(title: str, partial_match: bool = True) -> List[Book]:
+        """
+        Get books by title.
+
+        Args:
+            title: The title to search for
+            partial_match: If True, search for partial matches; if False, search for exact matches
+
+        Returns:
+            A list of books matching the title criteria that are not deleted
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug(
+                f"Getting books by title: {title} (partial_match={partial_match})"
+            )
+            if partial_match:
+                books = (
+                    Session.query(Book)
+                    .where(Book.title.ilike(f"%{title}%"), Book.deleted.is_(False))
+                    .all()
+                )
+            else:
+                books = (
+                    Session.query(Book)
+                    .where(Book.title == title, Book.deleted.is_(False))
+                    .all()
+                )
+            logger.debug(f"Found {len(books)} books matching title: {title}")
+            return books
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books by title {title}: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_by_author(author_id: int) -> List[Book]:
+        """
+        Get books by author ID.
+
+        Args:
+            author_id: The ID of the author
+
+        Returns:
+            A list of non-deleted books by the specified author
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug(f"Getting books by author ID: {author_id}")
+            books = (
+                Session.query(Book)
+                .join(AuthorOrdering, Book.id == AuthorOrdering.book_id)
+                .where(AuthorOrdering.author_id == author_id, Book.deleted.is_(False))
+                .all()
+            )
+            logger.debug(f"Found {len(books)} books by author ID: {author_id}")
+            return books
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books by author ID {author_id}: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_by_genre(genre_id: int) -> List[Book]:
+        """
+        Get books by genre ID.
+
+        Args:
+            genre_id: The ID of the genre
+
+        Returns:
+            A list of non-deleted books in the specified genre
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug(f"Getting books by genre ID: {genre_id}")
+            books = (
+                Session.query(Book)
+                .join(book_genres, Book.id == book_genres.c.book_id)
+                .where(book_genres.c.genre_id == genre_id, Book.deleted.is_(False))
+                .all()
+            )
+            logger.debug(f"Found {len(books)} books by genre ID: {genre_id}")
+            return books
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books by genre ID {genre_id}: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_by_publisher(publisher_id: int) -> List[Book]:
+        """
+        Get books by publisher ID.
+
+        Args:
+            publisher_id: The ID of the publisher
+
+        Returns:
+            A list of non-deleted books from the specified publisher
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug(f"Getting books by publisher ID: {publisher_id}")
+            books = (
+                Session.query(Book)
+                .join(book_publishers, Book.id == book_publishers.c.book_id)
+                .where(
+                    book_publishers.c.publisher_id == publisher_id,
+                    Book.deleted.is_(False),
+                ).all()
+            )
+            logger.debug(f"Found {len(books)} books by publisher ID: {publisher_id}")
+            return books
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books by publisher ID {publisher_id}: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_by_year(
+        year: int = None, start_year: int = None, end_year: int = None
+    ) -> List[Book]:
+        """
+        Get books by release year or range of years.
+
+        Args:
+            year: Specific release year to search for
+            start_year: Start of release year range (inclusive)
+            end_year: End of release year range (inclusive)
+
+        Returns:
+            A list of non-deleted books matching the year criteria
+
+        Raises:
+            ValueError: If invalid year parameters are provided
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            # Validate parameters
+            if year is not None and (start_year is not None or end_year is not None):
+                raise ValueError("Cannot specify both year and year range")
+
+            if year is None and start_year is None and end_year is None:
+                raise ValueError("Must specify either year or year range")
+
+            if year is not None:
+                logger.debug(f"Getting books by release year: {year}")
+                books = list(
+                    Session.query(Book).where(
+                        Book.released == year, Book.deleted.is_(False)
+                    )
+                )
+                logger.debug(f"Found {len(books)} books released in {year}")
+            else:
+                # Handle year range
+                query = Session.query(Book).where(Book.deleted.is_(False))
+
+                if start_year is not None:
+                    query = query.where(Book.released >= start_year)
+
+                if end_year is not None:
+                    query = query.where(Book.released <= end_year)
+
+                range_desc = f"{start_year or 'any'} to {end_year or 'any'}"
+                logger.debug(f"Getting books by release year range: {range_desc}")
+                books = list(query)
+                logger.debug(f"Found {len(books)} books released in range {range_desc}")
+
+            return books
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books by year: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_by_price_range(
+        min_price: Decimal = None, max_price: Decimal = None
+    ) -> List[Book]:
+        """
+        Get books within a specific price range.
+
+        Args:
+            min_price: Minimum price (inclusive)
+            max_price: Maximum price (inclusive)
+
+        Returns:
+            A list of non-deleted books within the specified price range
+
+        Raises:
+            ValueError: If invalid price parameters are provided
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            # Validate parameters
+            if min_price is None and max_price is None:
+                raise ValueError("Must specify at least one of min_price or max_price")
+
+            if min_price is not None and min_price < 0:
+                raise ValueError("min_price cannot be negative")
+
+            if max_price is not None and max_price < 0:
+                raise ValueError("max_price cannot be negative")
+
+            if (
+                min_price is not None
+                and max_price is not None
+                and min_price > max_price
+            ):
+                raise ValueError("min_price cannot be greater than max_price")
+
+            # Build query
+            query = Session.query(Book).where(Book.deleted.is_(False))
+
+            if min_price is not None:
+                query = query.where(Book.price >= min_price)
+
+            if max_price is not None:
+                query = query.where(Book.price <= max_price)
+
+            range_desc = f"{min_price or 'any'} to {max_price or 'any'}"
+            logger.debug(f"Getting books by price range: {range_desc}")
+            books = list(query)
+            logger.debug(f"Found {len(books)} books in price range {range_desc}")
+
+            return books
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books by price range: {e}")
             raise
 
     @staticmethod
@@ -234,19 +488,19 @@ class BookService:
     @transactional
     def delete(book_id: int) -> bool:
         """
-        Delete a book.
+        Soft delete a book by setting its deleted flag to True.
 
         Args:
             book_id: The ID of the book to delete
 
         Returns:
-            True if the book was deleted, False otherwise
+            True if the book was soft deleted, False otherwise
 
         Raises:
             SQLAlchemyError: If there's an error during database operations
         """
         try:
-            logger.info(f"Deleting book with ID: {book_id}")
+            logger.info(f"Soft deleting book with ID: {book_id}")
 
             # Get the book
             book = Session.get(Book, book_id)
@@ -257,13 +511,13 @@ class BookService:
             # Store book title for logging
             book_title = book.title
 
-            # Delete the book
-            Session.delete(book)
+            # Soft delete the book by setting the deleted flag
+            book.deleted = True
 
-            logger.info(f"Book deleted: {book_title} (ID: {book_id})")
+            logger.info(f"Book soft deleted: {book_title} (ID: {book_id})")
             return True
         except SQLAlchemyError as e:
-            logger.error(f"Error deleting book with ID {book_id}: {e}")
+            logger.error(f"Error soft deleting book with ID {book_id}: {e}")
             raise
 
     @staticmethod

@@ -129,6 +129,7 @@ class Book(Base):
     read: Mapped[bool] = mapped_column(default=False)
     has_cover: Mapped[bool] = mapped_column(default=False)
     uuid: Mapped[str_uuid]
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     format_id: Mapped[int] = mapped_column(ForeignKey("format.id"))
@@ -252,6 +253,7 @@ class Author(Base):
     uuid: Mapped[str_uuid]
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     books: Mapped[List["AuthorOrdering"]] = relationship(
@@ -312,6 +314,7 @@ class Publisher(Base):
     name: Mapped[str_max]
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     books: Mapped[List["Book"]] = relationship(
@@ -340,6 +343,7 @@ class Format(Base):
     name: Mapped[str_max]
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     books: Mapped[List["Book"]] = relationship(back_populates="format")
@@ -366,6 +370,7 @@ class Language(Base):
     name: Mapped[str_max]
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     books: Mapped[List["Book"]] = relationship(
@@ -394,6 +399,7 @@ class Genre(Base):
     name: Mapped[str_max]
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     books: Mapped[List["Book"]] = relationship(
@@ -415,6 +421,7 @@ class Series(Base):
     )
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     # Relationships
     books: Mapped[List["SeriesIndex"]] = relationship(

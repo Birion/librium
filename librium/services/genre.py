@@ -22,9 +22,12 @@ class GenreService:
             genre_id: The ID of the genre
 
         Returns:
-            The genre if found, None otherwise
+            The genre if found and not deleted, None otherwise
         """
-        return Session.get(Genre, genre_id)
+        genre = Session.get(Genre, genre_id)
+        if genre and not genre.deleted:
+            return genre
+        return None
 
     @staticmethod
     @read_only
@@ -36,20 +39,20 @@ class GenreService:
             name: The name of the genre
 
         Returns:
-            The genre if found, None otherwise
+            The genre if found and not deleted, None otherwise
         """
-        return Session.get(Genre, {"name": name})
+        return Session.query(Genre).where(Genre.name == name, Genre.deleted == False).one_or_none()
 
     @staticmethod
     @read_only
     def get_all() -> List[Genre]:
         """
-        Get all genres.
+        Get all genres that are not deleted.
 
         Returns:
-            A list of all genres
+            A list of all genres that are not deleted
         """
-        return list(Session.query(Genre).order_by(Genre.name))
+        return Session.query(Genre).filter(Genre.deleted == False).order_by(Genre.name).all()
 
     @staticmethod
     @transactional
@@ -103,17 +106,17 @@ class GenreService:
     @transactional
     def delete(genre_id: int) -> bool:
         """
-        Delete a genre.
+        Soft delete a genre by setting its deleted flag to True.
 
         Args:
             genre_id: The ID of the genre to delete
 
         Returns:
-            True if the genre was deleted, False otherwise
+            True if the genre was soft deleted, False otherwise
         """
         genre_obj = Session.get(Genre, genre_id)
         if not genre_obj:
             return False
 
-        genre_obj.delete()
+        genre_obj.deleted = True
         return True

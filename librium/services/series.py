@@ -44,7 +44,7 @@ class SeriesService:
         Returns:
             A list of all series
         """
-        return list(Session.query(Series).order_by(Series.name))
+        return Session.query(Series).order_by(Series.name).all()
 
     @staticmethod
     @transactional

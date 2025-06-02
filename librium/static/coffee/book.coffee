@@ -2,11 +2,12 @@
 # This file contains all the JavaScript functionality related to book management,
 # including form handling, series management, and cover uploads.
 
+# Track the last series ID for dynamic series field creation
+$lastID = 0
+$seriesInputs = $ "input[name^=series-name]"
+
 # Initialize book-related functionality when the document is ready
 $ ->
-  # Track the last series ID for dynamic series field creation
-  $lastID = 0
-  $seriesInputs = $ "input[name^=series-name]"
 
   # Initialize the last ID from existing series inputs
   if $seriesInputs.length

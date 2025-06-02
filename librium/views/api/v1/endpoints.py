@@ -8,27 +8,15 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from flask import abort, jsonify, send_file, url_for, request, current_app
+from flask import abort, jsonify, send_file, url_for
 from marshmallow import fields
 from marshmallow.fields import Integer, String
 from webargs.flaskparser import use_args, use_kwargs
 from werkzeug.datastructures import FileStorage
 
-from librium.services import (
-    BookService,
-    FormatService,
-    GenreService,
-    LanguageService,
-    PublisherService,
-    SeriesService,
-    AuthorService,
-)
-from librium.database.backup import (
-    create_backup,
-    restore_from_backup,
-    list_backups,
-    delete_backup,
-)
+from librium.database.backup import (create_backup, delete_backup, list_backups, restore_from_backup)
+from librium.services import (AuthorService, BookService, GenreService, LanguageService, PublisherService,
+                              SeriesService)
 from librium.views.api.v1 import bp
 from utils.export import run as export_func
 
@@ -44,7 +32,8 @@ def get_data_from_service(service):
         JSON response with items
     """
     items = service.get_all()
-    return jsonify([{"name": item.name, "id": item.id} for item in items])
+    results = [{"name": item.name, "id": item.id} for item in items]
+    return jsonify(results)
 
 
 @bp.route("/series")

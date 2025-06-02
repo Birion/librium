@@ -33,9 +33,9 @@ class BookSchema(Schema):
     page_count = fields.Integer()
     read = MyBoolean(load_default=False)
     authors = DelimitedList(fields.Integer())
-    genres = fields.List(fields.Integer())
+    genres = DelimitedList(fields.Integer())
     publishers = DelimitedList(fields.Integer())
-    languages = fields.List(fields.Integer())
+    languages = DelimitedList(fields.Integer())
     series = fields.Nested(SeriesSchema, many=True)
 
     @pre_load

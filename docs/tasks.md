@@ -21,21 +21,27 @@ This document contains a prioritized list of tasks for improving the Librium cod
 ### Security
 
 [//]: # (- [ ] Implement authentication and authorization)
-
-- [ ] Add CSRF protection for forms
-- [ ] Implement input validation for all user inputs
-- [ ] Add rate limiting for API endpoints
-
+[//]: # (- [ ] Add CSRF protection for forms)
+[//]: # (- [ ] Implement input validation for all user inputs)
+[//]: # (- [ ] Add rate limiting for API endpoints)
 [//]: # (- [ ] Implement secure password storage if user accounts are added)
 
 ## Code-Level Improvements
 
+### Testing
+- [x] Increase test coverage for all components
+- [x] Add integration tests for critical user flows
+- [ ] Implement property-based testing for complex logic
+- [ ] Add performance tests for critical operations
+- [ ] Implement continuous integration for automated testing
+
 ### Models
 - [x] Add data validation in model properties
-- [ ] Implement soft delete functionality for books and other entities
+- [x] Implement soft delete functionality for books and other entities
 - [x] Add created_at and updated_at timestamps to all models
-- [ ] Implement full-text search for books
 - [ ] Add more helper methods for common queries
+
+[//]: # (- [ ] Implement full-text search for books)
 
 ### Views and Templates
 - [ ] Implement proper pagination for book listings
@@ -50,13 +56,6 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [ ] Add filtering and sorting options for API endpoints
 - [ ] Implement bulk operations for API endpoints
 - [ ] Add caching for frequently accessed API endpoints
-
-### Testing
-- [ ] Increase test coverage for all components
-- [ ] Add integration tests for critical user flows
-- [ ] Implement property-based testing for complex logic
-- [ ] Add performance tests for critical operations
-- [ ] Implement continuous integration for automated testing
 
 ### Frontend
 - [ ] Optimize asset loading for better performance

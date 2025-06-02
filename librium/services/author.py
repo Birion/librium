@@ -24,9 +24,12 @@ class AuthorService:
             author_id: The ID of the author
 
         Returns:
-            The author if found, None otherwise
+            The author if found and not deleted, None otherwise
         """
-        return Session.get(Author, author_id)
+        author = Session.get(Author, author_id)
+        if author and not author.deleted:
+            return author
+        return None
 
     @staticmethod
     @read_only
@@ -38,20 +41,23 @@ class AuthorService:
             name: The name of the author
 
         Returns:
-            The author if found, None otherwise
+            The author if found and not deleted, None otherwise
         """
-        return Session.get(Author, {"name": name})
+        author = Session.scalar(
+            select(Author).where(Author.name == name, Author.deleted == False)
+        )
+        return author
 
     @staticmethod
     @read_only
     def get_all() -> List[Author]:
         """
-        Get all authors.
+        Get all authors that are not deleted.
 
         Returns:
-            A list of all authors
+            A list of all authors that are not deleted
         """
-        return list(Session.query(Author))
+        return list(Session.query(Author).filter(Author.deleted == False))
 
     @staticmethod
     @read_only
@@ -64,6 +70,19 @@ class AuthorService:
     ) -> Optional[Author]:
         """
         Get an author by their full name.
+
+        Args:
+            first_name: The first name of the author
+            middle_name: The middle name of the author
+            last_name: The last name of the author
+            prefix: The prefix of the author
+            suffix: The suffix of the author
+
+        Returns:
+            The author if found and not deleted, None otherwise
+
+        Raises:
+            ValueError: If neither first_name nor last_name is provided
         """
         if not (first_name or last_name):
             raise ValueError("At least one of first_name or last_name must be provided")
@@ -74,6 +93,7 @@ class AuthorService:
             .where(Author.middle_name == middle_name)
             .where(Author.prefix == prefix)
             .where(Author.suffix == suffix)
+            .where(Author.deleted == False)
         )
 
         return Session.scalar(selector).unique().one_or_none()
@@ -88,12 +108,13 @@ class AuthorService:
             prefix: The prefix of the last name
 
         Returns:
-            A list of authors with last names starting with the prefix
+            A list of non-deleted authors with last names starting with the prefix
         """
         selector = (
             select(Author)
             .where(Author.last_name is not None)
             .where(Author.last_name.istartswith(prefix))
+            .where(Author.deleted == False)
         )
         return Session.scalars(selector).unique().all()
 
@@ -153,33 +174,33 @@ class AuthorService:
     @transactional
     def delete(author_id: int) -> bool:
         """
-        Delete an author.
+        Soft delete an author by setting its deleted flag to True.
 
         Args:
             author_id: The ID of the author to delete
 
         Returns:
-            True if the author was deleted, False otherwise
+            True if the author was soft deleted, False otherwise
         """
         author = Session.get(Author, author_id)
         if not author:
             return False
 
-        author.delete()
+        author.deleted = True
         return True
 
     @staticmethod
     @read_only
     def get_authors_with_books() -> List[Author]:
         """
-        Get all authors who have books.
+        Get all non-deleted authors who have books.
 
         Returns:
-            A list of authors who have books
+            A list of non-deleted authors who have books
         """
         return list(
             Session.query(Author)
-            .where(Author.books.is_empty() == False)
+            .where(Author.books.is_empty() == False, Author.deleted == False)
             .order_by(Author.last_name)
         )
 
@@ -187,17 +208,18 @@ class AuthorService:
     @read_only
     def get_authors_with_read_books(is_read: bool = True) -> List[Author]:
         """
-        Get all authors who have books with the specified read status.
+        Get all non-deleted authors who have books with the specified read status.
 
         Args:
             is_read: Whether to get authors with read or unread books
 
         Returns:
-            A list of authors who have books with the specified read status
+            A list of non-deleted authors who have books with the specified read status
         """
         return list(
             Session.query(Author).where(
                 Author.books.is_empty() == False,
                 Author.books.any(lambda b: b.book.read is is_read),
+                Author.deleted == False,
             )
         )
