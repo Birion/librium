@@ -1,4 +1,18 @@
+// Input component styles
+// Styles for form input elements and controls
+
+// Remove spinner buttons from number inputs (WebKit browsers)
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button
   -webkit-appearance: none
   margin: 0
+
+// Firefox number input styling
+input[type=number]
+  -moz-appearance: textfield
+
+// Focus styles for all inputs
+input:focus
+  outline: none
+  border-color: rgba(0, 181, 173, 0.8)
+  box-shadow: 0 0 0 1px rgba(0, 181, 173, 0.2)

@@ -2,7 +2,13 @@ from flask import Blueprint, redirect, render_template, request, url_for
 from marshmallow import Schema, fields
 from webargs.flaskparser import use_args
 
-from librium.views.views import get_authors, get_books, get_genres, get_series, get_years
+from librium.views.views import (
+    get_authors,
+    get_books,
+    get_genres,
+    get_series,
+    get_years,
+)
 
 bp = Blueprint("main", __name__)
 

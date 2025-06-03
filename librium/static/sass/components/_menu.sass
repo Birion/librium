@@ -1,5 +1,23 @@
+// Menu component styles
+// Styles for menus, navigation, and pagination components
+
+// Pagination menu styling
 .ui
   &.pagination
     &.menu
+      display: flex
+      justify-content: center
+      margin: 1.5em 0
+
       .item
-        min-width: 3.3rem !important
+        min-width: 3.3rem
+        display: flex
+        justify-content: center
+        align-items: center
+        transition: background-color 0.2s ease
+
+        &:hover
+          background-color: rgba(0, 0, 0, 0.05)
+
+        &.active
+          font-weight: bold

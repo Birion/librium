@@ -1,9 +1,17 @@
+// Typography and font styles
+// Defines font families, mixins, and typography-related styles
+
+// Font variables
 $default-fonts: 'Helvetica Neue', Helvetica, Arial, sans-serif
 $font-cabin: 'Cabin'
 $font-source-sans-pro: 'Source Sans Pro'
 $body-fonts: $font-cabin, $default-fonts
 $release-font: $font-source-sans-pro
 
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i|Source+Sans+Pro:700&display=swap&subset=latin-ext')
+
+// Function to generate input type selectors
 @function make-input-types()
   $type-output: ()
   $types: 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'color', 'date', 'datetime', 'datetime-local', 'month', 'time', 'week'
@@ -13,8 +21,10 @@ $release-font: $font-source-sans-pro
 
 $inputs-list: make-input-types()
 
+// Typography mixins
 @mixin bodyfont
-  font-family: $body-fonts !important
+  font-family: $body-fonts
+  letter-spacing: 0.01em
 
 @mixin add-header($direct: false)
   @if $direct
@@ -24,7 +34,6 @@ $inputs-list: make-input-types()
     .header
       +bodyfont
 
-
 @mixin add-sub($type)
   .ui
     &.#{$type}s
@@ -32,40 +41,58 @@ $inputs-list: make-input-types()
         > .content
           +add-header(true)
 
-@import url('https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i|Source+Sans+Pro:700&display=swap&subset=latin-ext')
-
+// Base typography
 body
   +bodyfont
+  line-height: 1.5
+  color: rgba(0, 0, 0, 0.87)
 
+// Heading styles
+@for $i from 1 through 4
+  h#{$i}
+    +bodyfont
+    margin-top: 1em
+    margin-bottom: 0.5em
+    line-height: 1.2
+
+// Year label styling
 .year
   &.label
     font-family: $release-font
     font-variant-numeric: tabular-nums
+    font-weight: 700
 
+// UI component typography
 .ui
+  // Basic UI elements
   &.button,
   &.header,
   &.menu
     +bodyfont
 
+  // Text containers
   &.text
     &.container
       +bodyfont
 
+  // Form inputs
   &.input
     > input
       +bodyfont
 
+  // Accordion
   &.accordion
     .title
       &:not(.ui)
         +bodyfont
 
+  // Steps
   &.steps
     .step
       .title
         +bodyfont
 
+  // Search components
   &.category
     &.search
       > .results
@@ -82,12 +109,17 @@ body
       > .message
         +add-header
 
+  // Modal, popup, and message components
   &.modal
     +add-header
 
   &.popup
     +add-header
 
+  &.message
+    +add-header
+
+  // List components
   &.list
     .list
       > .item
@@ -96,25 +128,27 @@ body
     > .item
       +add-header
 
-  &.message
-    +add-header
-
+  // Card components
   &.card
     > .content
       +add-header(true)
 
+  // Form components
   &.form
     input
       &:not([type])
         +bodyfont
 
+  // Apply body font to all input types
   @each $elem in $inputs-list
     #{$elem}
       +bodyfont
 
+// Apply sub-element styling
 @each $elem in 'card', 'item'
   +add-sub($elem)
 
+// Statistic component styling
 @each $elem in '.label', '.value'
   .ui
     &.statistic
@@ -124,7 +158,3 @@ body
 
       > #{$elem}
         +bodyfont
-
-@for $i from 1 to 5
-  h#{$i}
-    +bodyfont

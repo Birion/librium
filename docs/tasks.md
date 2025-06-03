@@ -5,34 +5,43 @@ This document contains a prioritized list of tasks for improving the Librium cod
 ## Architecture Improvements
 
 ### Database and ORM
-- [ ] Implement database migrations using Alembic to manage schema changes
-- [ ] Add database indexing for frequently queried fields to improve performance
-- [ ] Implement connection pooling for better database performance
-- [ ] Add database transaction management for critical operations
-- [ ] Create a database backup and restore functionality
+- [x] Implement database migrations using Alembic to manage schema changes
+- [x] Add database indexing for frequently queried fields to improve performance
+- [x] Implement connection pooling for better database performance
+- [x] Migrate from Pony.ORM to SqlAlchemy
+- [x] Add database transaction management for critical operations
+- [x] Create a database backup and restore functionality
 
 ### Application Structure
-- [ ] Implement a service layer between views and database models
-- [ ] Refactor to use dependency injection for better testability
-- [ ] Implement proper error handling and logging throughout the application
-- [ ] Create a configuration management system for different environments (dev, test, prod)
-- [ ] Implement API versioning for better maintainability
+- [x] Implement a service layer between views and database models
+- [x] Implement proper error handling and logging throughout the application
+- [x] Create a configuration management system for different environments (dev, test, prod)
+- [x] Implement API versioning for better maintainability
 
 ### Security
-- [ ] Implement authentication and authorization
-- [ ] Add CSRF protection for forms
-- [ ] Implement input validation for all user inputs
-- [ ] Add rate limiting for API endpoints
-- [ ] Implement secure password storage if user accounts are added
+
+[//]: # (- [ ] Implement authentication and authorization)
+[//]: # (- [ ] Add CSRF protection for forms)
+[//]: # (- [ ] Implement input validation for all user inputs)
+[//]: # (- [ ] Add rate limiting for API endpoints)
+[//]: # (- [ ] Implement secure password storage if user accounts are added)
 
 ## Code-Level Improvements
 
+### Testing
+- [x] Increase test coverage for all components
+- [x] Add integration tests for critical user flows
+- [ ] Implement property-based testing for complex logic
+- [ ] Add performance tests for critical operations
+- [ ] Implement continuous integration for automated testing
+
 ### Models
-- [ ] Add data validation in model properties
-- [ ] Implement soft delete functionality for books and other entities
-- [ ] Add created_at and updated_at timestamps to all models
-- [ ] Implement full-text search for books
+- [x] Add data validation in model properties
+- [x] Implement soft delete functionality for books and other entities
+- [x] Add created_at and updated_at timestamps to all models
 - [ ] Add more helper methods for common queries
+
+[//]: # (- [ ] Implement full-text search for books)
 
 ### Views and Templates
 - [ ] Implement proper pagination for book listings
@@ -47,13 +56,6 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [ ] Add filtering and sorting options for API endpoints
 - [ ] Implement bulk operations for API endpoints
 - [ ] Add caching for frequently accessed API endpoints
-
-### Testing
-- [ ] Increase test coverage for all components
-- [ ] Add integration tests for critical user flows
-- [ ] Implement property-based testing for complex logic
-- [ ] Add performance tests for critical operations
-- [ ] Implement continuous integration for automated testing
 
 ### Frontend
 - [ ] Optimize asset loading for better performance

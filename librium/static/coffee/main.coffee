@@ -1,38 +1,56 @@
+# Main application initialization
+# This file contains core UI initialization and common functionality
+
+# Initialize UI components when the document is ready
 $ ->
-#  M.AutoInit()
+  # Initialize Semantic UI components
   $ ".ui.accordion"
     .accordion()
+
   $ "select.dropdown, .ui.dropdown"
     .dropdown
       fullTextSearch: true
+
   $ ".ui.checkbox"
     .checkbox()
+
   $ "*[data-content]"
     .popup()
 
+  # Handle filter changes
   $ "#filter"
     .change ->
       key = $(@).data "type"
       val = @.value
-      url = new URI $(@).data "url"
-      data =
-        "#{key}": val
-      url.query data
+      url = new URL $(@).data "url"
+      url.searchParams.append key, val
       window.location = url.toString()
 
-#  Cover Toggle
-
+  # Cover Toggle functionality
   $ "#cover-toggle"
     .click ->
-      if @.dataset["toggled"] == "false"
-        @.dataset["toggled"] = "true"
-        @.dataset["content"] = "Show cover art"
-        @.classList.replace "green", "red"
-        $ "img.ui.bordered.fluid.image"
-          .addClass "hidden"
-      else
-        @.dataset["toggled"] = "false"
-        @.dataset["content"] = "Hide cover art"
-        @.classList.replace "red", "green"
-        $ "img.ui.bordered.fluid.image"
-          .removeClass "hidden"
+      isCoverHidden = @.dataset["toggled"] == "false"
+
+      # Update toggle state
+      @.dataset["toggled"] = if isCoverHidden then "true" else "false"
+      @.dataset["content"] = if isCoverHidden then "Show cover art" else "Hide cover art"
+      @.classList.replace(
+        if isCoverHidden then "green" else "red", 
+        if isCoverHidden then "red" else "green"
+      )
+
+      # Toggle cover visibility
+      $ "img.ui.bordered.fluid.image"
+        .toggleClass "hidden", isCoverHidden
+
+# Display a warning toast message
+# @param {string} message - The message to display
+showWarning = (message) ->
+  console.log message
+  $.toast
+    class: "error"
+    position: "top attached"
+    message: message
+
+# Export functions for use in other modules
+window.showWarning = showWarning

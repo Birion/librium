@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from librium.database.pony.db import *
+from librium.database import *
 
 load_dotenv(find_dotenv())
 

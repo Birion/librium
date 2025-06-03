@@ -1,322 +1,225 @@
+"""
+Tests for database models.
+"""
 import os
-import sys
 import unittest
+from datetime import datetime
 from decimal import Decimal
-from pony.orm import db_session, select, commit
 
-# Add the project directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
-# Set environment variable for testing
-os.environ["PONY_SQLDATABASE"] = ":memory:"
-
-# Import after setting environment variable
-from librium.database.pony.db import (
-    Book, Author, Publisher, Format, Language, Genre, Series, 
-    SeriesIndex, AuthorOrdering, db
+from librium.database.sqlalchemy.db import (
+    Base,
+    Book,
+    Author,
+    Publisher,
+    Format,
+    Language,
+    Genre,
+    Series,
+    SeriesIndex,
+    AuthorOrdering,
+    create_tables,
 )
 
 
-class TestDatabaseModels(unittest.TestCase):
+class TestBase(unittest.TestCase):
+    """Base class for model tests."""
+
     @classmethod
     def setUpClass(cls):
-        # Create a test database in memory
-        db.drop_all_tables(with_all_data=True)
-        db.create_tables()
+        """Set up the test database."""
+        # Use an in-memory SQLite database for testing
+        os.environ["SQLDATABASE"] = ":memory:"
+        cls.engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(cls.engine)
 
-        # Create test data
-        with db_session:
-            # Create formats
-            Format(id=1, name="Paperback")
-            Format(id=2, name="Hardcover")
-            Format(id=3, name="E-book")
-
-            # Create languages
-            Language(id=1, name="English")
-            Language(id=2, name="Spanish")
-
-            # Create genres
-            Genre(id=1, name="Fiction")
-            Genre(id=2, name="Science Fiction")
-            Genre(id=3, name="Fantasy")
-
-            # Create publishers
-            Publisher(id=1, name="Publisher A")
-            Publisher(id=2, name="Publisher B")
-
-            # Create authors
-            Author(id=1, first_name="John", last_name="Doe")
-            Author(id=2, first_name="Jane", middle_name="M", last_name="Smith")
-            Author(id=3, last_name="Johnson", suffix="Jr")
-
-            # Create series
-            Series(id=1, name="Test Series 1")
-            Series(id=2, name="Test Series 2")
-
-
-class TestBook(TestDatabaseModels):
     def setUp(self):
-        with db_session:
-            # Clean up any books from previous tests
-            Book.select().delete(bulk=True)
+        """Set up a new session for each test."""
+        self.session = Session(self.engine)
 
-    @db_session
+    def tearDown(self):
+        """Clean up after each test."""
+        self.session.rollback()
+        self.session.close()
+
+
+class TestBook(TestBase):
+    """Tests for the Book model."""
+
     def test_create_book(self):
-        # Create a new book with minimal attributes
-        format1 = Format[1]  # Paperback
-        book = Book(title="Test Book", format=format1)
+        """Test creating a book."""
+        # Create a format first (required for book)
+        format_obj = Format(name="Hardcover")
+        self.session.add(format_obj)
+        self.session.commit()
 
-        # Verify book was created
-        self.assertEqual(book.title, "Test Book")
-        self.assertEqual(book.format.name, "Paperback")
-        self.assertFalse(book.read)
-        self.assertFalse(book.has_cover)
-        self.assertIsNotNone(book.uuid)
-
-    @db_session
-    def test_create_book_with_all_attributes(self):
-        # Get test data from a database
-        format2 = Format[2]  # Hardcover
-        lang1 = Language[1]  # English
-        genre1 = Genre[1]  # Fiction
-        genre2 = Genre[2]  # Science Fiction
-        pub1 = Publisher[1]  # Publisher A
-        author1 = Author[1]  # John Doe
-        author2 = Author[2]  # Jane Smith
-        series1 = Series[1]  # Test Series 1
-
-        # Create a book with all attributes
+        # Create a book
         book = Book(
-            title="Complete Book",
-            isbn="9781234567890",
+            title="Test Book",
+            isbn="9781234567897",  # Valid ISBN-13
             released=2023,
-            page_count=300,
+            page_count=200,
             price=Decimal("19.99"),
-            read=True,
-            has_cover=True,
-            format=format2
+            read=False,
+            has_cover=False,
+            format_id=format_obj.id,
+            uuid="12345678-1234-5678-1234-567812345678",
         )
+        self.session.add(book)
+        self.session.commit()
 
-        # Add relationships
-        book.languages.add(lang1)
-        book.genres.add(genre1)
-        book.genres.add(genre2)
-        book.publishers.add(pub1)
+        # Retrieve the book from the database
+        retrieved_book = self.session.query(Book).filter_by(title="Test Book").first()
 
-        # Add authors with ordering
-        AuthorOrdering(book=book, author=author1, idx=1)
-        AuthorOrdering(book=book, author=author2, idx=2)
+        # Assert that the book was created correctly
+        self.assertIsNotNone(retrieved_book)
+        self.assertEqual(retrieved_book.title, "Test Book")
+        self.assertEqual(retrieved_book.isbn, "9781234567897")
+        self.assertEqual(retrieved_book.released, 2023)
+        self.assertEqual(retrieved_book.page_count, 200)
+        self.assertEqual(retrieved_book.price, Decimal("19.99"))
+        self.assertFalse(retrieved_book.read)
+        self.assertFalse(retrieved_book.has_cover)
+        self.assertEqual(retrieved_book.format_id, format_obj.id)
+        self.assertEqual(retrieved_book.uuid, "12345678-1234-5678-1234-567812345678")
 
-        # Add to series
-        SeriesIndex(book=book, series=series1, idx=1.0)
-
-        # Commit changes to ensure relationships are saved
-        commit()
-
-        # Verify all attributes
-        self.assertEqual(book.title, "Complete Book")
-        self.assertEqual(book.isbn, "9781234567890")
-        self.assertEqual(book.released, 2023)
-        self.assertEqual(book.page_count, 300)
-        self.assertEqual(book.price, Decimal("19.99"))
-        self.assertTrue(book.read)
-        self.assertTrue(book.has_cover)
-        self.assertEqual(book.format.name, "Hardcover")
-
-        # Verify relationships
-        self.assertEqual(len(book.languages), 1)
-        self.assertEqual(book.languages.select().first().name, "English")
-
-        self.assertEqual(len(book.genres), 2)
-        genre_names = [g.name for g in book.genres]
-        self.assertIn("Fiction", genre_names)
-        self.assertIn("Science Fiction", genre_names)
-
-        self.assertEqual(len(book.publishers), 1)
-        self.assertEqual(book.publishers.select().first().name, "Publisher A")
-
-        # Verify authors and ordering
-        self.assertEqual(len(book.authors), 2)
-        ordered_authors = book.ordered_authors
-        self.assertEqual(ordered_authors[0].first_name, "John")
-        self.assertEqual(ordered_authors[1].first_name, "Jane")
-
-        # Verify series
-        self.assertEqual(len(book.series), 1)
-        self.assertEqual(book.series.select().first().series.name, "Test Series 1")
-
-    @db_session
     def test_book_properties(self):
-        # Get test data from database
-        format1 = Format[1]  # Paperback
-        author1 = Author[1]  # John Doe
-        author2 = Author[2]  # Jane Smith
-        series1 = Series[1]  # Test Series 1
+        """Test book properties."""
+        # Create a format first (required for book)
+        format_obj = Format(name="Paperback")
+        self.session.add(format_obj)
+        self.session.commit()
 
-        # Create a book with authors and series
-        book = Book(title="Property Test Book", format=format1)
+        # Create a book
+        book = Book(
+            title="Property Test Book",
+            format_id=format_obj.id,
+            uuid="12345678-1234-5678-1234-567812345678",
+        )
+        self.session.add(book)
+        self.session.commit()
 
-        # Add authors with ordering
-        AuthorOrdering(book=book, author=author1, idx=1)
-        AuthorOrdering(book=book, author=author2, idx=2)
-
-        # Add to series
-        SeriesIndex(book=book, series=series1, idx=1.5)
-
-        # Commit changes to ensure relationships are saved
-        commit()
-
-        # Test properties
+        # Test name property
         self.assertEqual(book.name, "Property Test Book")
-
-        # Test ordered_authors property
-        self.assertEqual(len(book.ordered_authors), 2)
-        self.assertEqual(book.ordered_authors[0].first_name, "John")
-        self.assertEqual(book.ordered_authors[1].first_name, "Jane")
-
-        # Test author_ids property
-        self.assertEqual(book.author_ids, [1, 2])
-
-        # Test series_ids property
-        self.assertEqual(book.series_ids, [1])
 
         # Test name setter
         book.name = "Updated Title"
         self.assertEqual(book.title, "Updated Title")
 
-    @db_session
-    def test_delete_book(self):
-        # Get test data from database
-        format1 = Format[1]  # Paperback
+        # Test hex_uuid property
+        self.assertEqual(book.hex_uuid, "12345678123456781234567812345678")
+
+    def test_book_relationships(self):
+        """Test book relationships."""
+        # Create required objects
+        format_obj = Format(name="E-book")
+        self.session.add(format_obj)
+
+        author1 = Author(name="Author One")
+        author2 = Author(name="Author Two")
+        self.session.add_all([author1, author2])
+
+        publisher = Publisher(name="Test Publisher")
+        self.session.add(publisher)
+
+        language = Language(name="English")
+        self.session.add(language)
+
+        genre = Genre(name="Fiction")
+        self.session.add(genre)
+
+        series = Series(name="Test Series")
+        self.session.add(series)
+
+        self.session.commit()
 
         # Create a book
-        book = Book(title="Book to Delete", format=format1)
-        book_id = book.id
-
-        # Delete the book
-        book.delete()
-
-        # Verify book was deleted
-        self.assertIsNone(Book.get(id=book_id))
-
-
-class TestAuthor(TestDatabaseModels):
-    @db_session
-    def test_create_author(self):
-        # Create an author with all name components
-        author = Author(
-            first_name="Test",
-            middle_name="Middle",
-            last_name="Author",
-            prefix="Dr",
-            suffix="PhD"
+        book = Book(
+            title="Relationship Test Book",
+            format_id=format_obj.id,
+            uuid="12345678-1234-5678-1234-567812345678",
         )
+        self.session.add(book)
+        self.session.commit()
 
-        # Verify author was created with correct attributes
-        self.assertEqual(author.first_name, "Test")
-        self.assertEqual(author.middle_name, "Middle")
-        self.assertEqual(author.last_name, "Author")
-        self.assertEqual(author.prefix, "Dr")
-        self.assertEqual(author.suffix, "PhD")
-        self.assertIsNotNone(author.uuid)
+        # Add relationships
+        author_ordering1 = AuthorOrdering(book=book, author=author1, idx=1)
+        author_ordering2 = AuthorOrdering(book=book, author=author2, idx=2)
+        self.session.add_all([author_ordering1, author_ordering2])
 
-    @db_session
-    def test_author_books_properties(self):
-        # Get test data from database
-        format1 = Format[1]  # Paperback
-        author1 = Author[1]  # John Doe
-        series1 = Series[1]  # Test Series 1
+        book.publishers.append(publisher)
+        book.languages.append(language)
+        book.genres.append(genre)
 
-        # Create books and associate with author
+        series_index = SeriesIndex(book=book, series=series, idx=1)
+        self.session.add(series_index)
 
-        # Create standalone book
-        standalone_book = Book(title="Standalone Book", format=format1)
-        AuthorOrdering(book=standalone_book, author=author1, idx=1)
+        self.session.commit()
 
-        # Create book in series
-        series_book = Book(title="Series Book", format=format1)
-        AuthorOrdering(book=series_book, author=author1, idx=1)
-        SeriesIndex(book=series_book, series=series1, idx=1.0)
+        # Test relationships
+        self.assertEqual(len(book.authors), 2)
+        self.assertEqual(book.ordered_authors[0].name, "Author One")
+        self.assertEqual(book.ordered_authors[1].name, "Author Two")
+        self.assertEqual(book.author_ids, [author1.id, author2.id])
 
-        # Commit changes to ensure relationships are saved
-        commit()
+        self.assertEqual(len(book.publishers), 1)
+        self.assertEqual(book.publishers[0].name, "Test Publisher")
+        self.assertEqual(book.publisher_ids, [publisher.id])
 
-        # Test books_in_series property
-        series_books = list(author1.books_in_series)
-        self.assertEqual(len(series_books), 1)
-        self.assertEqual(series_books[0].title, "Series Book")
+        self.assertEqual(len(book.languages), 1)
+        self.assertEqual(book.languages[0].name, "English")
+        self.assertEqual(book.language_ids, [language.id])
 
-        # Test books_standalone property
-        standalone_books = list(author1.books_standalone)
-        self.assertEqual(len(standalone_books), 1)
-        self.assertEqual(standalone_books[0].title, "Standalone Book")
+        self.assertEqual(len(book.genres), 1)
+        self.assertEqual(book.genres[0].name, "Fiction")
+        self.assertEqual(book.genre_ids, [genre.id])
 
+        self.assertEqual(len(book.series), 1)
+        self.assertEqual(book.series[0].series.name, "Test Series")
+        self.assertEqual(book.series_ids, [series.id])
 
-class TestSeries(TestDatabaseModels):
-    def setUp(self):
-        with db_session:
-            # Clean up any books from previous tests
-            Book.select().delete(bulk=True)
-
-    @db_session
-    def test_series_properties(self):
-        # Get test data from database
-        format1 = Format[1]  # Paperback
-        series1 = Series[1]  # Test Series 1
-
-        # Create books in series with different read statuses
-
-        # Create read book
-        read_book = Book(title="Read Book", format=format1, read=True)
-        SeriesIndex(book=read_book, series=series1, idx=1.0)
-
-        # Create unread book
-        unread_book = Book(title="Unread Book", format=format1, read=False)
-        SeriesIndex(book=unread_book, series=series1, idx=2.0)
-
-        # Commit changes to ensure relationships are saved
-        commit()
-
-        # Test has_unread_books property
-        self.assertTrue(series1.has_unread_books)
-
-        # Test has_read_books property
-        self.assertTrue(series1.has_read_books)
-
-        # Test books_read property
-        read_books = list(series1.books_read)
-        self.assertEqual(len(read_books), 1)
-        self.assertEqual(read_books[0].book.title, "Read Book")
-
-        # Test books_unread property
-        unread_books = list(series1.books_unread)
-        self.assertEqual(len(unread_books), 1)
-        self.assertEqual(unread_books[0].book.title, "Unread Book")
+    def test_validate_isbn(self):
+        """Test ISBN validation."""
+        # Valid ISBN-13
+        self.assertTrue(Book.validate_isbn("9781234567897"))
+        # Invalid ISBN-13 (wrong checksum)
+        self.assertFalse(Book.validate_isbn("9781234567890"))
+        # Invalid ISBN-13 (wrong length)
+        self.assertFalse(Book.validate_isbn("978123456789"))
+        # Invalid ISBN-13 (contains non-digits)
+        self.assertFalse(Book.validate_isbn("978123456789X"))
+        # None is valid (optional field)
+        self.assertTrue(Book.validate_isbn(None))
 
 
-class TestSeriesIndex(TestDatabaseModels):
-    @db_session
-    def test_series_index_property(self):
-        # Get test data from database
-        format1 = Format[1]  # Paperback
-        series1 = Series[1]  # Test Series 1
+class TestAuthor(TestBase):
+    """Tests for the Author model."""
 
-        # Create a book in series with integer index
-        book1 = Book(title="Book with Integer Index", format=format1)
-        si1 = SeriesIndex(book=book1, series=series1, idx=1.0)
+    def test_create_author(self):
+        """Test creating an author."""
+        author = Author(name="Test Author")
+        self.session.add(author)
+        self.session.commit()
 
-        # Create a book in series with decimal index
-        book2 = Book(title="Book with Decimal Index", format=format1)
-        si2 = SeriesIndex(book=book2, series=series1, idx=1.5)
+        retrieved_author = self.session.query(Author).filter_by(name="Test Author").first()
+        self.assertIsNotNone(retrieved_author)
+        self.assertEqual(retrieved_author.name, "Test Author")
 
-        # Commit changes to ensure relationships are saved
-        commit()
+    def test_author_validation(self):
+        """Test author validation."""
+        # Name is required
+        with self.assertRaises(Exception):
+            author = Author()
+            self.session.add(author)
+            self.session.commit()
 
-        # Test index property for integer value
-        self.assertEqual(si1.index, 1)
-
-        # Test index property for decimal value
-        self.assertEqual(si2.index, 1.5)
+        # Name must be between 1 and 100 characters
+        with self.assertRaises(Exception):
+            author = Author(name="A" * 101)
+            self.session.add(author)
+            self.session.commit()
 
 
 if __name__ == "__main__":

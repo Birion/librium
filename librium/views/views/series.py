@@ -1,4 +1,5 @@
-from librium.database.pony.db import *
+from librium.database import *
+from librium.services import SeriesService
 from librium.views.views.utils import SeriesType, get_raw
 
 
@@ -11,16 +12,24 @@ def get_series(args) -> dict[str, list[SeriesType] | int]:
     }
     options = {"series": [], "pagination": None, "letters": {}}
 
-    _series, options["letters"], options["pagination"] = get_raw(Series, args, filters)
+    _series, options["letters"], options["pagination"] = get_raw(SeriesService, args, filters)
 
     for si in _series:
-        _ = {"series": si.name, "books": []}
-        for s in si.books.order_by(SeriesIndex.idx):
-            _2 = {"name": s.book.name, "id": s.book.id, "idx": s.index, "authors": [], "published": s.book.released,
-                  "uuid": s.book.uuid}
-            for a in s.book.authors.order_by(AuthorOrdering.idx):
-                _2["authors"].append({"name": a.author.name, "id": a.author.id})
-            _["books"].append(_2)
-        options["series"].append(_)
+        series_info = {"series": si.name, "books": []}
+        for s in si.books:
+            series_book = {
+                "name": s.book.name,
+                "id": s.book.id,
+                "idx": s.index,
+                "authors": [],
+                "published": s.book.released,
+                "uuid": s.book.uuid,
+            }
+            for a in s.book.authors:
+                series_book["authors"].append({"name": a.author.name, "id": a.author.id, "idx": a.idx})
+            series_book["authors"].sort(key=lambda x: x["idx"])
+            series_info["books"].append(series_book)
+        series_info["books"].sort(key=lambda x: x["idx"])
+        options["series"].append(series_info)
 
     return options

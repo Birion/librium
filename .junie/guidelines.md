@@ -22,7 +22,7 @@ This document provides essential information for developers working on the Libri
 
 3. **Environment Variables**: Create a `.env` file in the project root with the following variables:
    ```
-   PONY_SQLDATABASE=librium.sqlite  # Path to the SQLite database file
+   SQLDATABASE=librium.sqlite       # Path to the SQLite database file
    APPLICATION_NAME=Librium         # Application name for display
    ```
 
@@ -48,7 +48,7 @@ This document provides essential information for developers working on the Libri
    ```python
    import os
    
-   os.environ["PONY_SQLDATABASE"] = ":memory:"
+   os.environ["SQLDATABASE"] = ":memory:"
    ```
 
 2. **Test Structure**: Tests should be organized by module and functionality. Use Python's unittest framework.
@@ -73,53 +73,6 @@ This document provides essential information for developers working on the Libri
 
 3. **Database Tests**: When testing database operations, use the `@db_session` decorator and create an in-memory database.
 
-### Example Test
-
-Here's a simple test for the Book model:
-
-```python
-import os
-import sys
-import unittest
-from pony.orm import db_session, select
-
-# Add the project directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Set environment variable for testing
-os.environ["PONY_SQLDATABASE"] = ":memory:"
-
-# Import after setting environment variable
-from librium.database.pony.db import Book, Format, db
-
-class TestBook(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Create a test database in memory
-        db.drop_all_tables(with_all_data=True)
-        db.create_tables()
-
-        # Create a test format
-        with db_session:
-            Format(id=1, name="Paperback")
-
-    @db_session
-    def test_create_book(self):
-        # Create a new book
-        Book(title="Test Book", format=Format[1])
-
-        # Query all books
-        books = list(select(b for b in Book))
-
-        # Verify a book was created
-        self.assertEqual(len(books), 1)
-        self.assertEqual(books[0].title, "Test Book")
-        self.assertEqual(books[0].format.name, "Paperback")
-
-if __name__ == "__main__":
-    unittest.main()
-```
-
 ## Additional Development Information
 
 ### Project Structure
@@ -138,16 +91,7 @@ Librium uses Pony ORM for database operations. Key points:
 
 2. **Database Sessions**: Use the `@db_session` decorator for functions that interact with the database.
 
-3. **Queries**: Use Pony's query language for database operations:
-   ```python
-   from librium.database.pony.db import Book, select
-   
-   # Get a book by ID
-   book = Book[id]
-   
-   # Query books with a filter
-   books = select(b for b in Book if b.read is True)
-   ```
+3. **Queries**: Use SQLAlchemy's query language for database operations
 
 ### Asset Pipeline
 
@@ -171,9 +115,4 @@ The project uses Flask-Assets for managing static assets:
 
 1. **Flask Debug Mode**: Run the application with `--debug` for detailed error messages.
 
-2. **Database Logging**: Enable Pony ORM's SQL logging for debugging database operations:
-   ```python
-   from pony.orm import set_sql_debug
-
-   set_sql_debug(True)
-   ```
+2. **Database Logging**: Enable SQLAlchemy's SQL logging for debugging database operations
