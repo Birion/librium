@@ -1,5 +1,5 @@
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, jsonify
 from flask_jwt_extended import JWTManager
 
 from librium.__version__ import __version__
@@ -7,6 +7,7 @@ from librium.core.assets import assets
 from librium.core.config import get_config
 from librium.core.logging import configure_logging, get_logger
 from librium.core.utils import parse_read_arg
+from librium.core.limit import limiter
 from librium.views import book, covers, main
 from librium.views.api import bp as api_bp
 
@@ -110,6 +111,21 @@ def create_app():
 
     # JWT setup
     jwt = JWTManager(app)
+
+    # Rate limiting setup
+    limiter.init_app(app)
+
+    # Default API rate limits
+    limiter.limit("100/day;30/hour;5/minute")(api_bp)
+
+    # Register rate limit exceeded handler
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        logger.warning(f"Rate limit exceeded: {request.path} - {e}")
+        return jsonify(
+            error="Rate limit exceeded",
+            message="Too many requests. Please try again later.",
+        ), 429
 
     # Register routes and blueprints
     app.route("/favicon.ico")(lambda: handle_favicon(app))

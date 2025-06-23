@@ -28,7 +28,7 @@ initializeBookFormValidation = ->
         identifier: "title"
         rules: [
           {
-            type: "empty"
+            type: "notEmpty"
             prompt: "Please enter a title"
           }
         ]
@@ -36,7 +36,7 @@ initializeBookFormValidation = ->
         identifier: "format"
         rules: [
           {
-            type: "empty"
+            type: "notEmpty"
             prompt: "Please select a format"
           }
         ]
@@ -44,7 +44,7 @@ initializeBookFormValidation = ->
         identifier: "authors"
         rules: [
           {
-            type: "empty"
+            type: "notEmpty"
             prompt: "Please select at least one author"
           }
         ]
