@@ -16,7 +16,7 @@ requestAuthToken = (username, password) ->
   
   # Send authentication request
   $.ajax
-    url: "/api/v1/auth/token"
+    url: document.querySelector("meta[name='auth-url']").getAttribute("content")
     type: "POST"
     data: formData
     processData: false
