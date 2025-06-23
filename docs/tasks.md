@@ -23,11 +23,13 @@ This document contains a prioritised list of tasks for improving the Librium cod
 ### Security
 - [x] Implement API authentication tokens
 - [x] Add a system to request the authentication token and store it safely client-side
-- [ ] Implement input validation for all user inputs
-- [ ] Add CSRF protection for forms
+- [x] Implement input validation for all user inputs
+
+[//]: # (- [ ] Add CSRF protection for forms)
 - [ ] Add rate limiting for API endpoints
-- [ ] Implement authentication and authorisation
-- [ ] Implement secure password storage if user accounts are added
+
+[//]: # (- [ ] Implement authentication and authorisation)
+[//]: # (- [ ] Implement secure password storage if user accounts are added)
 
 ## Code-Level Improvements
 

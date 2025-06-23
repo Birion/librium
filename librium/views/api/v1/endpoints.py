@@ -14,6 +14,17 @@ from flask_jwt_extended import create_access_token, jwt_required
 from marshmallow import fields
 from marshmallow.fields import Integer, String
 from webargs.flaskparser import use_args, use_kwargs
+
+from librium.views.api.v1.schemas import (
+    EntitySchema,
+    BookIdSchema,
+    CoverSchema,
+    ExportSchema,
+    BackupCreateSchema,
+    BackupRestoreSchema,
+    BackupDeleteSchema,
+    AuthTokenSchema,
+)
 from werkzeug.datastructures import FileStorage
 
 from librium.core.logging import get_logger
@@ -109,7 +120,7 @@ def publishers():
 @bp.route("/add", methods=["POST"])
 @jwt_required()
 @use_args(
-    {"type": fields.String(required=True), "name": fields.String(required=True)},
+    EntitySchema,
     location="form",
 )
 def add(args):
@@ -195,7 +206,7 @@ def add(args):
 
 @bp.route("/delete", methods=["POST"])
 @jwt_required()
-@use_args({"id": Integer(required=True)}, location="form")
+@use_args(BookIdSchema, location="form")
 def delete(args):
     """
     Delete a book.
@@ -239,19 +250,19 @@ def get_directory(directory):
 
 @bp.route("/add/cover", methods=["POST"])
 @jwt_required()
-@use_kwargs({"cover": fields.Raw(required=True)}, location="files")
-@use_kwargs({"uuid": fields.String(required=True)}, location="form")
-def add_cover(cover: FileStorage, uuid):
+@use_args(CoverSchema, location={"cover": "files", "uuid": "form"})
+def add_cover(args):
     """
     Add a cover image for a book.
 
     Args:
-        cover: The cover image file
-        uuid: The book UUID
+        args: The validated request arguments containing cover and uuid
 
     Returns:
         JSON response indicating success or failure
     """
+    cover = args["cover"]
+    uuid = args["uuid"]
     logger.info(f"POST /api/v1/add/cover called with uuid: {uuid}, cover: {cover}")
     # Get the book using the service
     book = BookService.get_by_uuid(uuid)
@@ -281,23 +292,24 @@ def add_cover(cover: FileStorage, uuid):
 
 @bp.route("/export")
 @jwt_required()
-@use_kwargs({"format": String(required=False)}, location="query")
-def export(format=None):
+@use_args(ExportSchema, location="query")
+def export(args):
     """
     Export books to the specified format.
 
     Args:
-        format: The format to export to (csv or json), defaults to csv
+        args: The validated request arguments containing optional format
 
     Returns:
         File download in the specified format
     """
+    format = args.get("format")
     logger.info(f"GET /api/v1/export called with format: {format}")
     # Default to CSV if no format is specified
     if format is None:
         format = "csv"
 
-    # Validate format
+    # Format validation is handled by the schema, but we'll keep this check for safety
     if format not in ["csv", "json"]:
         logger.warning(f"Invalid export format requested: {format}")
         return jsonify({"error": "Invalid format. Supported formats: csv, json"}), 400
@@ -321,17 +333,18 @@ def export(format=None):
 
 @bp.route("/backup/create", methods=["POST"])
 @jwt_required()
-@use_kwargs({"filename": String(required=False)}, location="form")
-def backup_create(filename=None):
+@use_args(BackupCreateSchema, location="form")
+def backup_create(args):
     """
     Create a backup of the database.
 
     Args:
-        filename: Optional name for the backup file
+        args: The validated request arguments containing optional filename
 
     Returns:
         JSON response with the backup file path
     """
+    filename = args.get("filename")
     logger.info(f"POST /api/v1/backup/create called with filename: {filename}")
     try:
         backup_file = create_backup(filename)
@@ -390,17 +403,18 @@ def backup_list():
 
 @bp.route("/backup/restore", methods=["POST"])
 @jwt_required()
-@use_kwargs({"filename": String(required=True)}, location="form")
-def backup_restore(filename):
+@use_args(BackupRestoreSchema, location="form")
+def backup_restore(args):
     """
     Restore the database from backup.
 
     Args:
-        filename: Backup file name or special keywords like 'latest', 'last', 'first'
+        args: The validated request arguments containing filename
 
     Returns:
         JSON response with the action result
     """
+    filename = args["filename"]
     logger.info(f"POST /api/v1/backup/restore called with filename: {filename}")
     try:
         if filename in ("latest", "last", "first"):
@@ -451,17 +465,18 @@ def backup_restore(filename):
 
 @bp.route("/backup/delete", methods=["POST"])
 @jwt_required()
-@use_kwargs({"filename": String(required=True)}, location="form")
-def backup_delete(filename):
+@use_args(BackupDeleteSchema, location="form")
+def backup_delete(args):
     """
     Delete a backup file.
 
     Args:
-        filename: The name of the backup file to delete
+        args: The validated request arguments containing filename
 
     Returns:
         JSON response with the action result
     """
+    filename = args["filename"]
     logger.info(f"POST /api/v1/backup/delete called with filename: {filename}")
     try:
         backup_dir = Path.cwd() / "backups"
@@ -503,14 +518,19 @@ def backup_delete(filename):
 
 
 @bp.route("/auth/token", methods=["POST"])
-@use_kwargs(
-    {"username": String(required=True), "password": String(required=True)},
-    location="form",
-)
-def get_token(username, password):
+@use_args(AuthTokenSchema, location="form")
+def get_token(args):
     """
-    Get JWT token. Example: {"username": "admin", "password": "admin"}
+    Get JWT token.
+
+    Args:
+        args: The validated request arguments containing username and password
+
+    Returns:
+        JSON response with access token or error message
     """
+    username = args["username"]
+    password = args["password"]
     authenticator = AuthenticationService.get_by_name(username)
     if authenticator and authenticator.check_password(password):
         access_token = create_access_token(identity=username)

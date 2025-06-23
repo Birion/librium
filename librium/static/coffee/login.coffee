@@ -26,9 +26,8 @@ initializeLoginModal = ->
     # Request authentication token
     requestAuthToken(username, password)
       .then ->
-        # Close modal and reload page on success
+        # Close modal on success
         $loginModal.modal("hide")
-        window.location.reload()
       .catch (error) ->
         # Show error message
         $("#login-error").text(error.responseJSON?.msg || "Authentication failed")
