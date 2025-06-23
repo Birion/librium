@@ -1,5 +1,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="auth_url" content="{{ url_for('api.api_v1.get_token') }}">
+<meta name="test_url" content="{{ url_for('api.api_v1.protected') }}">
 
 <link rel="icon" href="{{ url_for("static", filename="img/logo.svg") }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for("static", filename="img/logo.png") }}" type="image/x-icon">
