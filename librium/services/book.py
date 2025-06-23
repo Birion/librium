@@ -122,14 +122,14 @@ class BookService:
     @staticmethod
     @read_only
     def get_paginated(
-        page: int = 1, 
-        page_size: int = 30, 
+        page: int = 1,
+        page_size: int = 30,
         filter_read: Optional[bool] = None,
         search: Optional[str] = None,
         start_with: Optional[str] = None,
         exact_name: Optional[str] = None,
         sort_by: str = "title",
-        sort_order: str = "asc"
+        sort_order: str = "asc",
     ) -> tuple[List[Book], int]:
         """
         Get a paginated list of non-deleted books with optional filtering and sorting.
@@ -216,7 +216,9 @@ class BookService:
             # Execute query
             books = Session.scalars(query).unique().all()
 
-            logger.debug(f"Found {len(books)} books for page {page} (total: {total_count})")
+            logger.debug(
+                f"Found {len(books)} books for page {page} (total: {total_count})"
+            )
             return books, total_count
         except SQLAlchemyError as e:
             logger.error(f"Error getting paginated books: {e}")
@@ -385,7 +387,8 @@ class BookService:
                 .where(
                     book_publishers.c.publisher_id == publisher_id,
                     Book.deleted.is_(False),
-                ).all()
+                )
+                .all()
             )
             logger.debug(f"Found {len(books)} books by publisher ID: {publisher_id}")
             return books
@@ -532,9 +535,13 @@ class BookService:
                 logger.error(f"Format with ID {format_id} not found")
                 raise ValueError(f"Format with ID {format_id} not found")
 
+            logger.debug(kwargs)
+
             # Create the book
-            book = Book(title=title, format=format_obj, **kwargs)
+            book = Book(title=title, format=format_obj)
             Session.add(book)
+
+            book = BookService.update(book.id, **kwargs)
 
             logger.info(f"Book created: {title} (ID: {book.id})")
             return book

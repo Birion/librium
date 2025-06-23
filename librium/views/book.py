@@ -68,42 +68,41 @@ def index(id):
         return jsonify({"error": "An unexpected error occurred"}), 500
 
 
-@bp.route("/add", methods=["POST"])
-@use_kwargs(
-    {"key": {"type": str, "required": True}, "value": {type: str, "required": True}},
-    location="form",
-)
-def add(key, value):
-    logger.info(f"Add new {key}, value: {value}, method: {request.method}")
-    try:
-
-        match key:
-            case "author":
-                result = AuthorService.create_by_name(value)
-            case "genre":
-                result = GenreService.create(value)
-            case "format":
-                result = FormatService.create(value)
-            case "language":
-                result = LanguageService.create(value)
-            case "publisher":
-                result = PublisherService.create(value)
-            case "series":
-                result = SeriesService.create(value)
-            case _:
-                logger.error(f"Invalid key for add operation: {key}")
-                return bad_request(f"Invalid key: {key}")
-        logger.info(f"Successfully added {key}: {result}")
-        return jsonify({"url": url_for("book.index", id=result.id)})
-    except ValueError as e:
-        logger.error(f"Value error in add view for {key}: {e}")
-        return bad_request(str(e))
-    except SQLAlchemyError as e:
-        logger.error(f"Database error in add view for {key}: {e}")
-        return internal_server_error("Database error occurred")
-    except Exception as e:
-        logger.exception(f"Unexpected error in add view for {key}: {e}")
-        return internal_server_error("An unexpected error occurred")
+# @bp.route("/add", methods=["POST"])
+# @use_kwargs(
+#     {"key": {"type": str, "required": True}, "value": {type: str, "required": True}},
+#     location="form",
+# )
+# def add(key, value):
+#     logger.info(f"Add new {key}, value: {value}, method: {request.method}")
+#     try:
+#         match key:
+#             case "author":
+#                 result = AuthorService.create_by_name(value)
+#             case "genre":
+#                 result = GenreService.create(value)
+#             case "format":
+#                 result = FormatService.create(value)
+#             case "language":
+#                 result = LanguageService.create(value)
+#             case "publisher":
+#                 result = PublisherService.create(value)
+#             case "series":
+#                 result = SeriesService.create(value)
+#             case _:
+#                 logger.error(f"Invalid key for add operation: {key}")
+#                 return bad_request(f"Invalid key: {key}")
+#         logger.info(f"Successfully added {key}: {result}")
+#         return jsonify({"url": url_for("book.index", id=result.id)})
+#     except ValueError as e:
+#         logger.error(f"Value error in add view for {key}: {e}")
+#         return bad_request(str(e))
+#     except SQLAlchemyError as e:
+#         logger.error(f"Database error in add view for {key}: {e}")
+#         return internal_server_error("Database error occurred")
+#     except Exception as e:
+#         logger.exception(f"Unexpected error in add view for {key}: {e}")
+#         return internal_server_error("An unexpected error occurred")
 
 
 @bp.route("/update/<int:id>", methods=["POST"])
