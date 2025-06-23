@@ -12,6 +12,32 @@
     {% block content %}{% endblock %}
 </div>
 
+<!-- Login Modal -->
+<div class="ui mini modal" id="login-modal">
+    <div class="header">Login Required</div>
+    <div class="content">
+        <form id="login-form" class="ui form">
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="ui negative message" id="login-error" style="display: none;">
+                <p>Invalid username or password</p>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <button type="submit" form="login-form" class="ui positive right labeled icon button" id="login-submit">
+            Login
+            <i class="sign in icon"></i>
+        </button>
+    </div>
+</div>
+
 {% include "_core/_foot.html" %}
 </body>
 </html>
