@@ -77,6 +77,7 @@ def update(id, **kwargs):
         if not book:
             logger.warning(f"Book with ID {id} not found, creating new book")
             # If the book does not exist, create a new one with the provided data
+            kwargs["format_id"] = kwargs.pop("format", None)
             book = BookService.create(**kwargs)
             logger.info(f"Created new book with ID: {book.id}")
             return jsonify({"url": url_for("book.index", id=book.id)})
@@ -97,30 +98,23 @@ def update(id, **kwargs):
         return jsonify({"error": "An unexpected error occurred"}), 500
 
 
-@bp.route("/add", methods=["GET", "POST"])
-@use_args(BookSchema, location="form")
-def add(args):
+@bp.route("/new", methods=["GET"])
+def new():
     logger.info(f"Book add view, method: {request.method}")
 
     try:
-        if request.method == "POST":
-            logger.debug(f"POST request to add book with data: {args}")
-
-            # Create a new book using the BookService
-            # First create a book with a temporary title
-            logger.debug("Creating book with temporary title")
-            book = BookService.create(title="x", format_id=args.get("format", 1))
-            logger.info(f"Created book with temporary title, ID: {book.id}")
-
-            # Then update it with all the provided data
-            logger.debug(f"Updating book with provided data")
-            BookService.add_or_update(book, args)
-            logger.info(f"Book created and updated: {book.title} (ID: {book.id})")
-
-            return jsonify({"url": url_for("book.index", id=book.id)})
-        else:
-            logger.debug("GET request to add book form")
-            return redirect(url_for("main.index"))
+        logger.debug("GET request to add book form")
+        options = {
+            "book": None,
+            "genres": GenreService.get_all(),
+            "formats": FormatService.get_all(),
+            "languages": LanguageService.get_all(),
+            "publishers": PublisherService.get_all(),
+            "series": SeriesService.get_all(),
+            "authors": AuthorService.get_all(),
+        }
+        logger.debug("Successfully retrieved all related data for book template")
+        return render_template("book/index.html", **options)
     except ValueError as e:
         logger.error(f"Value error in book add view: {e}")
         return jsonify({"error": str(e)}), 400

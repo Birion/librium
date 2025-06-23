@@ -21,13 +21,14 @@ requestAuthToken = (username, password) ->
     data: formData
     processData: false
     contentType: false
-  .done (response) ->
-    # Store the token and return it
-    storeAuthToken(response.access_token)
-    return response.access_token
-  .fail (error) ->
-    console.error("Authentication failed:", error)
-    throw error
+    success: (response) ->
+      # Store the token and return it
+      storeAuthToken(response.access_token)
+      return response.access_token
+    error: (error) ->
+      # Handle authentication error
+      console.error("Authentication error:", error)
+      throw new Error("Authentication failed. Please check your credentials.")
 
 # Store the authentication token
 # @param {string} token - The authentication token to store

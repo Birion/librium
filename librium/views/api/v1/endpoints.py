@@ -5,29 +5,16 @@ This module provides the v1 API endpoints for the Librium application.
 """
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from glob import glob
 from pathlib import Path
 
-from flask import abort, jsonify, send_file, url_for, request
+from flask import jsonify, request, send_file, url_for
 from flask_jwt_extended import create_access_token, jwt_required
-from marshmallow import fields
-from marshmallow.fields import Integer, String
-from webargs.flaskparser import use_args, use_kwargs
+from flask_limiter import ExemptionScope
+from webargs.flaskparser import use_args
 
 from librium.core.limit import limiter
-from librium.views.api.v1.schemas import (
-    EntitySchema,
-    BookIdSchema,
-    CoverSchema,
-    ExportSchema,
-    BackupCreateSchema,
-    BackupRestoreSchema,
-    BackupDeleteSchema,
-    AuthTokenSchema,
-)
-from werkzeug.datastructures import FileStorage
-
 from librium.core.logging import get_logger
 from librium.database.backup import (
     create_backup,
@@ -44,11 +31,25 @@ from librium.services import (
     PublisherService,
     SeriesService,
 )
+from librium.views.api.errors import (bad_request, conflict, forbidden, internal_server_error, not_found, unauthorized)
 from librium.views.api.v1 import bp
+from librium.views.api.v1.schemas import (AuthTokenSchema, BackupCreateSchema, BackupDeleteSchema, BackupRestoreSchema,
+                                          BookIdSchema, BooksQuerySchema, CoverSchema, EntitySchema, ExportSchema)
 from utils.export import run as export_func
 
-
 logger = get_logger("api.v1.endpoints")
+
+# limiter.limit("100/day;30/hour;5/minute")(bp)
+
+# More restrictive limits for backup operations (resource-intensive)
+limiter.limit("10/day;5/hour;2/minute", override_defaults=True)(
+    lambda: request.path.startswith("/api/v1/backup/")
+)
+
+# More restrictive limits for data modification endpoints (POST methods)
+limiter.limit("50/day;20/hour;3/minute", override_defaults=True)(
+    lambda: request.method == "POST" and request.path.startswith("/api/v1/")
+)
 
 
 def get_data_from_service(service):
@@ -136,7 +137,7 @@ def add(args):
     """
     if args["name"] == "":
         logger.warning("Missing name in add endpoint")
-        return abort(403, "Missing name")
+        return forbidden("Missing name")
 
     # Map the type to the appropriate service
     service_lookup = {
@@ -184,7 +185,7 @@ def add(args):
             # Check if any of the existing authors match exactly
             if AuthorService.get_by_full_name(**options) is not None:
                 logger.warning(f"Author {args['name']} already exists")
-                return abort(403, f"Author {args['name']} already exists")
+                return conflict(f"Author {args['name']} already exists")
 
         # Create the author using the service
         new_item = AuthorService.create(**{k: v for k, v in options.items() if v})
@@ -196,7 +197,7 @@ def add(args):
         ]
         if existing_items:
             logger.warning(f"Object {args['name']} already exists in {args['type']}")
-            return abort(403, "Object already exists")
+            return conflict(f"{args['type'].capitalize()} '{args['name']}' already exists")
 
         # Create the item using the service
         new_item = service.create(name=args["name"])
@@ -269,7 +270,7 @@ def add_cover(args):
     book = BookService.get_by_uuid(uuid)
     if not book:
         logger.warning(f"Book with uuid {uuid} not found for cover upload")
-        return jsonify({"response": "Book not found"}), 404
+        return not_found(f"Book with UUID {uuid} not found")
 
     # Save the cover file
     covers_dir = get_directory("covers")
@@ -281,7 +282,7 @@ def add_cover(args):
         logger.exception(
             f"Failed to save cover for book {book.id} (uuid: {book.uuid}): {e}"
         )
-        return jsonify({"response": "Failed to save cover"}), 500
+        return internal_server_error(f"Failed to save cover: {str(e)}")
 
     # Update the book if needed
     if not book.has_cover:
@@ -313,7 +314,7 @@ def export(args):
     # Format validation is handled by the schema, but we'll keep this check for safety
     if format not in ["csv", "json"]:
         logger.warning(f"Invalid export format requested: {format}")
-        return jsonify({"error": "Invalid format. Supported formats: csv, json"}), 400
+        return bad_request("Invalid format. Supported formats: csv, json")
 
     try:
         tempfile = export_func(format)
@@ -326,7 +327,7 @@ def export(args):
         )
     except Exception as e:
         logger.exception(f"Failed to export books to {format}: {e}")
-        return jsonify({"error": f"Failed to export books: {str(e)}"}), 500
+        return internal_server_error(f"Failed to export books: {str(e)}")
 
 
 # Database backup and restore endpoints
@@ -359,10 +360,7 @@ def backup_create(args):
         )
     except Exception as e:
         logger.exception(f"Error creating backup: {e}")
-        return (
-            jsonify({"success": False, "message": f"Error creating backup: {str(e)}"}),
-            500,
-        )
+        return internal_server_error(f"Error creating backup: {str(e)}")
 
 
 @bp.route("/backup/list", methods=["GET"])
@@ -396,10 +394,7 @@ def backup_list():
         )
     except Exception as e:
         logger.exception(f"Error listing backups: {e}")
-        return (
-            jsonify({"success": False, "message": f"Error listing backups: {str(e)}"}),
-            500,
-        )
+        return internal_server_error(f"Error listing backups: {str(e)}")
 
 
 @bp.route("/backup/restore", methods=["POST"])
@@ -434,12 +429,7 @@ def backup_restore(args):
 
         if not backup_file.exists():
             logger.warning(f"Backup file {filename} not found for restore")
-            return (
-                jsonify(
-                    {"success": False, "message": f"Backup file {filename} not found"}
-                ),
-                404,
-            )
+            return not_found(f"Backup file {filename} not found")
 
         success = restore_from_backup(backup_file)
 
@@ -450,18 +440,10 @@ def backup_restore(args):
             )
         else:
             logger.error(f"Error restoring database from {backup_file}")
-            return (
-                jsonify({"success": False, "message": "Error restoring database"}),
-                500,
-            )
+            return internal_server_error("Error restoring database")
     except Exception as e:
         logger.exception(f"Exception during database restore: {str(e)}")
-        return (
-            jsonify(
-                {"success": False, "message": f"Error restoring database: {str(e)}"}
-            ),
-            500,
-        )
+        return internal_server_error(f"Error restoring database: {str(e)}")
 
 
 @bp.route("/backup/delete", methods=["POST"])
@@ -485,12 +467,7 @@ def backup_delete(args):
 
         if not backup_file.exists():
             logger.warning(f"Backup file {filename} not found for delete")
-            return (
-                jsonify(
-                    {"success": False, "message": f"Backup file {filename} not found"}
-                ),
-                404,
-            )
+            return not_found(f"Backup file {filename} not found")
 
         success = delete_backup(backup_file)
 
@@ -501,24 +478,96 @@ def backup_delete(args):
             )
         else:
             logger.error(f"Error deleting backup {filename}")
-            return (
-                jsonify(
-                    {"success": False, "message": f"Error deleting backup {filename}"}
-                ),
-                500,
-            )
+            return internal_server_error(f"Error deleting backup {filename}")
     except Exception as e:
         logger.exception(f"Exception during backup delete: {str(e)}")
-        return (
-            jsonify({"success": False, "message": f"Error deleting backup: {str(e)}"}),
-            500,
+        return internal_server_error(f"Error deleting backup: {str(e)}")
+
+
+# Books endpoint
+@bp.route("/books")
+@jwt_required()
+@use_args(BooksQuerySchema, location="query")
+def books(args):
+    """
+    Get books with filtering and sorting options.
+
+    Args:
+        args: The validated request arguments containing filtering and sorting options
+
+    Returns:
+        JSON response with books and pagination information
+    """
+    logger.info(f"GET /api/v1/books called with args: {args}")
+
+    try:
+        # Get books using the BookService
+        books, total_count = BookService.get_paginated(
+            page=args.get("page", 1),
+            page_size=args.get("page_size", 30),
+            filter_read=args.get("read"),
+            search=args.get("search"),
+            start_with=args.get("start_with"),
+            sort_by=args.get("sort_by", "title"),
+            sort_order=args.get("sort_order", "asc")
         )
+
+        # Calculate pagination information
+        total_pages = (total_count + args.get("page_size", 30) - 1) // args.get("page_size", 30)
+
+        # Convert books to dictionaries
+        book_dicts = []
+        for book in books:
+            book_dict = {
+                "id": book.id,
+                "title": book.title,
+                "uuid": book.uuid,
+                "isbn": book.isbn,
+                "released": book.released,
+                "price": float(book.price) if book.price else None,
+                "page_count": book.page_count,
+                "read": book.read,
+                "has_cover": book.has_cover,
+                "format": {"id": book.format.id, "name": book.format.name} if book.format else None,
+                "authors": [{"id": a.author.id, "name": a.author.name} for a in book.authors],
+                "genres": [{"id": g.id, "name": g.name} for g in book.genres],
+                "publishers": [{"id": p.id, "name": p.name} for p in book.publishers],
+                "languages": [{"id": l.id, "name": l.name} for l in book.languages],
+                "series": [{"id": s.series.id, "name": s.series.name, "index": s.index} for s in book.series],
+                "created_at": book.created_at.isoformat() if book.created_at else None,
+                "updated_at": book.updated_at.isoformat() if book.updated_at else None,
+            }
+            book_dicts.append(book_dict)
+
+        # Return the response
+        return jsonify({
+            "books": book_dicts,
+            "pagination": {
+                "page": args.get("page", 1),
+                "page_size": args.get("page_size", 30),
+                "total_items": total_count,
+                "total_pages": total_pages
+            },
+            "filters": {
+                "read": args.get("read"),
+                "search": args.get("search"),
+                "start_with": args.get("start_with")
+            },
+            "sorting": {
+                "sort_by": args.get("sort_by", "title"),
+                "sort_order": args.get("sort_order", "asc")
+            }
+        })
+    except Exception as e:
+        logger.exception(f"Error getting books: {e}")
+        return internal_server_error(f"Error getting books: {str(e)}")
 
 
 # Authentication endpoints
 
 
 @bp.route("/auth/token", methods=["POST"])
+@limiter.limit("20/day;5/hour;3/minute") # More restrictive limits for auth token endpoint
 @use_args(AuthTokenSchema, location="form")
 def get_token(args):
     """
@@ -534,13 +583,13 @@ def get_token(args):
     password = args["password"]
     authenticator = AuthenticationService.get_by_name(username)
     if authenticator and authenticator.check_password(password):
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity=username, expires_delta=timedelta(days=365))
         return jsonify(access_token=access_token)
-    return jsonify({"msg": "Bad username or password"}), 401
+    return unauthorized("Invalid credentials")
 
 
 @bp.route("/protected")
-@limiter.exempt()
+@limiter.exempt  # Exempt this endpoint from rate limiting
 @jwt_required()
 def protected():
     return jsonify(msg="You are authenticated!"), 200
@@ -550,26 +599,22 @@ def protected():
 @bp.app_errorhandler(404)
 def api_not_found(error):
     logger.warning(f"API 404 error: {request.path} - {error}")
-    response = {"error": "Not found", "message": str(error)}
-    return jsonify(response), 404
+    return not_found(str(error))
 
 
 @bp.app_errorhandler(400)
 def api_bad_request(error):
     logger.warning(f"API 400 error: {request.path} - {error}")
-    response = {"error": "Bad request", "message": str(error)}
-    return jsonify(response), 400
+    return bad_request(str(error))
 
 
 @bp.app_errorhandler(500)
 def api_internal_error(error):
     logger.error(f"API 500 error: {request.path} - {error}")
-    response = {"error": "Internal server error", "message": str(error)}
-    return jsonify(response), 500
+    return internal_server_error(str(error))
 
 
 @bp.app_errorhandler(Exception)
 def api_unhandled_exception(error):
     logger.exception(f"API unhandled exception: {error}")
-    response = {"error": "Unexpected error", "message": str(error)}
-    return jsonify(response), 500
+    return internal_server_error(str(error))

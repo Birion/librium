@@ -40,15 +40,7 @@ initializeBookFormValidation = ->
             prompt: "Please select a format"
           }
         ]
-      authors:
-        identifier: "authors"
-        rules: [
-          {
-            type: "notEmpty"
-            prompt: "Please select at least one author"
-          }
-        ]
-    
+
     # Custom validation for series
     onSuccess: (event, fields) ->
       # Check if series is valid
@@ -98,7 +90,7 @@ initializeLoginFormValidation = ->
         identifier: "password"
         rules: [
           {
-            type: " notEmpty"
+            type: "notEmpty"
             prompt: "Please enter a password"
           }
         ]

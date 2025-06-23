@@ -55,9 +55,9 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Add client-side validation for forms
 
 ### API
-- [ ] Document API endpoints using OpenAPI/Swagger
-- [ ] Implement consistent error responses for API endpoints
-- [ ] Add filtering and sorting options for API endpoints
+- [x] Document API endpoints using OpenAPI/Swagger
+- [x] Implement consistent error responses for API endpoints
+- [x] Add filtering and sorting options for API endpoints
 - [ ] Implement bulk operations for API endpoints
 - [ ] Add caching for frequently accessed API endpoints
 

@@ -1,6 +1,7 @@
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, render_template, request, url_for, jsonify
 from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
 
 from librium.__version__ import __version__
 from librium.core.assets import assets
@@ -10,6 +11,8 @@ from librium.core.utils import parse_read_arg
 from librium.core.limit import limiter
 from librium.views import book, covers, main
 from librium.views.api import bp as api_bp
+from librium.views.api.errors import too_many_requests
+from librium.views.api.swagger import swagger_ui_blueprint
 
 # Constants
 FLASK_APP_NAME = "librium"
@@ -50,11 +53,12 @@ def configure_jinja_env(app: Flask) -> None:
     )
 
 
-def register_blueprints(app: Flask) -> None:
+def register_blueprints(app: Flask, limiter: Limiter) -> None:
     """Register all application blueprints."""
-    blueprints = [main.bp, book.bp, api_bp, covers.bp]
+    blueprints = [main.bp, book.bp, api_bp, swagger_ui_blueprint, covers.bp]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+        limiter.exempt(blueprint)
 
 
 def create_url_for_self(**args):
@@ -88,6 +92,11 @@ def register_error_handlers(app: Flask) -> None:
             500,
         )
 
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        logger.warning(f"Rate limit exceeded: {request.path} - {e}")
+        return too_many_requests("Too many requests. Please try again later.")
+
     @app.errorhandler(Exception)
     def handle_exception(error):
         """Handle unhandled exceptions."""
@@ -115,43 +124,9 @@ def create_app():
     # Rate limiting setup
     limiter.init_app(app)
 
-    # Apply rate limiting to API endpoints with different limits for different endpoints
-
-    # Default API rate limits
-    limiter.limit("100/day;30/hour;5/minute")(api_bp)
-
-    # Allow more requests for /api/v1/protected endpoint for valid responses
-    limiter.limit("1000/day;100/hour;50/minute", override_defaults=True)(
-        lambda: request.path == "/api/v1/protected"
-    )
-
-    # More restrictive limits for authentication endpoint to prevent brute force attacks
-    limiter.limit("20/day;5/hour;3/minute", override_defaults=True)(
-        lambda: request.path.startswith("/api/v1/auth/")
-    )
-
-    # More restrictive limits for backup operations (resource-intensive)
-    limiter.limit("10/day;5/hour;2/minute", override_defaults=True)(
-        lambda: request.path.startswith("/api/v1/backup/")
-    )
-
-    # More restrictive limits for data modification endpoints (POST methods)
-    limiter.limit("50/day;20/hour;3/minute", override_defaults=True)(
-        lambda: request.method == "POST" and request.path.startswith("/api/v1/")
-    )
-
-    # Register rate limit exceeded handler
-    @app.errorhandler(429)
-    def ratelimit_handler(e):
-        logger.warning(f"Rate limit exceeded: {request.path} - {e}")
-        return jsonify(
-            error="Rate limit exceeded",
-            message="Too many requests. Please try again later.",
-        ), 429
-
     # Register routes and blueprints
     app.route("/favicon.ico")(lambda: handle_favicon(app))
-    register_blueprints(app)
+    register_blueprints(app, limiter)
 
     # Register error handlers
     register_error_handlers(app)

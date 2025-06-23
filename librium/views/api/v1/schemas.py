@@ -4,9 +4,8 @@ API validation schemas for Librium.
 This module provides validation schemas for the API endpoints.
 """
 
-from marshmallow import Schema, fields, validate, validates_schema, ValidationError
-from marshmallow.fields import Integer, String, Boolean, Float, Raw
-from webargs.fields import DelimitedList
+from marshmallow import Schema, validate
+from marshmallow.fields import Boolean, Integer, Raw, String
 
 
 class EntitySchema(Schema):
@@ -93,3 +92,29 @@ class AuthTokenSchema(Schema):
 
     username = String(required=True, validate=validate.Length(min=1, max=255))
     password = String(required=True, validate=validate.Length(min=1))
+
+
+class BooksQuerySchema(Schema):
+    """Schema for validating book listing query parameters."""
+
+    page = Integer(required=False, validate=validate.Range(min=1), load_default=1)
+    page_size = Integer(required=False, validate=validate.Range(min=1, max=100), load_default=30)
+    read = Boolean(required=False)
+    search = String(required=False)
+    start_with = String(required=False)
+    sort_by = String(
+        required=False,
+        validate=validate.OneOf(
+            ["title", "released", "price", "page_count", "read"],
+            error="Sort field must be one of: title, released, price, page_count, read"
+        ),
+        load_default="title"
+    )
+    sort_order = String(
+        required=False,
+        validate=validate.OneOf(
+            ["asc", "desc"],
+            error="Sort order must be one of: asc, desc"
+        ),
+        load_default="asc"
+    )

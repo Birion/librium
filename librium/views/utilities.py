@@ -59,11 +59,7 @@ class BookSchema(Schema):
     price = fields.Float(validate=lambda n: not n or n >= 0)
     page_count = fields.Integer(validate=lambda n: not n or n > 0)
     read = MyBoolean(load_default=False)
-    authors = DelimitedList(
-        fields.Integer(validate=lambda n: n > 0),
-        required=True,
-        error_messages={"required": "At least one author is required"},
-    )
+    authors = DelimitedList(fields.Integer(validate=lambda n: n > 0))
     genres = DelimitedList(fields.Integer(validate=lambda n: n > 0))
     publishers = DelimitedList(fields.Integer(validate=lambda n: n > 0))
     languages = DelimitedList(fields.Integer(validate=lambda n: n > 0))
