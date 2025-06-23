@@ -62,7 +62,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Add caching for frequently accessed API endpoints
 
 ### Frontend
-- [ ] Optimise asset loading for better performance
+- [x] Optimise asset loading for better performance
 - [ ] Implement responsive design for mobile devices
 - [ ] Add accessibility features (ARIA attributes, keyboard navigation)
 - [ ] Implement progressive enhancement for JavaScript features
@@ -100,7 +100,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Implement contextual help
 
 ### Developer Documentation
-- [ ] Create API documentation
+- [x] Create API documentation
 - [ ] Document database schema
 - [ ] Add a code style guide
 - [ ] Create contribution guidelines
@@ -119,5 +119,5 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Implement caching for frequently accessed data
 - [ ] Optimize database queries
 - [ ] Implement lazy loading for images
-- [ ] Add compression for static assets
+- [x] Add compression for static assets
 - [ ] Implement server-side rendering for critical content

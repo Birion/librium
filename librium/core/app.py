@@ -1,5 +1,6 @@
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, render_template, request, url_for, jsonify
+from flask_compress import Compress
 from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 
@@ -71,6 +72,31 @@ def handle_favicon(app):
     return app.send_static_file(FAVICON_PATH)
 
 
+def configure_static_cache(app: Flask) -> None:
+    """Configure cache headers for static files."""
+
+    @app.after_request
+    def add_cache_headers(response):
+        """Add cache headers to responses."""
+        # Only set cache headers for static files
+        if request.path.startswith("/static/") or request.path.startswith("/gen/"):
+            # Set cache headers based on file type
+            if request.path.endswith((".js", ".css")):
+                # Cache JavaScript and CSS files for 1 week
+                response.cache_control.max_age = 60 * 60 * 24 * 7  # 1 week in seconds
+                response.cache_control.public = True
+            elif request.path.endswith((".jpg", ".jpeg", ".png", ".gif", ".ico", ".svg")):
+                # Cache images for 1 month
+                response.cache_control.max_age = 60 * 60 * 24 * 30  # 30 days in seconds
+                response.cache_control.public = True
+            else:
+                # Cache other static files for 1 day
+                response.cache_control.max_age = 60 * 60 * 24  # 1 day in seconds
+                response.cache_control.public = True
+
+        return response
+
+
 def register_error_handlers(app: Flask) -> None:
     """Register error handlers for the application."""
 
@@ -114,6 +140,10 @@ def create_app():
     # Initialise extensions
     assets.init_app(app)
 
+    # Initialise and configure Flask-Compress
+    compress = Compress()
+    compress.init_app(app)
+
     # Configure application
     configure_flask_app(app)
     configure_jinja_env(app)
@@ -130,6 +160,9 @@ def create_app():
 
     # Register error handlers
     register_error_handlers(app)
+
+    # Configure cache headers for static files
+    configure_static_cache(app)
 
     logger.info(f"Application {FLASK_APP_NAME} v{__version__} created")
 
