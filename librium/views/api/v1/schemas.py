@@ -30,7 +30,6 @@ class BookIdSchema(Schema):
 class CoverSchema(Schema):
     """Schema for validating cover upload requests."""
 
-    cover = Raw(required=True)
     uuid = String(
         required=True,
         validate=validate.Regexp(
@@ -38,6 +37,12 @@ class CoverSchema(Schema):
             error="UUID must be in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         ),
     )
+
+
+class CoverFileSchema(Schema):
+    """Schema for validating cover upload requests."""
+
+    cover = Raw(required=True)
 
 
 class ExportSchema(Schema):
@@ -98,7 +103,9 @@ class BooksQuerySchema(Schema):
     """Schema for validating book listing query parameters."""
 
     page = Integer(required=False, validate=validate.Range(min=1), load_default=1)
-    page_size = Integer(required=False, validate=validate.Range(min=1, max=100), load_default=30)
+    page_size = Integer(
+        required=False, validate=validate.Range(min=1, max=100), load_default=30
+    )
     read = Boolean(required=False)
     search = String(required=False)
     start_with = String(required=False)
@@ -106,15 +113,14 @@ class BooksQuerySchema(Schema):
         required=False,
         validate=validate.OneOf(
             ["title", "released", "price", "page_count", "read"],
-            error="Sort field must be one of: title, released, price, page_count, read"
+            error="Sort field must be one of: title, released, price, page_count, read",
         ),
-        load_default="title"
+        load_default="title",
     )
     sort_order = String(
         required=False,
         validate=validate.OneOf(
-            ["asc", "desc"],
-            error="Sort order must be one of: asc, desc"
+            ["asc", "desc"], error="Sort order must be one of: asc, desc"
         ),
-        load_default="asc"
+        load_default="asc",
     )

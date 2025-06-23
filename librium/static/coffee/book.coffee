@@ -139,7 +139,7 @@ initializeFormHandlers = ->
   $ ".new-link"
     .click ->
       $type = $( @ ).data "type"
-      $modal = $ ".ui.modal"
+      $modal = $ "#new-modal"
 
       # Update modal title
       $modal.children ".header"

@@ -12,7 +12,7 @@ from pathlib import Path
 from flask import jsonify, request, send_file, url_for
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_limiter import ExemptionScope
-from webargs.flaskparser import use_args
+from webargs.flaskparser import use_args, use_kwargs
 
 from librium.core.limit import limiter
 from librium.core.logging import get_logger
@@ -31,10 +31,27 @@ from librium.services import (
     PublisherService,
     SeriesService,
 )
-from librium.views.api.errors import (bad_request, conflict, forbidden, internal_server_error, not_found, unauthorized)
+from librium.views.api.errors import (
+    bad_request,
+    conflict,
+    forbidden,
+    internal_server_error,
+    not_found,
+    unauthorized,
+)
 from librium.views.api.v1 import bp
-from librium.views.api.v1.schemas import (AuthTokenSchema, BackupCreateSchema, BackupDeleteSchema, BackupRestoreSchema,
-                                          BookIdSchema, BooksQuerySchema, CoverSchema, EntitySchema, ExportSchema)
+from librium.views.api.v1.schemas import (
+    AuthTokenSchema,
+    BackupCreateSchema,
+    BackupDeleteSchema,
+    BackupRestoreSchema,
+    BookIdSchema,
+    BooksQuerySchema,
+    CoverFileSchema,
+    CoverSchema,
+    EntitySchema,
+    ExportSchema,
+)
 from utils.export import run as export_func
 
 logger = get_logger("api.v1.endpoints")
@@ -197,7 +214,9 @@ def add(args):
         ]
         if existing_items:
             logger.warning(f"Object {args['name']} already exists in {args['type']}")
-            return conflict(f"{args['type'].capitalize()} '{args['name']}' already exists")
+            return conflict(
+                f"{args['type'].capitalize()} '{args['name']}' already exists"
+            )
 
         # Create the item using the service
         new_item = service.create(name=args["name"])
@@ -251,9 +270,10 @@ def get_directory(directory):
 
 
 @bp.route("/add/cover", methods=["POST"])
+@use_kwargs(CoverSchema, location="form")
+@use_kwargs(CoverFileSchema, location="files")
 @jwt_required()
-@use_args(CoverSchema, location={"cover": "files", "uuid": "form"})
-def add_cover(args):
+def add_cover(**kwargs):
     """
     Add a cover image for a book.
 
@@ -263,8 +283,8 @@ def add_cover(args):
     Returns:
         JSON response indicating success or failure
     """
-    cover = args["cover"]
-    uuid = args["uuid"]
+    cover = kwargs["cover"]
+    uuid = kwargs["uuid"]
     logger.info(f"POST /api/v1/add/cover called with uuid: {uuid}, cover: {cover}")
     # Get the book using the service
     book = BookService.get_by_uuid(uuid)
@@ -509,11 +529,13 @@ def books(args):
             search=args.get("search"),
             start_with=args.get("start_with"),
             sort_by=args.get("sort_by", "title"),
-            sort_order=args.get("sort_order", "asc")
+            sort_order=args.get("sort_order", "asc"),
         )
 
         # Calculate pagination information
-        total_pages = (total_count + args.get("page_size", 30) - 1) // args.get("page_size", 30)
+        total_pages = (total_count + args.get("page_size", 30) - 1) // args.get(
+            "page_size", 30
+        )
 
         # Convert books to dictionaries
         book_dicts = []
@@ -528,36 +550,47 @@ def books(args):
                 "page_count": book.page_count,
                 "read": book.read,
                 "has_cover": book.has_cover,
-                "format": {"id": book.format.id, "name": book.format.name} if book.format else None,
-                "authors": [{"id": a.author.id, "name": a.author.name} for a in book.authors],
+                "format": (
+                    {"id": book.format.id, "name": book.format.name}
+                    if book.format
+                    else None
+                ),
+                "authors": [
+                    {"id": a.author.id, "name": a.author.name} for a in book.authors
+                ],
                 "genres": [{"id": g.id, "name": g.name} for g in book.genres],
                 "publishers": [{"id": p.id, "name": p.name} for p in book.publishers],
                 "languages": [{"id": l.id, "name": l.name} for l in book.languages],
-                "series": [{"id": s.series.id, "name": s.series.name, "index": s.index} for s in book.series],
+                "series": [
+                    {"id": s.series.id, "name": s.series.name, "index": s.index}
+                    for s in book.series
+                ],
                 "created_at": book.created_at.isoformat() if book.created_at else None,
                 "updated_at": book.updated_at.isoformat() if book.updated_at else None,
             }
             book_dicts.append(book_dict)
 
         # Return the response
-        return jsonify({
-            "books": book_dicts,
-            "pagination": {
-                "page": args.get("page", 1),
-                "page_size": args.get("page_size", 30),
-                "total_items": total_count,
-                "total_pages": total_pages
-            },
-            "filters": {
-                "read": args.get("read"),
-                "search": args.get("search"),
-                "start_with": args.get("start_with")
-            },
-            "sorting": {
-                "sort_by": args.get("sort_by", "title"),
-                "sort_order": args.get("sort_order", "asc")
+        return jsonify(
+            {
+                "books": book_dicts,
+                "pagination": {
+                    "page": args.get("page", 1),
+                    "page_size": args.get("page_size", 30),
+                    "total_items": total_count,
+                    "total_pages": total_pages,
+                },
+                "filters": {
+                    "read": args.get("read"),
+                    "search": args.get("search"),
+                    "start_with": args.get("start_with"),
+                },
+                "sorting": {
+                    "sort_by": args.get("sort_by", "title"),
+                    "sort_order": args.get("sort_order", "asc"),
+                },
             }
-        })
+        )
     except Exception as e:
         logger.exception(f"Error getting books: {e}")
         return internal_server_error(f"Error getting books: {str(e)}")
@@ -567,7 +600,9 @@ def books(args):
 
 
 @bp.route("/auth/token", methods=["POST"])
-@limiter.limit("20/day;5/hour;3/minute") # More restrictive limits for auth token endpoint
+@limiter.limit(
+    "20/day;5/hour;3/minute"
+)  # More restrictive limits for auth token endpoint
 @use_args(AuthTokenSchema, location="form")
 def get_token(args):
     """
@@ -583,7 +618,9 @@ def get_token(args):
     password = args["password"]
     authenticator = AuthenticationService.get_by_name(username)
     if authenticator and authenticator.check_password(password):
-        access_token = create_access_token(identity=username, expires_delta=timedelta(days=365))
+        access_token = create_access_token(
+            identity=username, expires_delta=timedelta(days=365)
+        )
         return jsonify(access_token=access_token)
     return unauthorized("Invalid credentials")
 
