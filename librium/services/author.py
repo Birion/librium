@@ -124,7 +124,7 @@ class AuthorService:
         first_name: Optional[str] = None,
         last_name: Optional[str] = None,
         name: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> Author:
         """
         Create a new author.
@@ -144,6 +144,43 @@ class AuthorService:
             )
 
         author = Author(first_name=first_name, last_name=last_name, name=name, **kwargs)
+        Session.add(author)
+        return author
+
+    @staticmethod
+    @transactional
+    def create_by_name(name: str, **kwargs) -> Author:
+        """
+        Create a new author.
+
+        Args:
+            name: The full name of the author
+            **kwargs: Additional author attributes
+
+        Returns:
+            The created author
+        """
+
+        split_name = name.split(" ")
+        options = {
+            "first_name": None,
+            "last_name": None,
+            "middle_name": None,
+            "name": name,
+        }
+
+        match len(split_name):
+            case 1:
+                options["last_name"] = split_name[0]
+            case 2:
+                options["first_name"] = split_name[0]
+                options["last_name"] = split_name[1]
+            case 3:
+                options["first_name"] = split_name[0]
+                options["middle_name"] = split_name[1]
+                options["last_name"] = split_name[2]
+
+        author = Author(**options)
         Session.add(author)
         return author
 
