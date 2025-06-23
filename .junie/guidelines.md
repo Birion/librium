@@ -12,10 +12,10 @@ This document provides essential information for developers working on the Libri
    ```bash
    # Install pipenv if you don't have it
    pip install pipenv
-   
+
    # Install dependencies
    pipenv install
-   
+
    # Activate the virtual environment
    pipenv shell
    ```
@@ -47,7 +47,7 @@ This document provides essential information for developers working on the Libri
 1. **Test Database**: Tests should use an in-memory SQLite database to avoid affecting the production database.
    ```python
    import os
-   
+
    os.environ["SQLDATABASE"] = ":memory:"
    ```
 
@@ -71,7 +71,7 @@ This document provides essential information for developers working on the Libri
 
 2. **Test Class Structure**: Each test file should contain one or more test classes that inherit from `unittest.TestCase`.
 
-3. **Database Tests**: When testing database operations, use the `@db_session` decorator and create an in-memory database.
+3. **Database Tests**: When testing database operations, use the `@transactional` decorator and create an in-memory database.
 
 ## Additional Development Information
 
@@ -85,13 +85,15 @@ This document provides essential information for developers working on the Libri
 
 ### Database ORM
 
-Librium uses Pony ORM for database operations. Key points:
+Librium uses SQLAlchemy for database operations. Key points:
 
-1. **Entity Definitions**: Database models are defined in `librium/database/pony/db.py`.
+1. **Entity Definitions**: Database models are defined in `librium/database/sqlalchemy/db.py`.
 
-2. **Database Sessions**: Use the `@db_session` decorator for functions that interact with the database.
+2. **Database Sessions**: Use the `@transactional` or `@read_only` decorators for functions that interact with the database.
 
-3. **Queries**: Use SQLAlchemy's query language for database operations
+3. **Queries**: Use SQLAlchemy's query language for database operations.
+
+4. **Compatibility Layer**: The project maintains compatibility with Pony ORM naming conventions through a compatibility layer.
 
 ### Asset Pipeline
 

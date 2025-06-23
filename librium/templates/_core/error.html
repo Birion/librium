@@ -1,76 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% include "_core/_head.html" %}
-    <title>{{ code }} Error - {{ app_name }}</title>
-    <style>
-        .error-container {
-            text-align: center;
-            padding: 50px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .error-code {
-            font-size: 72px;
-            font-weight: bold;
-            color: #e74c3c;
-            margin-bottom: 20px;
-        }
-        .error-message {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-        .error-details {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        .back-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .back-button:hover {
-            background-color: #2980b9;
-        }
-    </style>
-</head>
-<body>
-    {% include "_core/navbar.html" %}
-    
-    <div class="container">
-        <div class="error-container">
-            <div class="error-code">{{ code }}</div>
-            
-            {% if code == 404 %}
-                <div class="error-message">Page Not Found</div>
-                <p>The page you are looking for does not exist or has been moved.</p>
-            {% elif code == 500 %}
-                <div class="error-message">Internal Server Error</div>
-                <p>Something went wrong on our end. We're working to fix the issue.</p>
-            {% else %}
-                <div class="error-message">An Error Occurred</div>
-                <p>Something unexpected happened. Please try again later.</p>
-            {% endif %}
-            
-            {% if error and debug %}
-                <div class="error-details">
-                    <h3>Error Details:</h3>
-                    <pre>{{ error }}</pre>
+{% extends 'base.html' %}
+
+{% block title %}
+    Error {{ code }}
+{% endblock %}
+
+{% macro error_code(code, error, message) %}
+    <div class="ui huge negative message">
+        <div class="ui header">{{ code }} {{ error }}</div>
+        <p>{{ message }}</p>
+    </div>
+{% endmacro %}
+
+{% block content %}
+    <div class="ui segment">
+        <div class="ui centered grid">
+            <div class="one wide column"></div>
+            <div class="fourteen wide column">
+                {% if code == 404 %}
+                    {{ error_code(code, "Page Not Found", "The page you are looking for does not exist or has been moved.") }}
+                {% elif code == 500 %}
+                    {{ error_code(code, "Internal Server Error", "Something went wrong on our end. We're working to fix the issue.") }}
+                {% else %}
+                    {{ error_code(code, "An Error Occurred", "Something unexpected happened. Please try again later.") }}
+                {% endif %}
+
+                {% if error and debug %}
+                    <div class="ui divider"></div>
+                    <div class="ui red tertiary center aligned segment">
+                        <div class="ui header">Error Details:</div>
+                        <pre>{{ error }}</pre>
+                    </div>
+                {% endif %}
+
+                <div class="ui center aligned segment">
+                    <div class="ui buttons">
+                        <a href="javascript:history.back()" class="ui teal button">Go Back</a>
+                        <a href="{{ url_for('main.index') }}" class="ui secondary button">Go to Home</a>
+                    </div>
                 </div>
-            {% endif %}
-            
-            <a href="javascript:history.back()" class="back-button">Go Back</a>
-            <a href="{{ url_for('main.index') }}" class="back-button">Go to Home</a>
+            </div>
+            <div class="one wide column"></div>
         </div>
     </div>
-    
-    {% include "_core/_foot.html" %}
-</body>
-</html>
+{% endblock %}

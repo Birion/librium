@@ -1,11 +1,10 @@
 """
 Logging configuration for the Librium application.
 
-This module provides a centralized place for configuring logging throughout the application.
+This module provides a centralised place for configuring logging throughout the application.
 """
 
 import logging
-import os
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -73,13 +72,13 @@ def configure_logging(
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
 
-    # Add file handler if requested
+    # Add a file handler if requested
     if log_to_file:
         # Create log directory if it doesn't exist
         log_path = Path(log_dir)
         log_path.mkdir(exist_ok=True)
 
-        # Create file handler
+        # Create a file handler
         file_handler = RotatingFileHandler(
             log_path / log_file,
             maxBytes=log_max_bytes,

@@ -41,7 +41,30 @@
     </a>
 {% endmacro %}
 
-
+{% macro make_sorter(sort, text, active) %}
+    {% if active %}
+    <div class="active link item">
+        {{ text }}
+        <i class="sort alphabet {{ "up" if request.args.sort_order == "asc" else "down" }} icon"></i>
+    </div>
+        <div class="menu">
+            <a href="{{ url_for_self(sort_by=sort, sort_order="asc") }}" class="item">
+                Ascending
+                <i class="sort alphabet up icon"></i>
+            </a>
+            <a href="{{ url_for_self(sort_by=sort, sort_order="desc") }}" class="item">
+                Descending
+                <i class="sort alphabet down icon"></i>
+            </a>
+        </div>
+    {% else %}
+    <a href="{{ url_for_self(sort_by=sort, sort_order=request.args.sort_order) }}"
+       class="{% if active %}active {% endif %}item">
+        {{ text }}
+        <i class="sort alphabet up icon"></i>
+    </a>
+    {% endif %}
+{% endmacro %}
 
 {% macro make_author_book(book) %}
     <tr>

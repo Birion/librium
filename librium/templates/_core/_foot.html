@@ -1,4 +1,25 @@
 <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.4/dist/semantic.min.js"></script>
-{% assets "all-js" %}
+
+{# Core JavaScript - always included #}
+{% assets "js-core" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+
+{# Authentication JavaScript - always included for login functionality #}
+{% assets "js-auth" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{# Book-specific JavaScript - only included on book pages #}
+{% if request.endpoint and request.endpoint.startswith('book') %}
+    {% assets "js-book" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endif %}
+
+{# Validation JavaScript - included on pages with forms #}
+{% if request.endpoint and (request.endpoint.startswith('book') or 'new' in request.endpoint or 'edit' in request.endpoint) %}
+    {% assets "js-validation" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endif %}

@@ -10,6 +10,7 @@ $ ->
   $ "select.dropdown, .ui.dropdown"
     .dropdown
       fullTextSearch: true
+      on: "hover"
 
   $ ".ui.checkbox"
     .checkbox()

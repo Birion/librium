@@ -6,6 +6,7 @@ These services encapsulate the database operations and provide a higher-level
 API for the views to use.
 """
 
+from librium.services.authentication import AuthenticationService
 from librium.services.book import BookService
 from librium.services.author import AuthorService
 from librium.services.publisher import PublisherService
@@ -23,4 +24,5 @@ __all__ = [
     "LanguageService",
     "GenreService",
     "SeriesService",
+    "AuthenticationService",
 ]

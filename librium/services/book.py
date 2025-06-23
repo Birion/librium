@@ -121,6 +121,109 @@ class BookService:
 
     @staticmethod
     @read_only
+    def get_paginated(
+        page: int = 1, 
+        page_size: int = 30, 
+        filter_read: Optional[bool] = None,
+        search: Optional[str] = None,
+        start_with: Optional[str] = None,
+        exact_name: Optional[str] = None,
+        sort_by: str = "title",
+        sort_order: str = "asc"
+    ) -> tuple[List[Book], int]:
+        """
+        Get a paginated list of non-deleted books with optional filtering and sorting.
+
+        Args:
+            page: The page number (1-indexed)
+            page_size: The number of items per page
+            filter_read: If provided, filter books by read status
+            search: If provided, filter books by title containing this string
+            start_with: If provided, filter books by title starting with this string
+            exact_name: If provided, filter books by exact title match
+            sort_by: Field to sort by (title, released, price, page_count, read)
+            sort_order: Sort order (asc or desc)
+
+        Returns:
+            A tuple containing:
+                - A list of books for the requested page
+                - The total number of books matching the criteria
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug(
+                f"Getting paginated books (page={page}, page_size={page_size}, "
+                f"filter_read={filter_read}, search={search}, start_with={start_with}, "
+                f"exact_name={exact_name})"
+            )
+
+            # Build the base query
+            query = select(Book).where(Book.deleted.is_(False))
+            # Get a total count with the same filters
+            count_query = select(Book.id).where(Book.deleted.is_(False))
+
+            # Apply read filter if provided
+            if filter_read is not None:
+                query = query.where(Book.read.is_(filter_read))
+                count_query = count_query.where(Book.read.is_(filter_read))
+
+            # Apply search filter if provided
+            if search:
+                query = query.where(Book.title.ilike(f"%{search}%"))
+                count_query = count_query.where(Book.title.ilike(f"%{search}%"))
+
+            # Apply start_with filter if provided
+            if start_with:
+                query = query.where(Book.title.ilike(f"{start_with}%"))
+                count_query = count_query.where(Book.title.ilike(f"{start_with}%"))
+
+            # Apply exact_name filter if provided
+            if exact_name:
+                query = query.where(Book.title == exact_name)
+                count_query = count_query.where(Book.title == exact_name)
+
+            total_count = len(Session.scalars(count_query).all())
+
+            # Apply sorting
+            if sort_by == "title":
+                order_attr = Book.title
+            elif sort_by == "released":
+                order_attr = Book.released
+            elif sort_by == "price":
+                order_attr = Book.price
+            elif sort_by == "page_count":
+                order_attr = Book.page_count
+            elif sort_by == "read":
+                order_attr = Book.read
+            else:
+                # Default to title if sort_by is not recognised
+                order_attr = Book.title
+
+            logger.debug(f"Sorting by {sort_by} in {sort_order} order")
+
+            # Apply sort order
+            if sort_order.lower() == "desc":
+                query = query.order_by(order_attr.desc())
+            else:
+                query = query.order_by(order_attr.asc())
+
+            # Apply pagination
+            offset = (page - 1) * page_size
+            query = query.offset(offset).limit(page_size)
+
+            # Execute query
+            books = Session.scalars(query).unique().all()
+
+            logger.debug(f"Found {len(books)} books for page {page} (total: {total_count})")
+            return books, total_count
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting paginated books: {e}")
+            raise
+
+    @staticmethod
+    @read_only
     def get_read() -> List[Book]:
         """
         Get all read books that are not deleted.

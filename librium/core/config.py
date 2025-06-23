@@ -40,6 +40,13 @@ class Config:
     # Asset settings
     ASSETS_DEBUG = False
 
+    # Configure compression settings
+    COMPRESS_LEVEL = 6  # Compression level (1-9, higher = more compression but slower)
+    COMPRESS_MIN_SIZE = 500  # Only compress responses larger than this size (in bytes)
+
+
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-key-please-change-in-production")
+
     @classmethod
     def to_dict(cls) -> Dict[str, Any]:
         """Convert configuration to dictionary."""
@@ -72,6 +79,8 @@ class ProductionConfig(Config):
 
     # In production, SECRET_KEY should be set in environment variables
     SECRET_KEY = os.getenv("SECRET_KEY")
+
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
     # Ensure debug is off in production
     DEBUG = False

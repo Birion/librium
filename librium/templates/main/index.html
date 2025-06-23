@@ -3,8 +3,19 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
-    {% include "main/body.html" %}
-    {% if pagination > 1 %}
-        {% include "main/pagination.html" %}
-    {% endif %}
+    <div class="one wide column">
+        <div class="ui main container">
+            {% include "main/sidemenu.html" %}
+        </div>
+    </div>
+    <div class="twelve wide column">
+        <div class="ui main container">
+            {% include "main/body.html" %}
+        </div>
+        {% if pagination > 1 %}
+            {% include "main/pagination.html" %}
+        {% endif %}
+    </div>
+    <div class="one wide column">
+    </div>
 {% endblock %}

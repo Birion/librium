@@ -3,7 +3,7 @@ Tests for API endpoints.
 """
 import os
 import unittest
-import json
+import simplejson as json
 from unittest.mock import patch, MagicMock
 from io import BytesIO
 
@@ -183,16 +183,27 @@ class TestAPIEndpoints(TestAPIBase):
 
     @patch('librium.views.api.v1.endpoints.export_func')
     def test_export(self, mock_export):
-        """Test exporting data."""
-        # Mock the response
+        """Test exporting data in different formats."""
+        # Test CSV export (default)
         mock_export.return_value = 'export.csv'
-
-        # Make the request
         response = self.client.get('/api/v1/export')
-
-        # Check the response
         self.assertEqual(response.status_code, 200)
-        mock_export.assert_called_once()
+        mock_export.assert_called_with('csv')
+        mock_export.reset_mock()
+
+        # Test JSON export
+        mock_export.return_value = 'export.json'
+        response = self.client.get('/api/v1/export?format=json')
+        self.assertEqual(response.status_code, 200)
+        mock_export.assert_called_with('json')
+        mock_export.reset_mock()
+
+        # Test invalid format
+        response = self.client.get('/api/v1/export?format=invalid')
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.data)
+        self.assertIn('error', data)
+        self.assertFalse(mock_export.called)
 
     @patch('librium.views.api.v1.endpoints.create_backup')
     def test_backup_create(self, mock_create_backup):

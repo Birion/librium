@@ -10,51 +10,51 @@ Indexes are database structures that improve the speed of data retrieval operati
 
 ### Book Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_book_title | title | Improves performance of title searches and sorting by title |
-| idx_book_isbn | isbn | Speeds up book lookups by ISBN |
-| idx_book_read | read | Optimizes filtering books by read status |
-| idx_book_released | released | Improves performance when filtering or sorting by release year |
-| idx_book_created_at | created_at | Speeds up queries that sort by creation date |
+| Index Name          | Fields     | Purpose                                                        |
+|---------------------|------------|----------------------------------------------------------------|
+| idx_book_title      | title      | Improves performance of title searches and sorting by title    |
+| idx_book_isbn       | isbn       | Speeds up book lookups by ISBN                                 |
+| idx_book_read       | read       | Optimizes filtering books by read status                       |
+| idx_book_released   | released   | Improves performance when filtering or sorting by release year |
+| idx_book_created_at | created_at | Speeds up queries that sort by creation date                   |
 
 ### Author Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_author_first_name | first_name | Improves author searches by first name |
-| idx_author_last_name | last_name | Improves author searches by last name |
-| idx_author_name | name | Speeds up searches for authors by full name |
+| Index Name            | Fields     | Purpose                                     |
+|-----------------------|------------|---------------------------------------------|
+| idx_author_first_name | first_name | Improves author searches by first name      |
+| idx_author_last_name  | last_name  | Improves author searches by last name       |
+| idx_author_name       | name       | Speeds up searches for authors by full name |
 
 ### Publisher Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_publisher_name | name | Improves publisher lookups by name |
+| Index Name         | Fields | Purpose                            |
+|--------------------|--------|------------------------------------|
+| idx_publisher_name | name   | Improves publisher lookups by name |
 
 ### Format Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_format_name | name | Speeds up format lookups by name |
+| Index Name      | Fields | Purpose                          |
+|-----------------|--------|----------------------------------|
+| idx_format_name | name   | Speeds up format lookups by name |
 
 ### Language Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_language_name | name | Improves language lookups by name |
+| Index Name        | Fields | Purpose                           |
+|-------------------|--------|-----------------------------------|
+| idx_language_name | name   | Improves language lookups by name |
 
 ### Genre Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_genre_name | name | Speeds up genre lookups by name |
+| Index Name     | Fields | Purpose                         |
+|----------------|--------|---------------------------------|
+| idx_genre_name | name   | Speeds up genre lookups by name |
 
 ### Series Table
 
-| Index Name | Fields | Purpose |
-|------------|--------|---------|
-| idx_series_name | name | Improves series lookups by name (unique constraint) |
+| Index Name      | Fields | Purpose                                             |
+|-----------------|--------|-----------------------------------------------------|
+| idx_series_name | name   | Improves series lookups by name (unique constraint) |
 
 ## Performance Impact
 
