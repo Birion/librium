@@ -6,12 +6,11 @@
         <a href="{{ url_for("book.add") }}" class="item" data-content="Add a new book" data-position="bottom center">
             <i class="large plus icon"></i>
         </a>
-    {% if request.endpoint.split(".")|length == 2 %}
-        {% set endpoint, current = request.endpoint.split(".") %}
-    {% else %}
-        {% set endpoint, _, current = request.endpoint.split(".") %}
+    {% if request.endpoint %}
+    {% set endpoints = request.endpoint.split(".") %}
+    {% set endpoint = endpoints[0] %}
+    {% set current = endpoints[-1] %}
     {% endif %}
-    {{ endpoint }}
         {% if endpoint == "main" %}
             <div class="ui dropdown icon item">
                 Browse by
@@ -38,9 +37,13 @@
                 <i class="large green book icon" id="cover-toggle" data-content="Hide cover art" data-position="bottom center" data-toggled="false"></i>
             </a>
             <div class="right menu">
-                <a href="{{ url_for("api.api_v1.export") }}" class="item" data-content="Export data" data-position="bottom center">
+                <div class="ui dropdown icon item" data-content="Export data" data-position="left center">
                     <i class="large teal arrow alternate circle down icon"></i>
-                </a>
+                    <div class="menu">
+                        <a href="{{ url_for("api.api_v1.export", format="csv") }}" class="item">CSV</a>
+                        <a href="{{ url_for("api.api_v1.export", format="json") }}" class="item">JSON</a>
+                    </div>
+                </div>
                 <div class="item">
                     <form action="" method="get">
                         <div class="ui icon input">

@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 
 from marshmallow import pre_load, EXCLUDE, Schema, fields, INCLUDE
 from webargs.fields import DelimitedList

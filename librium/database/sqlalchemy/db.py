@@ -499,6 +499,34 @@ class AuthorOrdering(Base):
         return f"<AuthorOrdering(book_id={self.book_id}, author_id={self.author_id}, idx={self.idx})>"
 
 
+class Authentication(Base):
+    """Authentication model for user authentication."""
+
+    __tablename__ = "authentication"
+
+    id: Mapped[int_pk]
+    username: Mapped[str_max] = mapped_column(String, unique=True)
+    password_hash: Mapped[str_max]
+    created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now)
+    updated_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    deleted: Mapped[bool] = mapped_column(default=False)
+
+    def __repr__(self):
+        return f"<Authentication(id={self.id}, username='{self.username}')>"
+
+    def set_password(self, password: str):
+        """Set the password hash for the user."""
+        from werkzeug.security import generate_password_hash
+
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password: str) -> bool:
+        """Check if the provided password matches the stored hash."""
+        from werkzeug.security import check_password_hash
+
+        return check_password_hash(self.password_hash, password)
+
+
 # Create indexes for frequently queried fields
 Index("idx_book_title", Book.title)
 Index("idx_book_read", Book.read)

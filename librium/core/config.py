@@ -40,6 +40,8 @@ class Config:
     # Asset settings
     ASSETS_DEBUG = False
 
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-key-please-change-in-production")
+
     @classmethod
     def to_dict(cls) -> Dict[str, Any]:
         """Convert configuration to dictionary."""
@@ -72,6 +74,8 @@ class ProductionConfig(Config):
 
     # In production, SECRET_KEY should be set in environment variables
     SECRET_KEY = os.getenv("SECRET_KEY")
+
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
     # Ensure debug is off in production
     DEBUG = False

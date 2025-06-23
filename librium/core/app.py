@@ -1,6 +1,6 @@
 from dotenv import find_dotenv, load_dotenv
-from dotenv import find_dotenv, load_dotenv
 from flask import Flask, render_template, request, url_for
+from flask_jwt_extended import JWTManager
 
 from librium.__version__ import __version__
 from librium.core.assets import assets
@@ -101,12 +101,15 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(FLASK_APP_NAME)
 
-    # Initialize extensions
+    # Initialise extensions
     assets.init_app(app)
 
     # Configure application
     configure_flask_app(app)
     configure_jinja_env(app)
+
+    # JWT setup
+    jwt = JWTManager(app)
 
     # Register routes and blueprints
     app.route("/favicon.ico")(lambda: handle_favicon(app))

@@ -1,5 +1,7 @@
+import simplejson as json
 import tempfile
 from csv import DictWriter
+from typing import Literal
 
 from sqlalchemy import select
 
@@ -75,15 +77,40 @@ def process_book_info(book):
     return _data
 
 
-def run() -> str:
-    export_file = tempfile.mkstemp(suffix=".csv")[1]
-    with open(export_file, "w", newline="\n") as fp:
-        writer = DictWriter(fp, HEADERS)
-        writer.writeheader()
-        for book in Session.scalars(select(Book).order_by(Book.id)).unique():
-            writer.writerow(process_book_info(book))
+def run(export_format: Literal["csv", "json"] = "csv") -> str:
+    """
+    Export book data to a file in the specified format.
+
+    Args:
+        export_format: The format to export to ("csv" or "json")
+
+    Returns:
+        The path to the exported file
+    """
+    file_extension = f".{export_format}"
+    export_file = tempfile.mkstemp(suffix=file_extension)[1]
+
+    # Get all books
+    books = Session.scalars(select(Book).order_by(Book.id)).unique()
+
+    if export_format == "csv":
+        with open(export_file, "w", newline="\n") as fp:
+            writer = DictWriter(fp, HEADERS)
+            writer.writeheader()
+            for book in books:
+                writer.writerow(process_book_info(book))
+    elif export_format == "json":
+        book_data = [process_book_info(book) for book in books]
+        with open(export_file, "w", encoding="utf-8") as fp:
+            json.dump(book_data, fp, indent=2, ensure_ascii=False)
+
     return export_file
 
 
 if __name__ == "__main__":
-    run()
+    # Example usage
+    csv_file = run("csv")
+    print(f"CSV export created at: {csv_file}")
+
+    json_file = run("json")
+    print(f"JSON export created at: {json_file}")

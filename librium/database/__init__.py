@@ -8,6 +8,7 @@ working with minimal changes.
 
 # Re-export the SQLAlchemy models and compatibility functions
 from librium.database.sqlalchemy.db import (
+    Authentication,
     Book,
     Author,
     Publisher,
@@ -25,9 +26,6 @@ from librium.database.sqlalchemy.db import (
     init_db,
 )
 
-# from librium.database.sqlalchemy.compat import (
-#     db_session, select, commit, rollback, flush, ObjectNotFound
-# )
 from librium.database.sqlalchemy.transactions import (
     transactional,
     read_only,
@@ -54,6 +52,7 @@ __all__ = [
     "Series",
     "SeriesIndex",
     "AuthorOrdering",
+    "Authentication",
     # Session management
     "Session",
     "Base",

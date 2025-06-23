@@ -30,9 +30,9 @@ alembic upgrade <revision_id>
 
 #### Automatic Migration Generation
 
-Alembic can automatically generate migrations based on changes to your Pony ORM models:
+Alembic can automatically generate migrations based on changes to your SQLAlchemy models:
 
-1. Make changes to your model definitions in `librium/database/pony/db.py`
+1. Make changes to your model definitions in `librium/database/sqlalchemy/db.py`
 2. Run the following command to generate a migration:
 
 ```bash
@@ -115,8 +115,8 @@ If your database schema gets out of sync with your migrations, you can use the f
 2. Drop all tables in the database
 3. Run `alembic upgrade head` to recreate the schema from scratch
 
-## Integration with Pony ORM
+## Integration with SQLAlchemy
 
-The Alembic configuration in this project is set up to work with Pony ORM. The `env.py` file includes code to generate SQLAlchemy metadata from Pony ORM entities, which Alembic uses to detect schema changes.
+The Alembic configuration in this project is set up to work directly with SQLAlchemy. The `env.py` file includes code to use SQLAlchemy metadata, which Alembic uses to detect schema changes.
 
-When you make changes to your Pony ORM models, Alembic will detect those changes and generate appropriate migration scripts.
+When you make changes to your SQLAlchemy models, Alembic will detect those changes and generate appropriate migration scripts.

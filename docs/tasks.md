@@ -1,6 +1,6 @@
 # Librium Improvement Tasks
 
-This document contains a prioritized list of tasks for improving the Librium codebase. Each task is marked with a checkbox that can be checked off when completed.
+This document contains a prioritised list of tasks for improving the Librium codebase. Each task is marked with a checkbox that can be checked off when completed.
 
 ## Architecture Improvements
 
@@ -18,19 +18,22 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [x] Create a configuration management system for different environments (dev, test, prod)
 - [x] Implement API versioning for better maintainability
 
-### Security
+[//]: # (- [ ] Implement centralised binary storage for cover images)
 
-[//]: # (- [ ] Implement authentication and authorization)
-[//]: # (- [ ] Add CSRF protection for forms)
-[//]: # (- [ ] Implement input validation for all user inputs)
-[//]: # (- [ ] Add rate limiting for API endpoints)
-[//]: # (- [ ] Implement secure password storage if user accounts are added)
+### Security
+- [x] Implement API authentication tokens
+- [ ] Implement input validation for all user inputs
+- [ ] Add CSRF protection for forms
+- [ ] Add rate limiting for API endpoints
+- [ ] Implement authentication and authorisation
+- [ ] Implement secure password storage if user accounts are added
 
 ## Code-Level Improvements
 
 ### Testing
-- [x] Increase test coverage for all components
-- [x] Add integration tests for critical user flows
+- [ ] Increase test coverage for all components
+- [ ] Add integration tests for critical user flows
+- [ ] Ensure all tests are passing and testing correctly
 - [ ] Implement property-based testing for complex logic
 - [ ] Add performance tests for critical operations
 - [ ] Implement continuous integration for automated testing
@@ -40,8 +43,7 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [x] Implement soft delete functionality for books and other entities
 - [x] Add created_at and updated_at timestamps to all models
 - [ ] Add more helper methods for common queries
-
-[//]: # (- [ ] Implement full-text search for books)
+- [ ] Implement full-text search for books
 
 ### Views and Templates
 - [ ] Implement proper pagination for book listings
@@ -58,7 +60,7 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [ ] Add caching for frequently accessed API endpoints
 
 ### Frontend
-- [ ] Optimize asset loading for better performance
+- [ ] Optimise asset loading for better performance
 - [ ] Implement responsive design for mobile devices
 - [ ] Add accessibility features (ARIA attributes, keyboard navigation)
 - [ ] Implement progressive enhancement for JavaScript features
@@ -80,12 +82,12 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [ ] Implement author merging for duplicate authors
 - [ ] Add support for book tags
 
-### Collection Organization
+### Collection Organisation
 - [ ] Implement custom shelves/collections
 - [ ] Add support for reading lists
 - [ ] Implement advanced search with multiple criteria
-- [ ] Add statistics and visualizations for the collection
-- [ ] Implement export to various formats (CSV, JSON, etc.)
+- [ ] Add statistics and visualisations for the collection
+- [x] Implement export to various formats (CSV, JSON, etc.)
 
 ## Documentation Improvements
 
@@ -93,7 +95,6 @@ This document contains a prioritized list of tasks for improving the Librium cod
 - [ ] Create comprehensive user guide
 - [ ] Add inline help and tooltips
 - [ ] Create FAQ section
-- [ ] Add video tutorials for common tasks
 - [ ] Implement contextual help
 
 ### Developer Documentation

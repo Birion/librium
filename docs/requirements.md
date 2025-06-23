@@ -34,7 +34,7 @@ Librium is a book management system designed to help users track their personal 
 4. **Web Framework**: Flask for the web application
 
 ### Architecture
-1. **ORM**: Pony ORM for database operations
+1. **ORM**: SQLAlchemy for database operations (with Pony ORM compatibility layer)
 2. **Asset Pipeline**: Flask-Assets for managing static assets
    - SASS for CSS preprocessing
    - CoffeeScript for JavaScript preprocessing
@@ -49,7 +49,7 @@ Librium is a book management system designed to help users track their personal 
 
 ### Technical Constraints
 1. **Database**: Must use SQLite for data storage
-2. **ORM**: Must use Pony ORM for database operations
+2. **ORM**: Must use SQLAlchemy for database operations
 3. **Web Framework**: Must use Flask for the web application
 4. **Python Version**: Must be compatible with Python 3.11
 
