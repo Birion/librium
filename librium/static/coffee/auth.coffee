@@ -21,7 +21,7 @@ requestAuthToken = (username, password) ->
     data: formData
     processData: false
     contentType: false
-  .then (response) ->
+  .done (response) ->
     # Store the token and return it
     storeAuthToken(response.access_token)
     return response.access_token

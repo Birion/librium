@@ -55,7 +55,7 @@ class BookSchema(Schema):
             "validator_failed": "Invalid format",
         },
     )
-    released = fields.Integer(validate=lambda n: not n or (n > 1000 and n < 3000))
+    released = fields.Integer(validate=lambda n: not n or (1000 < n < 3000))
     price = fields.Float(validate=lambda n: not n or n >= 0)
     page_count = fields.Integer(validate=lambda n: not n or n > 0)
     read = MyBoolean(load_default=False)

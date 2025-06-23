@@ -25,173 +25,177 @@
 {% block title %}{{ book.title if book else "Add new book" }}{% endblock %}
 
 {% block content %}
-    <div class="ui segment">
-        <div class="ui grid">
-            <div class="six wide column">
-                {% if book and book.has_cover %}
-                    <img class="ui bordered rounded centered image"
-                         src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}" alt="{{ book.title }} cover">
-                    <div class="ui center aligned">
+    <div class="main container">
+        <div class="ui segment">
+            <div class="ui grid">
+                <div class="six wide column">
+                    {% if book and book.has_cover %}
+                        <img class="ui bordered rounded centered image"
+                             src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
+                             alt="{{ book.title }} cover">
+                        <div class="ui center aligned">
+                            <input id="fileinput" type="file" class="ui invisible file input" accept="image/*"
+                                   data-url="{{ url_for("api.api_v1.add_cover") }}">
+                            <label for="fileinput">
+                                <a class="ui right icon label bottom right attached">
+                                    Replace cover
+                                    <i class="sync alternate icon"></i>
+                                </a>
+                            </label>
+                        </div>
+                    {% else %}
                         <input id="fileinput" type="file" class="ui invisible file input" accept="image/*"
                                data-url="{{ url_for("api.api_v1.add_cover") }}">
-                        <label for="fileinput">
-                            <a class="ui right icon label bottom right attached">
-                                Replace cover
-                                <i class="sync alternate icon"></i>
-                            </a>
+                        <label for="fileinput" class="ui placeholder segment">
+                            <div class="ui icon header">
+                                <i class="upload icon"></i>
+                                Click here to upload
+                            </div>
                         </label>
-                    </div>
-                {% else %}
-                    <input id="fileinput" type="file" class="ui invisible file input" accept="image/*"
-                           data-url="{{ url_for("api.api_v1.add_cover") }}">
-                    <label for="fileinput" class="ui placeholder segment">
-                        <div class="ui icon header">
-                            <i class="upload icon"></i>
-                            Click here to upload
-                        </div>
-                    </label>
-                {% endif %}
-            </div>
-            <div class="ten wide column">
-                <form id="book" class="ui equal width form" action="update/{{ book.id }}" method="post">
-                    <div class="two fields">
-                        <div class="field">
-                            <label for="title">Title</label>
-                            <input name="title" id="title" type="text" value="{{ book.title if book }}">
-                        </div>
-                        <div class="field">
-                            <label for="isbn">ISBN</label>
-                            <input name="isbn" id="isbn" type="text" value="{{ book.isbn if book and book.isbn }}">
-                        </div>
-                    </div>
-                    <div class="two fields">
-                        <div class="field">
-                            <label for="uuid">UUID</label>
-                            <input type="text" name="uuid" id="uuid" value="{{ book.uuid if book }}"
-                                   disabled="disabled">
-                        </div>
-                        <div class="field">
-                            <label for="format">Format</label>
-                            <select name="format" id="format" class="ui fluid dropdown">
-                                <option value="">Select format</option>
-                                {% for format in formats %}
-                                    <option value="{{ format.id }}" {{ "selected" if book and format == book.format }}>{{ format.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="two fields">
-                        <div class="field">
-                            <div class="six wide field">
-                                <label for="released">Year released</label>
-                                <input name="released" id="released" type="number"
-                                       value="{{ book.released if book and book.released }}"
-                                       min="0">
+                    {% endif %}
+                </div>
+                <div class="ten wide column">
+                    <form id="book" class="ui equal width form" action="update/{{ book.id }}" method="post">
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="title">Title</label>
+                                <input name="title" id="title" type="text" value="{{ book.title if book }}">
                             </div>
-                            <div class="six wide field">
-                                <label for="price">Original price</label>
-                                <input name="price" id="price" type="number"
-                                       value="{{ book.price if book and book.price }}"
-                                       min="0">
-                            </div>
-                            <div class="six wide field">
-                                <label for="page_count">Page count</label>
-                                <input name="page_count" id="page_count" type="number"
-                                       value="{{ book.page_count if book and book.page_count }}"
-                                       min="0">
+                            <div class="field">
+                                <label for="isbn">ISBN</label>
+                                <input name="isbn" id="isbn" type="text" value="{{ book.isbn if book and book.isbn }}">
                             </div>
                         </div>
-                        <div class="field">
-                            <p></p>
-                            <div class="ui checkbox">
-                                <input name="read" id="read"
-                                       type="checkbox" {{ 'checked="checked"' if book and book.read }}
-                                       class="hidden" tabindex="0">
-                                <label for="read">Read</label>
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="uuid">UUID</label>
+                                <input type="text" name="uuid" id="uuid" value="{{ book.uuid if book }}"
+                                       disabled="disabled">
+                            </div>
+                            <div class="field">
+                                <label for="format">Format</label>
+                                <select name="format" id="format" class="ui fluid dropdown">
+                                    <option value="">Select format</option>
+                                    {% for format in formats %}
+                                        <option value="{{ format.id }}" {{ "selected" if book and format == book.format }}>{{ format.name }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="two fields">
-                        {{ make_select(book.author_ids if book else None, authors, "author") }}
-                        {{ make_select(book.genre_ids if book else None, genres, "genre") }}
-                    </div>
-                    <div class="two fields">
-                        {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
-                        {{ make_select(book.language_ids if book else None, languages, "language") }}
-                    </div>
+                        <div class="two fields">
+                            <div class="field">
+                                <div class="six wide field">
+                                    <label for="released">Year released</label>
+                                    <input name="released" id="released" type="number"
+                                           value="{{ book.released if book and book.released }}"
+                                           min="0">
+                                </div>
+                                <div class="six wide field">
+                                    <label for="price">Original price</label>
+                                    <input name="price" id="price" type="number"
+                                           value="{{ book.price if book and book.price }}"
+                                           min="0">
+                                </div>
+                                <div class="six wide field">
+                                    <label for="page_count">Page count</label>
+                                    <input name="page_count" id="page_count" type="number"
+                                           value="{{ book.page_count if book and book.page_count }}"
+                                           min="0">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <p></p>
+                                <div class="ui checkbox">
+                                    <input name="read" id="read"
+                                           type="checkbox" {{ 'checked="checked"' if book and book.read }}
+                                           class="hidden" tabindex="0">
+                                    <label for="read">Read</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="two fields">
+                            {{ make_select(book.author_ids if book else None, authors, "author") }}
+                            {{ make_select(book.genre_ids if book else None, genres, "genre") }}
+                        </div>
+                        <div class="two fields">
+                            {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
+                            {{ make_select(book.language_ids if book else None, languages, "language") }}
+                        </div>
 
-                    <h4 class="ui dividing header">
-                        <span>Series</span>
-                        <a href="#" class="new-link" data-type="series" data-content="Create new series"
-                           id="create-series"
-                           style="float: right;">
-                            <i class="plus icon"></i>
-                        </a>
-                    </h4>
-                    <input type="hidden" name="series" id="series">
-                    {% if book %}
-                        {% for si in book.series %}
-                            <div class="fields">
-                                <div class="eight wide field">
-                                    <label for="series-name-{{ loop.index }}">Name</label>
-                                    <div class="ui fluid buttons">
-                                        <div class="ui fluid dropdown search icon button">
-                                            <input type="hidden" name="series-name-{{ loop.index }}"
-                                                   value="{{ si.series.id }}">
-                                            <span class="text">Select series</span>
-                                            <div class="menu">
-                                                {% for s in series %}
-                                                    <div class="item" data-value="{{ s.id }}">{{ s.name }}</div>
-                                                {% endfor %}
+                        <h4 class="ui dividing header">
+                            <span>Series</span>
+                            <a href="#" class="new-link" data-type="series" data-content="Create new series"
+                               id="create-series"
+                               style="float: right;">
+                                <i class="plus icon"></i>
+                            </a>
+                        </h4>
+                        <input type="hidden" name="series" id="series">
+                        {% if book %}
+                            {% for si in book.series %}
+                                <div class="fields">
+                                    <div class="eight wide field">
+                                        <label for="series-name-{{ loop.index }}">Name</label>
+                                        <div class="ui fluid buttons">
+                                            <div class="ui fluid dropdown search icon button">
+                                                <input type="hidden" name="series-name-{{ loop.index }}"
+                                                       value="{{ si.series.id }}">
+                                                <span class="text">Select series</span>
+                                                <div class="menu">
+                                                    {% for s in series %}
+                                                        <div class="item" data-value="{{ s.id }}">{{ s.name }}</div>
+                                                    {% endfor %}
+                                                </div>
                                             </div>
+                                            <a class="ui teal button edit series">
+                                                <i class="pencil icon"></i>
+                                            </a>
+                                            <a class="ui teal button remove series">
+                                                <i class="minus icon"></i>
+                                            </a>
                                         </div>
-                                        <a class="ui teal button edit series">
-                                            <i class="pencil icon"></i>
-                                        </a>
-                                        <a class="ui teal button remove series">
-                                            <i class="minus icon"></i>
-                                        </a>
+                                    </div>
+                                    <div class="one wide field">
+                                    </div>
+                                    <div class="one wide field">
+                                        <label for="series-index-{{ loop.index }}">Index</label>
+                                        <input name="series-index-{{ loop.index }}" id="series-index-{{ loop.index }}"
+                                               type="number"
+                                               min="0" step="0.1" value="{{ si.index }}">
                                     </div>
                                 </div>
-                                <div class="one wide field">
-                                </div>
-                                <div class="one wide field">
-                                    <label for="series-index-{{ loop.index }}">Index</label>
-                                    <input name="series-index-{{ loop.index }}" id="series-index-{{ loop.index }}"
-                                           type="number"
-                                           min="0" step="0.1" value="{{ si.index }}">
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                            {% endfor %}
+                        {% endif %}
 
-                    <div class="field">
-                        <a id="add-series" class="ui basic fluid icon button" data-url="{{ url_for("api.api_v1.series") }}">
-                            <i class="plus icon"></i>
-                        </a>
-                    </div>
-
-                    <div class="ui divider"></div>
-
-                    <div class="ui two column centered grid">
-                        <div class="left floated center aligned column">
-                            <button class="ui primary animated fade button" type="submit">
-                                <span class="hidden content"><i class="thumbs up icon"></i></span>
-                                <span class="visible content">Submit</span>
-                            </button>
+                        <div class="field">
+                            <a id="add-series" class="ui basic fluid icon button"
+                               data-url="{{ url_for("api.api_v1.series") }}">
+                                <i class="plus icon"></i>
+                            </a>
                         </div>
-                        <div class="right floated center aligned column">
-                            {% if book %}
-                            <button class="ui negative animated fade button" type="button" id="delete-book">
+
+                        <div class="ui divider"></div>
+
+                        <div class="ui two column centered grid">
+                            <div class="left floated center aligned column">
+                                <button class="ui primary animated fade button" type="submit">
+                                    <span class="hidden content"><i class="thumbs up icon"></i></span>
+                                    <span class="visible content">Submit</span>
+                                </button>
+                            </div>
+                            <div class="right floated center aligned column">
+                                {% if book %}
+                                    <button class="ui negative animated fade button" type="button" id="delete-book">
                             <span class="hidden content">
                                 <i class="trash alternate icon"></i>
                             </span>
-                                <span class="visible content">Delete</span>
-                            </button>
-                            {% endif %}
+                                        <span class="visible content">Delete</span>
+                                    </button>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -232,18 +236,19 @@
         </div>
     {% endif %}
     {% if book %}
-    <div class="ui mini inverted modal" id="delete-modal" data-url="{{ url_for("api.api_v1.delete") }}" data-id="{{ book.id }}">
-        <div class="content">Do you really want to delete this book?</div>
-        <div class="actions">
-            <div class="ui positive right labeled icon button">
-                Delete
-                <i class="checkmark icon"></i>
-            </div>
-            <div class="ui negative right labeled icon button">
-                Cancel
-                <i class="x icon"></i>
+        <div class="ui mini inverted modal" id="delete-modal" data-url="{{ url_for("api.api_v1.delete") }}"
+             data-id="{{ book.id }}">
+            <div class="content">Do you really want to delete this book?</div>
+            <div class="actions">
+                <div class="ui positive right labeled icon button">
+                    Delete
+                    <i class="checkmark icon"></i>
+                </div>
+                <div class="ui negative right labeled icon button">
+                    Cancel
+                    <i class="x icon"></i>
+                </div>
             </div>
         </div>
-    </div>
     {% endif %}
 {% endblock %}

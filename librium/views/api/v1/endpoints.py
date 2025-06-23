@@ -15,6 +15,7 @@ from marshmallow import fields
 from marshmallow.fields import Integer, String
 from webargs.flaskparser import use_args, use_kwargs
 
+from librium.core.limit import limiter
 from librium.views.api.v1.schemas import (
     EntitySchema,
     BookIdSchema,
@@ -539,6 +540,7 @@ def get_token(args):
 
 
 @bp.route("/protected")
+@limiter.exempt()
 @jwt_required()
 def protected():
     return jsonify(msg="You are authenticated!"), 200

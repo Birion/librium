@@ -18,9 +18,6 @@ FAVICON_PATH = "img/favicon.ico"
 # Load environment variables
 load_dotenv(find_dotenv())
 
-# Configure logging
-configure_logging()
-
 # Get logger for this module
 logger = get_logger("core.app")
 
@@ -30,6 +27,9 @@ def configure_flask_app(app: Flask) -> None:
     # Get the appropriate configuration based on the environment
     config_class = get_config()
     app.config.from_object(config_class)
+
+    # Configure logging
+    configure_logging(log_level=app.config.get("LOG_LEVEL"))
 
     # Set version
     app.config["VERSION"] = __version__
@@ -115,8 +115,30 @@ def create_app():
     # Rate limiting setup
     limiter.init_app(app)
 
+    # Apply rate limiting to API endpoints with different limits for different endpoints
+
     # Default API rate limits
     limiter.limit("100/day;30/hour;5/minute")(api_bp)
+
+    # Allow more requests for /api/v1/protected endpoint for valid responses
+    limiter.limit("1000/day;100/hour;50/minute", override_defaults=True)(
+        lambda: request.path == "/api/v1/protected"
+    )
+
+    # More restrictive limits for authentication endpoint to prevent brute force attacks
+    limiter.limit("20/day;5/hour;3/minute", override_defaults=True)(
+        lambda: request.path.startswith("/api/v1/auth/")
+    )
+
+    # More restrictive limits for backup operations (resource-intensive)
+    limiter.limit("10/day;5/hour;2/minute", override_defaults=True)(
+        lambda: request.path.startswith("/api/v1/backup/")
+    )
+
+    # More restrictive limits for data modification endpoints (POST methods)
+    limiter.limit("50/day;20/hour;3/minute", override_defaults=True)(
+        lambda: request.method == "POST" and request.path.startswith("/api/v1/")
+    )
 
     # Register rate limit exceeded handler
     @app.errorhandler(429)

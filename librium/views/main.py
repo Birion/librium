@@ -20,6 +20,8 @@ class UserArgs(Schema):
     id = fields.Integer()
     name = fields.String()
     search = fields.String()
+    sort_by = fields.String()
+    sort_order = fields.String(load_default="asc")
 
 
 @bp.route("/")

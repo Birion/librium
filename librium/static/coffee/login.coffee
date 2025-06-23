@@ -25,14 +25,14 @@ initializeLoginModal = ->
     
     # Request authentication token
     requestAuthToken(username, password)
-      .then ->
+      .done ->
         # Close modal on success
         $loginModal.modal("hide")
-      .catch (error) ->
+      .fail (error) ->
         # Show error message
         $("#login-error").text(error.responseJSON?.msg || "Authentication failed")
         $("#login-error").show()
-      .finally ->
+      .always ->
         # Re-enable form
         $("#login-submit").removeClass("loading disabled")
 

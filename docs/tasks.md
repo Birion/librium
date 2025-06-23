@@ -48,8 +48,8 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Implement full-text search for books
 
 ### Views and Templates
-- [ ] Implement proper pagination for book listings
-- [ ] Add sorting options for book listings
+- [x] Implement proper pagination for book listings
+- [x] Add sorting options for book listings
 - [ ] Improve error handling in view functions
 - [ ] Implement AJAX for form submissions to improve the user experience
 - [ ] Add client-side validation for forms
