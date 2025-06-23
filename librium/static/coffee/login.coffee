@@ -44,7 +44,7 @@ checkAuthenticationStatus = ->
   else
     # Verify the token is valid by making a test request
     $.ajax
-      url: document.querySelector("meta[name='test_url']").getAttribute("content")
+      url: document.querySelector("meta[name='test-url']").getAttribute("content")
       type: "GET"
       error: (xhr) ->
         if xhr.status == 401
