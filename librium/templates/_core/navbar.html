@@ -1,7 +1,9 @@
+{% from "main/definitions.html" import favicon_for_debug %}
+
 <div class="ui fixed inverted menu">
     <div class="ui container">
         <a href="{{ url_for("main.index") }}" class="header item">
-            <img class="logo" src="{{ url_for("static", filename="img/logo.svg") }}" alt="Librium logo">
+            <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}" alt="Librium logo">
         </a>
         <a href="{{ url_for("book.new") }}" class="item" data-content="Add a new book" data-position="bottom center">
             <i class="large plus icon"></i>
@@ -40,8 +42,11 @@
                 <div class="ui dropdown icon item" data-content="Export data" data-position="left center">
                     <i class="large teal arrow alternate circle down icon"></i>
                     <div class="menu">
-                        <a href="{{ url_for("api.api_v1.export", format="csv") }}" class="item">CSV</a>
-                        <a href="{{ url_for("api.api_v1.export", format="json") }}" class="item">JSON</a>
+                        {% for filetype in ["csv", "json"] %}
+                        <div data-url="{{ url_for("api.api_v1.export", format=filetype) }}" data-filename="export.{{ filetype }}" class="export link item">
+                            {{ filetype|upper }}
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="item">

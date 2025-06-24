@@ -1,6 +1,7 @@
 """
 Tests for database models.
 """
+
 import os
 import unittest
 from datetime import datetime
@@ -203,7 +204,9 @@ class TestAuthor(TestBase):
         self.session.add(author)
         self.session.commit()
 
-        retrieved_author = self.session.query(Author).filter_by(name="Test Author").first()
+        retrieved_author = (
+            self.session.query(Author).filter_by(name="Test Author").first()
+        )
         self.assertIsNotNone(retrieved_author)
         self.assertEqual(retrieved_author.name, "Test Author")
 

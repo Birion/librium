@@ -182,8 +182,7 @@ class SeriesService:
             return []
 
         books = (
-            Session.query(Book)
-            .filter(Book.id.in_([b.book.id for b in series.books]))
+            Session.query(Book).filter(Book.id.in_([b.book.id for b in series.books]))
             # .order_by(SeriesIndex.idx)
             .all()
         )

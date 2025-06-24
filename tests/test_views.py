@@ -1,6 +1,7 @@
 """
 Tests for view functions.
 """
+
 import unittest
 from unittest.mock import patch, MagicMock
 
@@ -96,7 +97,7 @@ class TestViewUtils(unittest.TestCase):
         result = apply_pagination(5, items)
         self.assertEqual(len(result), 0)
 
-    @patch('librium.views.views.utils.BookService')
+    @patch("librium.views.views.utils.BookService")
     def test_get_raw(self, mock_service):
         """Test getting raw items with filtering and pagination."""
         # Create mock items
@@ -139,20 +140,20 @@ class TestViewUtils(unittest.TestCase):
 class TestBookViews(unittest.TestCase):
     """Tests for book view functions."""
 
-    @patch('librium.views.views.books.get_raw')
+    @patch("librium.views.views.books.get_raw")
     def test_get_books(self, mock_get_raw):
         """Test getting books with various filters."""
         # Mock the get_raw function
         mock_get_raw.return_value = (
             [MagicMock(title="Book 1"), MagicMock(title="Book 2")],  # books
-            ['b'],  # letters
+            ["b"],  # letters
             1,  # pages
         )
 
         # Test with no arguments
         result = get_books({})
         self.assertEqual(len(result["books"]), 2)
-        self.assertEqual(result["letters"], ['b'])
+        self.assertEqual(result["letters"], ["b"])
         self.assertEqual(result["pagination"], 1)
 
         # Test with start argument

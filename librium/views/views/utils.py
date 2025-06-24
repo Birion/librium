@@ -91,7 +91,7 @@ def get_raw(
             start_with=start_with,
             exact_name=exact_name,
             sort_by=sort_by,
-            sort_order=sort_order
+            sort_order=sort_order,
         )
 
         # Get initial letters for pagination

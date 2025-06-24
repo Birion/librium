@@ -44,7 +44,6 @@ class Config:
     COMPRESS_LEVEL = 6  # Compression level (1-9, higher = more compression but slower)
     COMPRESS_MIN_SIZE = 500  # Only compress responses larger than this size (in bytes)
 
-
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-key-please-change-in-production")
 
     @classmethod

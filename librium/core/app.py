@@ -18,6 +18,7 @@ from librium.views.api.swagger import swagger_ui_blueprint
 # Constants
 FLASK_APP_NAME = "librium"
 FAVICON_PATH = "img/favicon.ico"
+FAVICON_DEV_PATH = "img/favicon-dev.ico"
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -69,6 +70,10 @@ def create_url_for_self(**args):
 
 def handle_favicon(app):
     """Handle favicon.ico requests."""
+    if app.config["DEBUG"]:
+        logger.debug("Debug mode enabled, using development favicon")
+        # In debug mode, use a different favicon
+        return app.send_static_file(FAVICON_DEV_PATH)
     return app.send_static_file(FAVICON_PATH)
 
 
@@ -85,7 +90,9 @@ def configure_static_cache(app: Flask) -> None:
                 # Cache JavaScript and CSS files for 1 week
                 response.cache_control.max_age = 60 * 60 * 24 * 7  # 1 week in seconds
                 response.cache_control.public = True
-            elif request.path.endswith((".jpg", ".jpeg", ".png", ".gif", ".ico", ".svg")):
+            elif request.path.endswith(
+                (".jpg", ".jpeg", ".png", ".gif", ".ico", ".svg")
+            ):
                 # Cache images for 1 month
                 response.cache_control.max_age = 60 * 60 * 24 * 30  # 30 days in seconds
                 response.cache_control.public = True
