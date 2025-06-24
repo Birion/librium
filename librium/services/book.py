@@ -539,9 +539,12 @@ class BookService:
 
             # Create the book
             book = Book(title=title, format=format_obj)
-            Session.add(book)
 
-            book = BookService.update(book.id, **kwargs)
+            # Update the book attributes
+            for key, value in kwargs.items():
+                setattr(book, key, value)
+
+            Session.add(book)
 
             logger.info(f"Book created: {title} (ID: {book.id})")
             return book
