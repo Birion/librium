@@ -14,7 +14,11 @@ from flask import Blueprint, jsonify, request, current_app
 from librium.views.api.swagger import swagger_ui_blueprint, swagger_spec
 
 # Import error handling utilities
-from librium.views.api.errors import not_found, method_not_allowed, internal_server_error
+from librium.views.api.errors import (
+    not_found,
+    method_not_allowed,
+    internal_server_error,
+)
 
 # Create the main API blueprint
 bp = Blueprint("api", __name__, url_prefix="/api")
@@ -33,6 +37,7 @@ _register_versioned_blueprints()
 
 # Register Swagger UI blueprint
 bp.register_blueprint(swagger_ui_blueprint)
+
 
 # Swagger specification endpoint
 @bp.route("/swagger.json", methods=["GET"])
@@ -75,7 +80,9 @@ def handle_not_found(error):
 @bp.errorhandler(405)
 def handle_method_not_allowed(error):
     """Handle 405 errors for API endpoints."""
-    return method_not_allowed(f"The method {request.method} is not allowed for this endpoint")
+    return method_not_allowed(
+        f"The method {request.method} is not allowed for this endpoint"
+    )
 
 
 @bp.errorhandler(500)

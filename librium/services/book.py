@@ -526,6 +526,7 @@ class BookService:
             ValueError: If the format with the given ID is not found
             SQLAlchemyError: If there's an error during database operations
         """
+        title = title.strip()
         try:
             logger.info(f"Creating new book: {title}")
 
@@ -542,7 +543,7 @@ class BookService:
 
             # Update the book attributes
             for key, value in kwargs.items():
-                setattr(book, key, value)
+                setattr(book, key, value.strip() if isinstance(value, str) else value)
 
             Session.add(book)
 
@@ -589,7 +590,7 @@ class BookService:
 
             # Update the book attributes
             for key, value in kwargs.items():
-                setattr(book, key, value)
+                setattr(book, key, value.strip() if isinstance(value, str) else value)
 
             logger.info(f"Book updated: {book.title} (ID: {book.id})")
             return book

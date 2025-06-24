@@ -8,4 +8,3 @@ limiter = Limiter(
     storage_uri="memory://",
     strategy="fixed-window",
 )
-

@@ -36,11 +36,7 @@ def error_response(status_code, message, error_type=None):
     if error_type is None:
         error_type = default_error_types.get(status_code, "Error")
 
-    response = {
-        "error": error_type,
-        "message": message,
-        "status_code": status_code
-    }
+    response = {"error": error_type, "message": message, "status_code": status_code}
 
     return jsonify(response), status_code
 

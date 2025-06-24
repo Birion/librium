@@ -2,6 +2,7 @@
 Integration tests for critical user flows in the Librium application.
 These tests verify the complete flow from HTTP request to database operation and response.
 """
+
 import os
 import unittest
 from decimal import Decimal
@@ -39,26 +40,26 @@ class IntegrationTestCase(unittest.TestCase):
         os.environ["SQLDATABASE"] = ":memory:"
         os.environ["TESTING"] = "True"
         os.environ["APPLICATION_NAME"] = "Librium Test"
-        
+
         # Create the Flask application
         self.app = create_app()
         self.app.config["TESTING"] = True
         self.app.config["SERVER_NAME"] = "localhost"
-        
+
         # Create a test client
         self.client = self.app.test_client()
-        
+
         # Create an application context
         self.app_context = self.app.app_context()
         self.app_context.push()
-        
+
         # Create the database and tables
         engine = create_engine("sqlite:///:memory:")
         Base.metadata.create_all(engine)
-        
+
         # Create a session
         self.session = Session(engine)
-        
+
         # Seed the database with test data
         self._seed_database()
 
@@ -66,10 +67,10 @@ class IntegrationTestCase(unittest.TestCase):
         """Clean up after tests."""
         # Remove the application context
         self.app_context.pop()
-        
+
         # Close the session
         self.session.close()
-        
+
         # Reset environment variables
         os.environ.pop("SQLDATABASE", None)
         os.environ.pop("TESTING", None)
@@ -82,33 +83,33 @@ class IntegrationTestCase(unittest.TestCase):
         format2 = Format(name="Paperback")
         format3 = Format(name="E-book")
         self.session.add_all([format1, format2, format3])
-        
+
         # Create test languages
         language1 = Language(name="English")
         language2 = Language(name="Spanish")
         self.session.add_all([language1, language2])
-        
+
         # Create test genres
         genre1 = Genre(name="Fiction")
         genre2 = Genre(name="Non-fiction")
         genre3 = Genre(name="Science Fiction")
         self.session.add_all([genre1, genre2, genre3])
-        
+
         # Create test publishers
         publisher1 = Publisher(name="Test Publisher 1")
         publisher2 = Publisher(name="Test Publisher 2")
         self.session.add_all([publisher1, publisher2])
-        
+
         # Create test series
         series1 = Series(name="Test Series 1")
         series2 = Series(name="Test Series 2")
         self.session.add_all([series1, series2])
-        
+
         # Create test authors
         author1 = Author(name="Test Author 1")
         author2 = Author(name="Test Author 2")
         self.session.add_all([author1, author2])
-        
+
         # Create test books
         book1 = Book(
             title="Test Book 1",
@@ -135,15 +136,15 @@ class IntegrationTestCase(unittest.TestCase):
             has_cover=False,
         )
         self.session.add_all([book1, book2])
-        
+
         # Add authors to books
         book1.authors.append(author1)
         book2.authors.append(author2)
-        
+
         # Add genres to books
         book1.genres.append(genre1)
         book2.genres.append(genre2)
-        
+
         # Commit the changes
         self.session.commit()
 
@@ -156,19 +157,19 @@ class TestBookFlows(IntegrationTestCase):
         with self.app.test_request_context():
             # Get the URL for the book view
             url = url_for("book.index", id=1)
-        
+
         # Make a GET request to the book view
         response = self.client.get(url)
-        
+
         # Check that the response is successful
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that the book title is in the response
         self.assertIn(b"Test Book 1", response.data)
-        
+
         # Check that the book's author is in the response
         self.assertIn(b"Test Author 1", response.data)
-        
+
         # Check that the book's publisher is in the response
         self.assertIn(b"Test Publisher 1", response.data)
 
@@ -177,7 +178,7 @@ class TestBookFlows(IntegrationTestCase):
         with self.app.test_request_context():
             # Get the URL for the add book view
             url = url_for("book.add")
-        
+
         # Make a POST request to add a new book
         response = self.client.post(
             url,
@@ -197,10 +198,10 @@ class TestBookFlows(IntegrationTestCase):
             },
             follow_redirects=True,
         )
-        
+
         # Check that the response is successful
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that the book was added to the database
         with Session(create_engine("sqlite:///:memory:")) as session:
             book = session.query(Book).filter_by(title="New Test Book").first()
@@ -214,7 +215,7 @@ class TestBookFlows(IntegrationTestCase):
             self.assertEqual(book.price, Decimal("24.99"))
             self.assertFalse(book.read)
             self.assertFalse(book.has_cover)
-            
+
             # Check that the book has the correct author and genre
             self.assertEqual(len(book.authors), 1)
             self.assertEqual(book.authors[0].id, 1)
@@ -226,7 +227,7 @@ class TestBookFlows(IntegrationTestCase):
         with self.app.test_request_context():
             # Get the URL for the book view
             url = url_for("book.index", id=2)
-        
+
         # Make a POST request to update the book
         response = self.client.post(
             url,
@@ -246,10 +247,10 @@ class TestBookFlows(IntegrationTestCase):
             },
             follow_redirects=True,
         )
-        
+
         # Check that the response is successful
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that the book was updated in the database
         with Session(create_engine("sqlite:///:memory:")) as session:
             book = session.query(Book).filter_by(id=2).first()
@@ -263,7 +264,7 @@ class TestBookFlows(IntegrationTestCase):
             self.assertEqual(book.price, Decimal("34.99"))
             self.assertTrue(book.read)
             self.assertTrue(book.has_cover)
-            
+
             # Check that the book has both authors and genres
             self.assertEqual(len(book.authors), 2)
             self.assertEqual(len(book.genres), 2)

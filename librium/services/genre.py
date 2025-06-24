@@ -41,7 +41,11 @@ class GenreService:
         Returns:
             The genre if found and not deleted, None otherwise
         """
-        return Session.query(Genre).where(Genre.name == name, Genre.deleted == False).one_or_none()
+        return (
+            Session.query(Genre)
+            .where(Genre.name == name, Genre.deleted == False)
+            .one_or_none()
+        )
 
     @staticmethod
     @read_only
@@ -52,7 +56,12 @@ class GenreService:
         Returns:
             A list of all genres that are not deleted
         """
-        return Session.query(Genre).filter(Genre.deleted == False).order_by(Genre.name).all()
+        return (
+            Session.query(Genre)
+            .filter(Genre.deleted == False)
+            .order_by(Genre.name)
+            .all()
+        )
 
     @staticmethod
     @transactional

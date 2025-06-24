@@ -12,7 +12,9 @@ def get_series(args) -> dict[str, list[SeriesType] | int]:
     }
     options = {"series": [], "pagination": None, "letters": {}}
 
-    _series, options["letters"], options["pagination"] = get_raw(SeriesService, args, filters)
+    _series, options["letters"], options["pagination"] = get_raw(
+        SeriesService, args, filters
+    )
 
     for si in _series:
         series_info = {"series": si.name, "books": []}
@@ -26,7 +28,9 @@ def get_series(args) -> dict[str, list[SeriesType] | int]:
                 "uuid": s.book.uuid,
             }
             for a in s.book.authors:
-                series_book["authors"].append({"name": a.author.name, "id": a.author.id, "idx": a.idx})
+                series_book["authors"].append(
+                    {"name": a.author.name, "id": a.author.id, "idx": a.idx}
+                )
             series_book["authors"].sort(key=lambda x: x["idx"])
             series_info["books"].append(series_book)
         series_info["books"].sort(key=lambda x: x["idx"])

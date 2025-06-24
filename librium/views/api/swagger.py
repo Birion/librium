@@ -7,16 +7,12 @@ This module provides Swagger/OpenAPI documentation for the Librium API endpoints
 from flask_swagger_ui import get_swaggerui_blueprint
 
 # Define Swagger UI blueprint
-SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI
-API_URL = '/api/swagger.json'  # URL for the Swagger JSON documentation
+SWAGGER_URL = "/api/docs"  # URL for exposing Swagger UI
+API_URL = "/api/swagger.json"  # URL for the Swagger JSON documentation
 
 # Create Swagger UI blueprint
 swagger_ui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': "Librium API Documentation"
-    }
+    SWAGGER_URL, API_URL, config={"app_name": "Librium API Documentation"}
 )
 
 # Swagger specification
@@ -25,26 +21,19 @@ swagger_spec = {
     "info": {
         "title": "Librium API",
         "description": "API for the Librium book management system",
-        "version": "1.0"
+        "version": "1.0",
     },
     "basePath": "/api/v1",
-    "schemes": [
-        "http",
-        "https"
-    ],
+    "schemes": ["http", "https"],
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+            "description": 'JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"',
         }
     },
-    "security": [
-        {
-            "Bearer": []
-        }
-    ],
+    "security": [{"Bearer": []}],
     "paths": {
         "/books": {
             "get": {
@@ -59,7 +48,7 @@ swagger_spec = {
                         "description": "Page number",
                         "required": False,
                         "type": "integer",
-                        "default": 1
+                        "default": 1,
                     },
                     {
                         "name": "page_size",
@@ -69,28 +58,28 @@ swagger_spec = {
                         "type": "integer",
                         "default": 30,
                         "minimum": 1,
-                        "maximum": 100
+                        "maximum": 100,
                     },
                     {
                         "name": "read",
                         "in": "query",
                         "description": "Filter by read status",
                         "required": False,
-                        "type": "boolean"
+                        "type": "boolean",
                     },
                     {
                         "name": "search",
                         "in": "query",
                         "description": "Search term for book title",
                         "required": False,
-                        "type": "string"
+                        "type": "string",
                     },
                     {
                         "name": "start_with",
                         "in": "query",
                         "description": "Filter books by title starting with this string",
                         "required": False,
-                        "type": "string"
+                        "type": "string",
                     },
                     {
                         "name": "sort_by",
@@ -99,7 +88,7 @@ swagger_spec = {
                         "required": False,
                         "type": "string",
                         "enum": ["title", "released", "price", "page_count", "read"],
-                        "default": "title"
+                        "default": "title",
                     },
                     {
                         "name": "sort_order",
@@ -108,8 +97,8 @@ swagger_spec = {
                         "required": False,
                         "type": "string",
                         "enum": ["asc", "desc"],
-                        "default": "asc"
-                    }
+                        "default": "asc",
+                    },
                 ],
                 "responses": {
                     "200": {
@@ -135,8 +124,8 @@ swagger_spec = {
                                                 "type": "object",
                                                 "properties": {
                                                     "id": {"type": "integer"},
-                                                    "name": {"type": "string"}
-                                                }
+                                                    "name": {"type": "string"},
+                                                },
                                             },
                                             "authors": {
                                                 "type": "array",
@@ -144,9 +133,9 @@ swagger_spec = {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {"type": "integer"},
-                                                        "name": {"type": "string"}
-                                                    }
-                                                }
+                                                        "name": {"type": "string"},
+                                                    },
+                                                },
                                             },
                                             "genres": {
                                                 "type": "array",
@@ -154,9 +143,9 @@ swagger_spec = {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {"type": "integer"},
-                                                        "name": {"type": "string"}
-                                                    }
-                                                }
+                                                        "name": {"type": "string"},
+                                                    },
+                                                },
                                             },
                                             "publishers": {
                                                 "type": "array",
@@ -164,9 +153,9 @@ swagger_spec = {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {"type": "integer"},
-                                                        "name": {"type": "string"}
-                                                    }
-                                                }
+                                                        "name": {"type": "string"},
+                                                    },
+                                                },
                                             },
                                             "languages": {
                                                 "type": "array",
@@ -174,9 +163,9 @@ swagger_spec = {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {"type": "integer"},
-                                                        "name": {"type": "string"}
-                                                    }
-                                                }
+                                                        "name": {"type": "string"},
+                                                    },
+                                                },
                                             },
                                             "series": {
                                                 "type": "array",
@@ -185,14 +174,20 @@ swagger_spec = {
                                                     "properties": {
                                                         "id": {"type": "integer"},
                                                         "name": {"type": "string"},
-                                                        "index": {"type": "number"}
-                                                    }
-                                                }
+                                                        "index": {"type": "number"},
+                                                    },
+                                                },
                                             },
-                                            "created_at": {"type": "string", "format": "date-time"},
-                                            "updated_at": {"type": "string", "format": "date-time"}
-                                        }
-                                    }
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                            },
+                                        },
+                                    },
                                 },
                                 "pagination": {
                                     "type": "object",
@@ -200,30 +195,30 @@ swagger_spec = {
                                         "page": {"type": "integer"},
                                         "page_size": {"type": "integer"},
                                         "total_items": {"type": "integer"},
-                                        "total_pages": {"type": "integer"}
-                                    }
+                                        "total_pages": {"type": "integer"},
+                                    },
                                 },
                                 "filters": {
                                     "type": "object",
                                     "properties": {
                                         "read": {"type": "boolean"},
                                         "search": {"type": "string"},
-                                        "start_with": {"type": "string"}
-                                    }
+                                        "start_with": {"type": "string"},
+                                    },
                                 },
                                 "sorting": {
                                     "type": "object",
                                     "properties": {
                                         "sort_by": {"type": "string"},
-                                        "sort_order": {"type": "string"}
-                                    }
-                                }
-                            }
-                        }
+                                        "sort_order": {"type": "string"},
+                                    },
+                                },
+                            },
+                        },
                     },
                     "401": {"description": "Unauthorized"},
-                    "500": {"description": "Internal server error"}
-                }
+                    "500": {"description": "Internal server error"},
+                },
             }
         },
         "/series": {
@@ -241,13 +236,13 @@ swagger_spec = {
                                 "type": "object",
                                 "properties": {
                                     "id": {"type": "integer"},
-                                    "name": {"type": "string"}
-                                }
-                            }
-                        }
+                                    "name": {"type": "string"},
+                                },
+                            },
+                        },
                     },
-                    "401": {"description": "Unauthorized"}
-                }
+                    "401": {"description": "Unauthorized"},
+                },
             }
         },
         "/genres": {
@@ -265,13 +260,13 @@ swagger_spec = {
                                 "type": "object",
                                 "properties": {
                                     "id": {"type": "integer"},
-                                    "name": {"type": "string"}
-                                }
-                            }
-                        }
+                                    "name": {"type": "string"},
+                                },
+                            },
+                        },
                     },
-                    "401": {"description": "Unauthorized"}
-                }
+                    "401": {"description": "Unauthorized"},
+                },
             }
         },
         "/languages": {
@@ -289,13 +284,13 @@ swagger_spec = {
                                 "type": "object",
                                 "properties": {
                                     "id": {"type": "integer"},
-                                    "name": {"type": "string"}
-                                }
-                            }
-                        }
+                                    "name": {"type": "string"},
+                                },
+                            },
+                        },
                     },
-                    "401": {"description": "Unauthorized"}
-                }
+                    "401": {"description": "Unauthorized"},
+                },
             }
         },
         "/publishers": {
@@ -313,13 +308,13 @@ swagger_spec = {
                                 "type": "object",
                                 "properties": {
                                     "id": {"type": "integer"},
-                                    "name": {"type": "string"}
-                                }
-                            }
-                        }
+                                    "name": {"type": "string"},
+                                },
+                            },
+                        },
                     },
-                    "401": {"description": "Unauthorized"}
-                }
+                    "401": {"description": "Unauthorized"},
+                },
             }
         },
         "/add": {
@@ -336,15 +331,15 @@ swagger_spec = {
                         "description": "Type of entity to add",
                         "required": True,
                         "type": "string",
-                        "enum": ["genre", "publisher", "language", "series", "author"]
+                        "enum": ["genre", "publisher", "language", "series", "author"],
                     },
                     {
                         "name": "name",
                         "in": "formData",
                         "description": "Name of the entity",
                         "required": True,
-                        "type": "string"
-                    }
+                        "type": "string",
+                    },
                 ],
                 "responses": {
                     "200": {
@@ -353,13 +348,13 @@ swagger_spec = {
                             "type": "object",
                             "properties": {
                                 "id": {"type": "integer"},
-                                "name": {"type": "string"}
-                            }
-                        }
+                                "name": {"type": "string"},
+                            },
+                        },
                     },
                     "401": {"description": "Unauthorized"},
-                    "403": {"description": "Object already exists or missing name"}
-                }
+                    "403": {"description": "Object already exists or missing name"},
+                },
             }
         },
         "/delete": {
@@ -375,7 +370,7 @@ swagger_spec = {
                         "in": "formData",
                         "description": "ID of the book to delete",
                         "required": True,
-                        "type": "integer"
+                        "type": "integer",
                     }
                 ],
                 "responses": {
@@ -383,13 +378,11 @@ swagger_spec = {
                         "description": "Book deleted successfully",
                         "schema": {
                             "type": "object",
-                            "properties": {
-                                "url": {"type": "string"}
-                            }
-                        }
+                            "properties": {"url": {"type": "string"}},
+                        },
                     },
-                    "401": {"description": "Unauthorized"}
-                }
+                    "401": {"description": "Unauthorized"},
+                },
             }
         },
         "/add/cover": {
@@ -405,30 +398,28 @@ swagger_spec = {
                         "in": "formData",
                         "description": "Cover image file",
                         "required": True,
-                        "type": "file"
+                        "type": "file",
                     },
                     {
                         "name": "uuid",
                         "in": "formData",
                         "description": "UUID of the book",
                         "required": True,
-                        "type": "string"
-                    }
+                        "type": "string",
+                    },
                 ],
                 "responses": {
                     "200": {
                         "description": "Cover uploaded successfully",
                         "schema": {
                             "type": "object",
-                            "properties": {
-                                "response": {"type": "string"}
-                            }
-                        }
+                            "properties": {"response": {"type": "string"}},
+                        },
                     },
                     "401": {"description": "Unauthorized"},
                     "404": {"description": "Book not found"},
-                    "500": {"description": "Failed to save cover"}
-                }
+                    "500": {"description": "Failed to save cover"},
+                },
             }
         },
         "/export": {
@@ -445,15 +436,15 @@ swagger_spec = {
                         "required": False,
                         "type": "string",
                         "enum": ["csv", "json"],
-                        "default": "csv"
+                        "default": "csv",
                     }
                 ],
                 "responses": {
                     "200": {"description": "File download"},
                     "400": {"description": "Invalid format"},
                     "401": {"description": "Unauthorized"},
-                    "500": {"description": "Failed to export books"}
-                }
+                    "500": {"description": "Failed to export books"},
+                },
             }
         },
         "/backup/create": {
@@ -469,7 +460,7 @@ swagger_spec = {
                         "in": "formData",
                         "description": "Optional name for the backup file",
                         "required": False,
-                        "type": "string"
+                        "type": "string",
                     }
                 ],
                 "responses": {
@@ -480,13 +471,13 @@ swagger_spec = {
                             "properties": {
                                 "success": {"type": "boolean"},
                                 "message": {"type": "string"},
-                                "filename": {"type": "string"}
-                            }
-                        }
+                                "filename": {"type": "string"},
+                            },
+                        },
                     },
                     "401": {"description": "Unauthorized"},
-                    "500": {"description": "Error creating backup"}
-                }
+                    "500": {"description": "Error creating backup"},
+                },
             }
         },
         "/backup/list": {
@@ -510,16 +501,19 @@ swagger_spec = {
                                             "filename": {"type": "string"},
                                             "path": {"type": "string"},
                                             "size": {"type": "integer"},
-                                            "created": {"type": "string", "format": "date-time"}
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                                            "created": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                     "401": {"description": "Unauthorized"},
-                    "500": {"description": "Error listing backups"}
-                }
+                    "500": {"description": "Error listing backups"},
+                },
             }
         },
         "/backup/restore": {
@@ -535,7 +529,7 @@ swagger_spec = {
                         "in": "formData",
                         "description": "Backup file name or special keywords (latest, last, first)",
                         "required": True,
-                        "type": "string"
+                        "type": "string",
                     }
                 ],
                 "responses": {
@@ -545,14 +539,14 @@ swagger_spec = {
                             "type": "object",
                             "properties": {
                                 "success": {"type": "boolean"},
-                                "message": {"type": "string"}
-                            }
-                        }
+                                "message": {"type": "string"},
+                            },
+                        },
                     },
                     "401": {"description": "Unauthorized"},
                     "404": {"description": "Backup file not found"},
-                    "500": {"description": "Error restoring database"}
-                }
+                    "500": {"description": "Error restoring database"},
+                },
             }
         },
         "/backup/delete": {
@@ -568,7 +562,7 @@ swagger_spec = {
                         "in": "formData",
                         "description": "Backup file name to delete",
                         "required": True,
-                        "type": "string"
+                        "type": "string",
                     }
                 ],
                 "responses": {
@@ -578,14 +572,14 @@ swagger_spec = {
                             "type": "object",
                             "properties": {
                                 "success": {"type": "boolean"},
-                                "message": {"type": "string"}
-                            }
-                        }
+                                "message": {"type": "string"},
+                            },
+                        },
                     },
                     "401": {"description": "Unauthorized"},
                     "404": {"description": "Backup file not found"},
-                    "500": {"description": "Error deleting backup"}
-                }
+                    "500": {"description": "Error deleting backup"},
+                },
             }
         },
         "/auth/token": {
@@ -601,28 +595,26 @@ swagger_spec = {
                         "in": "formData",
                         "description": "Username",
                         "required": True,
-                        "type": "string"
+                        "type": "string",
                     },
                     {
                         "name": "password",
                         "in": "formData",
                         "description": "Password",
                         "required": True,
-                        "type": "string"
-                    }
+                        "type": "string",
+                    },
                 ],
                 "responses": {
                     "200": {
                         "description": "Authentication successful",
                         "schema": {
                             "type": "object",
-                            "properties": {
-                                "access_token": {"type": "string"}
-                            }
-                        }
+                            "properties": {"access_token": {"type": "string"}},
+                        },
                     },
-                    "401": {"description": "Bad username or password"}
-                }
+                    "401": {"description": "Bad username or password"},
+                },
             }
         },
         "/protected": {
@@ -636,14 +628,12 @@ swagger_spec = {
                         "description": "Authentication successful",
                         "schema": {
                             "type": "object",
-                            "properties": {
-                                "msg": {"type": "string"}
-                            }
-                        }
+                            "properties": {"msg": {"type": "string"}},
+                        },
                     },
-                    "401": {"description": "Unauthorized"}
-                }
+                    "401": {"description": "Unauthorized"},
+                },
             }
-        }
-    }
+        },
+    },
 }
