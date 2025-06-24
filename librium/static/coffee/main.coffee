@@ -3,10 +3,12 @@
 
 # Initialize UI components when the document is ready
 $ ->
+  console.log $ "select.dropdown, .ui.dropdown"
   initializeSemanticElements()
   initializeCoverToggle()
   initializeFilterChanges()
   initializeExportDownload()
+  initializeSearch()
 
 # Initialize Semantic UI components
 initializeSemanticElements = ->
@@ -71,6 +73,11 @@ initializeExportDownload = ->
           document.body.removeChild(link)
         error: (error) ->
           showWarning error.responseText
+
+initializeSearch = ->
+  $ ".sidebar .item form i"
+    .click ->
+      $(@).closest("form").submit()
 
 # Display a warning toast message
 # @param {string} message - The message to display

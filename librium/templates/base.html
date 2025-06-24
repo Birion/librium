@@ -5,11 +5,9 @@
     {% include "_core/_head.html" %}
 </head>
 <body>
-{% include "_core/navbar.html" %}
-{% block modal %}{% endblock %}
-
-<div class="ui grid">
-    {% block content %}{% endblock %}
+{% include "_core/sidemenu.html" %}
+<div class="ui pusher">
+{% block content %}{% endblock %}
 </div>
 
 <!-- Login Modal -->
@@ -38,6 +36,7 @@
     </div>
 </div>
 
+{% block modal %}{% endblock %}
 {% include "_core/_foot.html" %}
 </body>
 </html>
