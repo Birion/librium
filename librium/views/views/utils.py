@@ -91,7 +91,7 @@ def get_raw(
     sort_by = arguments.get("sort_by", "title")
     sort_order = arguments.get("sort_order", "asc")
 
-    if service == BookService or service == GenreService:
+    if service == BookService or service == GenreService or service == SeriesService:
         # Get paginated books
         paginated_items, total_count = service.get_paginated(
             page=page,
@@ -105,9 +105,15 @@ def get_raw(
         )
         if service == GenreService:
             paginated_items = {
-                key.name: GenreService.get_books_in_genre(key.id)
+                key.name: GenreService.get_books_in_genre_formatted(key.id)
                 for key in paginated_items
             }
+        if service == SeriesService:
+            pi = []
+            for key in paginated_items:
+                series = {"series": key.name, "books": SeriesService.get_books_in_series_formatted(key.id)}
+                pi.append(series)
+            paginated_items = pi
     else:
         # For other services, use the original in-memory pagination
         # Get all items using the service

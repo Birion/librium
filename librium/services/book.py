@@ -398,6 +398,43 @@ class BookService:
 
     @staticmethod
     @read_only
+    def get_index_by_series(book_id: int, series_id: int) -> list[Decimal] | None:
+        """
+        Get the index of a book in a specific series.
+
+        Args:
+            book_id: The ID of the book
+            series_id: The ID of the series
+        Returns:
+            The index of the book in the series, or 0.0 if not found
+        """
+        try:
+            logger.debug(
+                f"Getting index of book ID {book_id} in series ID {series_id}"
+            )
+            index = (
+                Session.query(SeriesIndex)
+                .where(
+                    SeriesIndex.book_id == book_id,
+                    SeriesIndex.series_id == series_id,
+                )
+                .scalar()
+            )
+            if index is not None:
+                index = index.idx
+                logger.debug(f"Found index: {index}")
+                return index
+            else:
+                logger.info(
+                    f"No index found for book ID {book_id} in series ID {series_id}"
+                )
+                return None
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting index for book ID {book_id}: {e}")
+            raise
+
+    @staticmethod
+    @read_only
     def get_by_year(
         year: int = None, start_year: int = None, end_year: int = None
     ) -> List[Book]:

@@ -4,7 +4,7 @@ Genre service for the Librium application.
 This module provides a service for interacting with the Genre model.
 """
 
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -209,8 +209,25 @@ class GenreService:
             logger.debug(f"Genre with ID {genre_id} not found or is deleted")
             return []
 
+        books = [book for book in genre.books if not book.deleted]
+        logger.debug(f"Found {len(books)} books in genre {genre.name} (ID: {genre_id})")
+
+        return books
+
+    @staticmethod
+    @read_only
+    def get_books_in_genre_formatted(genre_id: int) -> List[dict[str, Any]]:
+        """
+        Get all books associated with a genre.
+
+        Args:
+            genre_id: The ID of the genre
+
+        Returns:
+            A list of books associated with the genre
+        """
         books = []
-        for book in genre.books:
+        for book in GenreService.get_books_in_genre(genre_id):
             # Skip deleted books
             if book.deleted:
                 continue
@@ -242,7 +259,5 @@ class GenreService:
             )
         except IndexError:
             books.sort(key=lambda x: x["name"])
-
-        logger.debug(f"Found {len(books)} books in genre {genre.name} (ID: {genre_id})")
 
         return books
