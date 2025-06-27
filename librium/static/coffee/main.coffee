@@ -3,7 +3,6 @@
 
 # Initialize UI components when the document is ready
 $ ->
-  console.log $ "select.dropdown, .ui.dropdown"
   initializeSemanticElements()
   initializeCoverToggle()
   initializeFilterChanges()
@@ -63,6 +62,9 @@ initializeExportDownload = ->
         url: $url
         type: "GET"
         success: (data) ->
+          # If the response is a JSON object, stringify it
+          if typeof data is "object"
+            data = JSON.stringify(data, null, 2)
           # Create a blob from the data and trigger download
           blob = new Blob([data], { type: "application/octet-stream" })
           link = document.createElement("a")
