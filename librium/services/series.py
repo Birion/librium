@@ -169,21 +169,21 @@ class SeriesService:
     @read_only
     def get_books_in_series(series_id: int) -> List[Book]:
         """
-        Get all books in a series, ordered by their index.
+        Get all books in a series.
 
         Args:
             series_id: The ID of the series
 
         Returns:
-            A list of books in the series, ordered by their index
+            A list of books in the series
         """
         series = Session.get(Series, series_id)
         if not series:
             return []
 
         books = (
-            Session.query(Book).filter(Book.id.in_([b.book.id for b in series.books]))
-            # .order_by(SeriesIndex.idx)
+            Session.query(Book)
+            .filter(Book.id.in_([b.book.id for b in series.books]))
             .all()
         )
 
