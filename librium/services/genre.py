@@ -6,7 +6,14 @@ This module provides a service for interacting with the Genre model.
 
 from typing import List, Optional
 
-from librium.database import Genre, Session, transactional, read_only
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+
+from librium.core.logging import get_logger
+from librium.database import Book, Genre, Session, transactional, read_only
+
+# Get logger for this module
+logger = get_logger("services.genre")
 
 
 class GenreService:
@@ -129,3 +136,113 @@ class GenreService:
 
         genre_obj.deleted = True
         return True
+
+    @staticmethod
+    @read_only
+    def get_paginated(
+        page: int = 1,
+        page_size: int = 30,
+        start_with: Optional[str] = None,
+        exact_name: Optional[str] = None,
+        sort_by: str = "name",
+        sort_order: str = "asc",
+        **kwargs,
+    ) -> tuple[List[Genre], int]:
+        """
+        Get a paginated list of non-deleted genres with optional filtering and sorting.
+        Follows the same logic as get_genres().
+        """
+        try:
+            logger.debug(
+                f"Getting paginated genres (page={page}, page_size={page_size}, "
+                f"start_with={start_with}, exact_name={exact_name})"
+            )
+            query = select(Genre).where(Genre.deleted.is_(False))
+            count_query = select(Genre.id).where(Genre.deleted.is_(False))
+
+            # Apply filters as in get_genres()
+            if start_with:
+                query = query.where(Genre.name.ilike(f"{start_with.lower()}%"))
+                count_query = count_query.where(
+                    Genre.name.ilike(f"{start_with.lower()}%")
+                )
+            if exact_name:
+                query = query.where(Genre.name == exact_name)
+                count_query = count_query.where(Genre.name == exact_name)
+
+            total_count = len(Session.scalars(count_query).all())
+
+            # Only 'name' is supported for sorting
+            order_attr = Genre.name
+            logger.debug(f"Sorting by {sort_by} in {sort_order} order")
+            if sort_order.lower() == "desc":
+                query = query.order_by(order_attr.desc())
+            else:
+                query = query.order_by(order_attr.asc())
+
+            offset = (page - 1) * page_size
+            query = query.offset(offset).limit(page_size)
+            genres = Session.scalars(query).unique().all()
+            logger.debug(
+                f"Found {len(genres)} genres for page {page} (total: {total_count})"
+            )
+            return genres, total_count
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting paginated genres: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_books_in_genre(genre_id: int) -> List[Book]:
+        """
+        Get all books associated with a genre.
+
+        Args:
+            genre_id: The ID of the genre
+
+        Returns:
+            A list of books associated with the genre
+        """
+        logger.debug(f"Getting books for genre ID: {genre_id}")
+        genre = Session.get(Genre, genre_id)
+        if not genre or genre.deleted:
+            logger.debug(f"Genre with ID {genre_id} not found or is deleted")
+            return []
+
+        books = []
+        for book in genre.books:
+            # Skip deleted books
+            if book.deleted:
+                continue
+            book_info = {
+                "name": book.title,
+                "id": book.id,
+                "uuid": book.uuid,
+                "authors": [],
+                "series": [],
+                "released": book.released,
+            }
+            for s in book.series:
+                book_info["series"].append(
+                    {"name": s.series.name, "id": s.series.id, "idx": s.idx}
+                )
+            for a in book.authors:
+                book_info["authors"].append(
+                    {"name": a.author.name, "id": a.author.id, "idx": a.idx}
+                )
+            book_info["authors"].sort(key=lambda x: x["idx"])
+            books.append(book_info)
+        try:
+            books.sort(
+                key=lambda x: (
+                    x["series"][0]["name"] if x.get("series") else "",
+                    x["series"][0]["idx"] if x.get("series") else 0,
+                    x["name"],
+                )
+            )
+        except IndexError:
+            books.sort(key=lambda x: x["name"])
+
+        logger.debug(f"Found {len(books)} books in genre {genre.name} (ID: {genre_id})")
+
+        return books

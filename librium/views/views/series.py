@@ -1,4 +1,3 @@
-from librium.database import *
 from librium.services import SeriesService
 from librium.views.views.utils import SeriesType, get_raw
 
@@ -10,11 +9,9 @@ def get_series(args) -> dict[str, list[SeriesType] | int]:
         "start": lambda x: x.name.lower().startswith(s),
         "name": lambda x: x.name == n,
     }
-    options = {"series": [], "pagination": None, "letters": {}}
+    options = {"series": [], "pagination": None}
 
-    _series, options["letters"], options["pagination"] = get_raw(
-        SeriesService, args, filters
-    )
+    _series, options["pagination"] = get_raw(SeriesService, args, filters)
 
     for si in _series:
         series_info = {"series": si.name, "books": []}

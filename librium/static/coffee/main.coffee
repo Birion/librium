@@ -4,7 +4,6 @@
 # Initialize UI components when the document is ready
 $ ->
   initializeSemanticElements()
-  initializeCoverToggle()
   initializeFilterChanges()
   initializeExportDownload()
   initializeSearch()
@@ -24,24 +23,6 @@ initializeSemanticElements = ->
 
   $ "*[data-content]"
     .popup()
-
-# Cover Toggle functionality
-initializeCoverToggle = ->
-  $ "#cover-toggle"
-    .click ->
-      isCoverHidden = @.dataset["toggled"] == "false"
-
-      # Update toggle state
-      @.dataset["toggled"] = if isCoverHidden then "true" else "false"
-      @.dataset["content"] = if isCoverHidden then "Show cover art" else "Hide cover art"
-      @.classList.replace(
-        if isCoverHidden then "green" else "red",
-        if isCoverHidden then "red" else "green"
-      )
-
-      # Toggle cover visibility
-      $ "img.ui.bordered.fluid.image"
-        .toggleClass "hidden", isCoverHidden
 
 # Handle filter changes
 initializeFilterChanges = ->

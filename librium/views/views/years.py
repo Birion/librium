@@ -26,3 +26,13 @@ def get_years(args) -> dict[str, list[YearType] | int]:
     options["years"] = options["years"][pagesize * page : pagesize * (page + 1)]
 
     return options
+
+
+def get_years(args) -> dict[str, YearType | int]:
+    is_read = args.get("read")
+
+    filters = {
+        "read": lambda x: any(b.book.read is is_read for b in x.books),
+    }
+
+    options = {"years": [], "pagination": None}
