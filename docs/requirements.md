@@ -14,13 +14,13 @@ Librium is a book management system designed to help users track their personal 
 
 2. **Metadata Management**
    - Associate books with authors (multiple authors per book)
-   - Categorize books by genre
-   - Organize books into series
+   - Categorise books by genre
+   - Organise books into series
    - Track book formats (paperback, hardcover, etc.)
    - Record book languages
    - Associate books with publishers
 
-3. **Collection Organization**
+3. **Collection Organisation**
    - Group books by series
    - Filter books by various metadata (author, genre, etc.)
    - Track reading progress across the collection
@@ -34,7 +34,7 @@ Librium is a book management system designed to help users track their personal 
 4. **Web Framework**: Flask for the web application
 
 ### Architecture
-1. **ORM**: SQLAlchemy for database operations (with Pony ORM compatibility layer)
+1. **ORM**: SQLAlchemy for database operations
 2. **Asset Pipeline**: Flask-Assets for managing static assets
    - SASS for CSS preprocessing
    - CoffeeScript for JavaScript preprocessing
