@@ -14,10 +14,15 @@
     {% set ico = "book" %}
 {% endif %}
 
-<div class="ui visible sidebar inverted vertical menu">
-    <a href="{{ url_for("main.index") }}" class="item">
-        <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
-             alt="Librium logo">
+<div class="ui big visible sidebar inverted vertical menu">
+    <a href="{{ url_for("main.index") }}" class="ui header item">
+        <span class="ui logo icon image">
+            <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
+                 alt="{{ app_name }} logo">
+        </span>
+        <span>
+            {{ app_name }}
+        </span>
     </a>
     <a href="{{ url_for("book.new") }}" class="item">
         Add a new book
