@@ -597,8 +597,6 @@ def books(args):
 
 
 # Authentication endpoints
-
-
 @bp.route("/auth/token", methods=["POST"])
 @limiter.limit(
     "20/day;5/hour;3/minute"
