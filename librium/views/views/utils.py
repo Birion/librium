@@ -1,16 +1,11 @@
 from math import ceil
-from typing import Any, Iterable, Tuple, List, Callable, TypeVar, Generic, Dict
-
-from sqlalchemy.testing.util import total_size
+from typing import Any, Iterable, TypeVar
 
 from librium.services import (
     BookService,
-    FormatService,
     GenreService,
-    LanguageService,
-    PublisherService,
     SeriesService,
-    AuthorService,
+    YearService,
 )
 
 AuthorType = dict[str, str | list[dict[str, Any]]]
@@ -19,7 +14,7 @@ BookType = dict[str, Iterable]
 YearType = dict[str, Iterable]
 GenreType = dict[str, Iterable]
 
-# Type variable for generic entity type
+# Type variable for a generic entity type
 T = TypeVar("T")
 
 pagesize = 30
@@ -60,7 +55,7 @@ def get_raw(
     arguments: dict,
     filters: dict,
     sorting_key=lambda x: x.name,
-) -> tuple[list | None, int]:
+) -> tuple[list | dict[str, list] | None, int]:
     # Handle direct ID lookup first
     if arguments.get("id"):
         item = service.get_by_id(arguments["id"])
@@ -91,11 +86,13 @@ def get_raw(
     sort_by = arguments.get("sort_by", "title")
     sort_order = arguments.get("sort_order", "asc")
 
-    if service == BookService or service == GenreService or service == SeriesService:
+    pagesize = get_pagesize(service)
+
+    if service == BookService or service == GenreService or service == SeriesService or service == YearService:
         # Get paginated books
         paginated_items, total_count = service.get_paginated(
             page=page,
-            page_size=get_pagesize(service),
+            page_size=pagesize,
             filter_read=read_filter,
             search=search,
             start_with=start_with,
@@ -103,17 +100,24 @@ def get_raw(
             sort_by=sort_by,
             sort_order=sort_order,
         )
+        paginated_length = ceil(total_count / pagesize)
         if service == GenreService:
             paginated_items = {
                 key.name: GenreService.get_books_in_genre_formatted(key.id)
                 for key in paginated_items
             }
         if service == SeriesService:
-            pi = []
-            for key in paginated_items:
-                series = {"series": key.name, "books": SeriesService.get_books_in_series_formatted(key.id)}
-                pi.append(series)
-            paginated_items = pi
+            paginated_items = {
+                key.name: SeriesService.get_books_in_series_formatted(key.id)
+                for key in paginated_items
+            }
+        if service == YearService:
+            years = [year for year in {key.released for key in paginated_items}]
+            years.sort()
+            paginated_items = {
+                year: YearService.get_books_in_year_formatted(year)
+                for year in years
+            }
     else:
         # For other services, use the original in-memory pagination
         # Get all items using the service
@@ -121,9 +125,8 @@ def get_raw(
 
         # Apply filters
         items = apply_filters(filters, arguments, items) if filters else items
-        length = len(items)
         sorted_items = sorted(items, key=sorting_key)
         paginated_items = apply_pagination(arguments.get("page", 1), sorted_items)
-        total_count = len(paginated_items)
+        paginated_length = len(paginated_items)
 
-    return paginated_items, total_count
+    return paginated_items, paginated_length

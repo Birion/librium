@@ -228,9 +228,6 @@ class GenreService:
         """
         books = []
         for book in GenreService.get_books_in_genre(genre_id):
-            # Skip deleted books
-            if book.deleted:
-                continue
             book_info = {
                 "name": book.title,
                 "id": book.id,

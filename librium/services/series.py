@@ -188,19 +188,14 @@ class SeriesService:
                 f"start_with={start_with}, exact_name={exact_name})"
             )
             query = select(Series).where(Series.deleted.is_(False))
-            count_query = select(Series.id).where(Series.deleted.is_(False))
 
             # Apply filters as in get_genres()
             if start_with:
                 query = query.where(Series.name.ilike(f"{start_with.lower()}%"))
-                count_query = count_query.where(
-                    Series.name.ilike(f"{start_with.lower()}%")
-                )
             if exact_name:
                 query = query.where(Series.name == exact_name)
-                count_query = count_query.where(Series.name == exact_name)
 
-            total_count = len(Session.scalars(count_query).all())
+            total_count = Session.query(Series.id).where(Series.deleted.is_(False)).count()
 
             # Only 'name' is supported for sorting
             order_attr = Series.name

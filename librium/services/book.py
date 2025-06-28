@@ -161,30 +161,24 @@ class BookService:
 
             # Build the base query
             query = select(Book).where(Book.deleted.is_(False))
-            # Get a total count with the same filters
-            count_query = select(Book.id).where(Book.deleted.is_(False))
 
             # Apply read filter if provided
             if filter_read is not None:
                 query = query.where(Book.read.is_(filter_read))
-                count_query = count_query.where(Book.read.is_(filter_read))
 
             # Apply search filter if provided
             if search:
                 query = query.where(Book.title.ilike(f"%{search}%"))
-                count_query = count_query.where(Book.title.ilike(f"%{search}%"))
 
             # Apply start_with filter if provided
             if start_with:
                 query = query.where(Book.title.ilike(f"{start_with}%"))
-                count_query = count_query.where(Book.title.ilike(f"{start_with}%"))
 
             # Apply exact_name filter if provided
             if exact_name:
                 query = query.where(Book.title == exact_name)
-                count_query = count_query.where(Book.title == exact_name)
 
-            total_count = len(Session.scalars(count_query).all())
+            total_count = len(Session.scalars(query).unique().all())
 
             # Apply sorting
             if sort_by == "title":
@@ -418,10 +412,10 @@ class BookService:
                     SeriesIndex.book_id == book_id,
                     SeriesIndex.series_id == series_id,
                 )
-                .scalar()
+                .all()
             )
             if index is not None:
-                index = index.idx
+                index = [x.idx for x in index]
                 logger.debug(f"Found index: {index}")
                 return index
             else:

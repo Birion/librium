@@ -16,13 +16,13 @@
 {% macro make_year(year) %}
     <a href="{{ url_for("main.year", year=year) }}" data-content="Show all books released in {{ year }}">{{ year }}</a>
 {% endmacro %}
-{% macro make_index(idx, circular=True) %}
+{% macro fix_index(idx, circular) -%}
     {% if circular %}
         {% set class = "horizontal blue circular" %}
     {% else %}
         {% set class = "horizontal blue" %}
     {% endif %}
-    {% if idx and idx != -1 %}
+    {% if idx is defined() and idx != -1 %}
         {% if idx|int == idx %}
             {% set idx = idx|int %}
         {% else %}
@@ -31,6 +31,15 @@
             {% set idx = idx / 10 %}
         {% endif %}
         {{ label(class, idx) }}
+    {% endif %}
+{%- endmacro %}
+{% macro make_index(idx, circular=True) %}
+    {% if idx is sequence() %}
+        {% for index in idx %}
+        	{{ fix_index(index, circular) }}
+        {% endfor %}
+    {% else %}
+        {{ fix_index(idx, circular) }}
     {% endif %}
 {% endmacro %}
 
@@ -97,7 +106,7 @@
     </table>
 {% endmacro %}
 
-{% macro make_series_content(series) %}
+{% macro make_series_content(books) %}
     <table class="ui structured table">
         <thead>
         <tr>
@@ -109,7 +118,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for book in series.books %}
+        {% for book in books %}
             <tr>
                 <td>
                     {{ make_book_cover(book) }}
@@ -180,7 +189,7 @@
     </div>
 {% endmacro %}
 
-{% macro make_year_content(year) %}
+{% macro make_year_content(year, books) %}
     <table class="ui structured table">
         <thead>
         <tr>
@@ -192,7 +201,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for book in year.books %}
+        {% for book in books %}
             <tr>
                 <td>
                     {{ make_book_cover(book) }}
