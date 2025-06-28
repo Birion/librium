@@ -34,11 +34,9 @@ Alembic can automatically generate migrations based on changes to your SQLAlchem
 
 1. Make changes to your model definitions in `librium/database/sqlalchemy/db.py`
 2. Run the following command to generate a migration:
-
-```bash
-alembic revision --autogenerate -m "Description of changes"
-```
-
+   ```bash
+   alembic revision --autogenerate -m "Description of changes"
+   ```
 3. Review the generated migration script in `alembic/versions/` to ensure it correctly captures your changes
 
 #### Manual Migration Creation

@@ -8,6 +8,6 @@ def get_books(args) -> dict[str, list[BookType] | int]:
 
     # Get books using the service
     results = get_raw(BookService, args, {}, "title")
-    options = {"books": results[0], "pagination": results[2], "letters": results[1]}
+    options = {"books": results[0], "pagination": results[1]}
 
     return options

@@ -14,6 +14,7 @@ from librium.services.format import FormatService
 from librium.services.language import LanguageService
 from librium.services.genre import GenreService
 from librium.services.series import SeriesService
+from librium.services.year import YearService
 
 # Define __all__ to control what gets imported with "from librium.services import *"
 __all__ = [
@@ -25,4 +26,6 @@ __all__ = [
     "GenreService",
     "SeriesService",
     "AuthenticationService",
+    "YearService",
 ]
+

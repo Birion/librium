@@ -12,34 +12,30 @@
 {% endmacro %}
 
 {% block content %}
-    <div class="ui segment">
-        <div class="ui centered grid">
-            <div class="one wide column"></div>
-            <div class="fourteen wide column">
-                {% if code == 404 %}
-                    {{ error_code(code, "Page Not Found", "The page you are looking for does not exist or has been moved.") }}
-                {% elif code == 500 %}
-                    {{ error_code(code, "Internal Server Error", "Something went wrong on our end. We're working to fix the issue.") }}
-                {% else %}
-                    {{ error_code(code, "An Error Occurred", "Something unexpected happened. Please try again later.") }}
-                {% endif %}
+    <div class="ui main container">
+        <div class="ui segment">
+            {% if code == 404 %}
+                {{ error_code(code, "Page Not Found", "The page you are looking for does not exist or has been moved.") }}
+            {% elif code == 500 %}
+                {{ error_code(code, "Internal Server Error", "Something went wrong on our end. We're working to fix the issue.") }}
+            {% else %}
+                {{ error_code(code, "An Error Occurred", "Something unexpected happened. Please try again later.") }}
+            {% endif %}
 
-                {% if error and debug %}
-                    <div class="ui divider"></div>
-                    <div class="ui red tertiary center aligned segment">
-                        <div class="ui header">Error Details:</div>
-                        <pre>{{ error }}</pre>
-                    </div>
-                {% endif %}
+            {% if error and debug %}
+                <div class="ui divider"></div>
+                <div class="ui red tertiary center aligned segment">
+                    <div class="ui header">Error Details:</div>
+                    <pre>{{ error }}</pre>
+                </div>
+            {% endif %}
 
-                <div class="ui center aligned segment">
-                    <div class="ui buttons">
-                        <a href="javascript:history.back()" class="ui teal button">Go Back</a>
-                        <a href="{{ url_for('main.index') }}" class="ui secondary button">Go to Home</a>
-                    </div>
+            <div class="ui center aligned segment">
+                <div class="ui buttons">
+                    <a href="javascript:history.back()" class="ui teal button">Go Back</a>
+                    <a href="{{ url_for('main.index') }}" class="ui secondary button">Go to Home</a>
                 </div>
             </div>
-            <div class="one wide column"></div>
         </div>
     </div>
 {% endblock %}

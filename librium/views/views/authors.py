@@ -85,15 +85,15 @@ def get_authors(args) -> dict[str, list[AuthorType] | int]:
     if name:
         filters["name"] = lambda x: x.name == name
 
-    options = {"authors": [], "pagination": None, "letters": {}}
+    options = {"authors": [], "pagination": None}
 
     # Get authors using the service
-    authors, options["letters"], options["pagination"] = get_raw(
-        AuthorService, args, filters, "last_name", lambda x: x.last_name
+    authors, options["pagination"] = get_raw(
+        AuthorService, args, filters, lambda x: x.last_name
     )
 
     for author in authors:
-        # Initialize series dictionary with standalone books
+        # Initialise series dictionary with standalone books
         authors_series = {"0": []}
 
         # Get all series names for this author's books

@@ -4,7 +4,7 @@ This document explains the database indexing strategy implemented in Librium to 
 
 ## Overview
 
-Indexes are database structures that improve the speed of data retrieval operations at the cost of additional writes and storage space. In Librium, we've added indexes to frequently queried fields to optimize the most common database operations.
+Indexes are database structures that improve the speed of data retrieval operations at the cost of additional writes and storage space. In Librium, we've added indexes to frequently queried fields to optimise the most common database operations.
 
 ## Implemented Indexes
 
@@ -62,7 +62,7 @@ These indexes significantly improve the performance of the following common oper
 
 1. **Book searches**: Searching for books by title, ISBN, or release year is now faster
 2. **Filtering**: Filtering books by read status or other attributes is more efficient
-3. **Author lookups**: Finding authors by name is optimized
+3. **Author lookups**: Finding authors by name is optimised
 4. **Metadata filtering**: Filtering by publisher, format, language, genre, or series is improved
 5. **Sorting**: Sorting books by title, release year, or creation date is faster
 

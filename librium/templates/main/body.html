@@ -28,18 +28,18 @@
         {% endfor %}
     {% elif series is defined %}
         {% set active = series|length == 1 %}
-        {% for s in series %}
+        {% for s, books in series.items() %}
             {% set title %}
             <div class="ui grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ s.series }}</div>
+                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ s }}</div>
                 <div class="two wide column">
-                    <div class="ui teal horizontal label">{{ s.books|length }} book{{ "s" if s.books|length > 1 }}</div>
+                    <div class="ui teal horizontal label">{{ books|length }} book{{ "s" if books|length > 1 }}</div>
                 </div>
             </div>
             {% endset %}
             {{ make_head(title, active, False) }}
             {% call make_content(active) %}
-                {{ make_series_content(s) }}
+                {{ make_series_content(books) }}
             {% endcall %}
         {% endfor %}
     {% elif books is defined %}
@@ -58,18 +58,18 @@
         {% endfor %}
     {% elif years is defined %}
         {% set active = years|length == 1 %}
-        {% for y in years %}
+        {% for year, books in years.items() %}
             {% set title %}
             <div class="ui grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ y.year }}</div>
+                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ year }}</div>
                 <div class="two wide column">
-                    <div class="ui teal horizontal label">{{ y.books|length }} book{{ "s" if y.books|length > 1 }}</div>
+                    <div class="ui teal horizontal label">{{ books|length }} book{{ "s" if books|length > 1 }}</div>
                 </div>
             </div>
             {% endset %}
             {{ make_head(title, active, False) }}
             {% call make_content(active) %}
-                {{ make_year_content(y) }}
+                {{ make_year_content(year, books) }}
             {% endcall %}
         {% endfor %}
     {% elif genres is defined %}
