@@ -30,7 +30,9 @@
             {% set idx = idx|int %}
             {% set idx = idx / 10 %}
         {% endif %}
-        {{ label(class, idx) }}
+        {% if idx != 0 %}
+            {{ label(class, idx) }}
+        {% endif %}
     {% endif %}
 {%- endmacro %}
 {% macro make_index(idx, circular=True) %}

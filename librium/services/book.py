@@ -403,9 +403,7 @@ class BookService:
             The index of the book in the series, or 0.0 if not found
         """
         try:
-            logger.debug(
-                f"Getting index of book ID {book_id} in series ID {series_id}"
-            )
+            logger.debug(f"Getting index of book ID {book_id} in series ID {series_id}")
             index = (
                 Session.query(SeriesIndex)
                 .where(
@@ -571,14 +569,16 @@ class BookService:
 
             # Create the book
             book = Book(title=title, format=format_obj)
+            Session.add(book)
+            Session.flush()
 
             # Update the book attributes
             for key, value in kwargs.items():
+                print(key, value)
                 setattr(book, key, value.strip() if isinstance(value, str) else value)
 
-            Session.add(book)
-
             logger.info(f"Book created: {title} (ID: {book.id})")
+
             return book
         except SQLAlchemyError as e:
             logger.error(f"Error creating book {title}: {e}")
@@ -621,6 +621,7 @@ class BookService:
 
             # Update the book attributes
             for key, value in kwargs.items():
+                print(key, value)
                 setattr(book, key, value.strip() if isinstance(value, str) else value)
 
             logger.info(f"Book updated: {book.title} (ID: {book.id})")

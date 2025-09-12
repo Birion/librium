@@ -103,12 +103,12 @@ def get_raw(
         paginated_length = ceil(total_count / pagesize)
         if service == GenreService:
             paginated_items = {
-                key.name: GenreService.get_books_in_genre_formatted(key.id)
+                key.name: GenreService.get_books_in_genre_formatted(key.id, read_filter)
                 for key in paginated_items
             }
         if service == SeriesService:
             paginated_items = {
-                key.name: SeriesService.get_books_in_series_formatted(key.id)
+                key.name: SeriesService.get_books_in_series_formatted(key.id, read_filter)
                 for key in paginated_items
             }
         if service == YearService:

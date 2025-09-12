@@ -172,6 +172,7 @@ class SeriesService:
     def get_paginated(
         page: int = 1,
         page_size: int = 30,
+        filter_read: Optional[bool] = None,
         start_with: Optional[str] = None,
         exact_name: Optional[str] = None,
         sort_by: str = "name",
@@ -194,6 +195,9 @@ class SeriesService:
                 query = query.where(Series.name.ilike(f"{start_with.lower()}%"))
             if exact_name:
                 query = query.where(Series.name == exact_name)
+
+            if filter_read is not None:
+                query = query.join(Series.books).where(Book.read.is_(filter_read))
 
             total_count = Session.query(Series.id).where(Series.deleted.is_(False)).count()
 
@@ -218,12 +222,13 @@ class SeriesService:
 
     @staticmethod
     @read_only
-    def get_books_in_series(series_id: int) -> List[Book]:
+    def get_books_in_series(series_id: int, read: Optional[bool]) -> List[Book]:
         """
         Get all books in a series.
 
         Args:
             series_id: The ID of the series
+            read: Optional filter for read status of books
 
         Returns:
             A list of books in the series
@@ -235,6 +240,8 @@ class SeriesService:
         books = (
             Session.query(Book)
             .filter(Book.id.in_([b.book.id for b in series.books]))
+            .filter(Book.deleted.is_(False))
+            .filter(Book.read.is_(read))
             .all()
         )
 
@@ -242,18 +249,19 @@ class SeriesService:
 
     @staticmethod
     @read_only
-    def get_books_in_series_formatted(series_id: int) -> List[dict[str, Any]]:
+    def get_books_in_series_formatted(series_id: int, read: Optional[bool]) -> List[dict[str, Any]]:
         """
         Get all books in a series formatted for output.
 
         Args:
             series_id: The ID of the series
+            read: Optional filter for read status of books
 
         Returns:
             A list of dictionaries containing book information
         """
         books = []
-        for book in SeriesService.get_books_in_series(series_id):
+        for book in SeriesService.get_books_in_series(series_id, read):
             from librium.services import BookService
             series_book = {
                 "name": book.name,
