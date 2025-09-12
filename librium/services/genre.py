@@ -143,7 +143,9 @@ class GenreService:
         page: int = 1,
         page_size: int = 30,
         filter_read: Optional[bool] = None,
+        search: Optional[str] = None,
         start_with: Optional[str] = None,
+        ends_with: Optional[str] = None,
         exact_name: Optional[str] = None,
         sort_by: str = "name",
         sort_order: str = "asc",
@@ -156,13 +158,17 @@ class GenreService:
         try:
             logger.debug(
                 f"Getting paginated genres (page={page}, page_size={page_size}, "
-                f"start_with={start_with}, exact_name={exact_name})"
+                f"search={search}, start_with={start_with}, ends_with={ends_with}, exact_name={exact_name})"
             )
             query = select(Genre).where(Genre.deleted.is_(False))
 
             # Apply filters as in get_genres()
+            if search:
+                query = query.where(Genre.name.ilike(f"%{search}%"))
             if start_with:
                 query = query.where(Genre.name.ilike(f"{start_with.lower()}%"))
+            if ends_with:
+                query = query.where(Genre.name.ilike(f"%{ends_with}"))
             if exact_name:
                 query = query.where(Genre.name == exact_name)
             if filter_read is not None:
@@ -208,14 +214,26 @@ class GenreService:
             logger.debug(f"Genre with ID {genre_id} not found or is deleted")
             return []
 
-        books = Session.scalars(select(Book).where(Book.genres.contains(genre)).where(Book.read.is_(read))).unique().all()
+        # Build base selector for books in this genre, excluding deleted
+        selector = (
+            select(Book)
+            .where(Book.genres.contains(genre))
+            .where(Book.deleted.is_(False))
+        )
+        # Apply read filter only if explicitly provided
+        if read is not None:
+            selector = selector.where(Book.read.is_(read))
+
+        books = Session.scalars(selector).unique().all()
         logger.debug(f"Found {len(books)} books in genre {genre.name} (ID: {genre_id})")
 
         return books
 
     @staticmethod
     @read_only
-    def get_books_in_genre_formatted(genre_id: int, read: Optional[bool]) -> List[dict[str, Any]]:
+    def get_books_in_genre_formatted(
+        genre_id: int, read: Optional[bool]
+    ) -> List[dict[str, Any]]:
         """
         Get all books associated with a genre.
 

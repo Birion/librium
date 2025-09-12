@@ -127,6 +127,7 @@ class BookService:
         filter_read: Optional[bool] = None,
         search: Optional[str] = None,
         start_with: Optional[str] = None,
+        ends_with: Optional[str] = None,
         exact_name: Optional[str] = None,
         sort_by: str = "title",
         sort_order: str = "asc",
@@ -156,7 +157,7 @@ class BookService:
             logger.debug(
                 f"Getting paginated books (page={page}, page_size={page_size}, "
                 f"filter_read={filter_read}, search={search}, start_with={start_with}, "
-                f"exact_name={exact_name})"
+                f"ends_with={ends_with}, exact_name={exact_name})"
             )
 
             # Build the base query
@@ -177,6 +178,10 @@ class BookService:
             # Apply exact_name filter if provided
             if exact_name:
                 query = query.where(Book.title == exact_name)
+
+            # Apply ends_with filter if provided
+            if ends_with:
+                query = query.where(Book.title.ilike(f"%{ends_with}"))
 
             total_count = len(Session.scalars(query).unique().all())
 

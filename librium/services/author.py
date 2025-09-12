@@ -260,3 +260,53 @@ class AuthorService:
                 Author.deleted == False,
             )
         )
+
+    @staticmethod
+    @read_only
+    def get_paginated(
+        page: int = 1,
+        page_size: int = 30,
+        filter_read: Optional[bool] = None,
+        search: Optional[str] = None,
+        start_with: Optional[str] = None,
+        ends_with: Optional[str] = None,
+        exact_name: Optional[str] = None,
+        sort_by: str = "last_name",
+        sort_order: str = "asc",
+        **kwargs,
+    ) -> tuple[List[Author], int]:
+        """
+        Get a paginated list of non-deleted authors with optional filtering and sorting.
+        """
+        query = select(Author).where(Author.deleted == False)
+        # name/last_name filters
+        if search:
+            # search in last_name or name
+            query = query.where(
+                (Author.last_name.ilike(f"%{search}%"))
+                | (Author.name.ilike(f"%{search}%"))
+            )
+        if start_with:
+            query = query.where(Author.last_name.ilike(f"{start_with}%"))
+        if ends_with:
+            query = query.where(Author.last_name.ilike(f"%{ends_with}"))
+        if exact_name:
+            query = query.where(Author.name == exact_name)
+        if filter_read is not None:
+            # Join through association to books; use any() via SQL Alchemy relationships if available
+            from librium.database import Book
+
+            query = (
+                query.join(Author.books).join(Book).where(Book.read.is_(filter_read))
+            )
+        total_count = len(Session.scalars(query).unique().all())
+        # sorting
+        order_attr = Author.last_name
+        if sort_order.lower() == "desc":
+            query = query.order_by(order_attr.desc())
+        else:
+            query = query.order_by(order_attr.asc())
+        offset = (page - 1) * page_size
+        query = query.offset(offset).limit(page_size)
+        authors = Session.scalars(query).unique().all()
+        return authors, total_count

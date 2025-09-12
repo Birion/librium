@@ -173,7 +173,9 @@ class SeriesService:
         page: int = 1,
         page_size: int = 30,
         filter_read: Optional[bool] = None,
+        search: Optional[str] = None,
         start_with: Optional[str] = None,
+        ends_with: Optional[str] = None,
         exact_name: Optional[str] = None,
         sort_by: str = "name",
         sort_order: str = "asc",
@@ -186,20 +188,24 @@ class SeriesService:
         try:
             logger.debug(
                 f"Getting paginated genres (page={page}, page_size={page_size}, "
-                f"start_with={start_with}, exact_name={exact_name})"
+                f"search={search}, start_with={start_with}, ends_with={ends_with}, exact_name={exact_name})"
             )
             query = select(Series).where(Series.deleted.is_(False))
 
             # Apply filters as in get_genres()
+            if search:
+                query = query.where(Series.name.ilike(f"%{search}%"))
             if start_with:
                 query = query.where(Series.name.ilike(f"{start_with.lower()}%"))
+            if ends_with:
+                query = query.where(Series.name.ilike(f"%{ends_with}"))
             if exact_name:
                 query = query.where(Series.name == exact_name)
 
             if filter_read is not None:
                 query = query.join(Series.books).where(Book.read.is_(filter_read))
 
-            total_count = Session.query(Series.id).where(Series.deleted.is_(False)).count()
+            total_count = len(Session.scalars(query).unique().all())
 
             # Only 'name' is supported for sorting
             order_attr = Series.name
@@ -237,19 +243,22 @@ class SeriesService:
         if not series:
             return []
 
-        books = (
+        query = (
             Session.query(Book)
             .filter(Book.id.in_([b.book.id for b in series.books]))
             .filter(Book.deleted.is_(False))
-            .filter(Book.read.is_(read))
-            .all()
         )
+        if read is not None:
+            query = query.filter(Book.read.is_(read))
+        books = query.all()
 
         return books
 
     @staticmethod
     @read_only
-    def get_books_in_series_formatted(series_id: int, read: Optional[bool]) -> List[dict[str, Any]]:
+    def get_books_in_series_formatted(
+        series_id: int, read: Optional[bool]
+    ) -> List[dict[str, Any]]:
         """
         Get all books in a series formatted for output.
 
@@ -263,12 +272,14 @@ class SeriesService:
         books = []
         for book in SeriesService.get_books_in_series(series_id, read):
             from librium.services import BookService
+
             series_book = {
                 "name": book.name,
                 "id": book.id,
                 "idx": BookService.get_index_by_series(book.id, series_id),
                 "authors": [
-                    {"name": a.author.name, "id": a.author.id, "idx": a.idx} for a in book.authors
+                    {"name": a.author.name, "id": a.author.id, "idx": a.idx}
+                    for a in book.authors
                 ],
                 "published": book.released,
                 "uuid": book.uuid,
