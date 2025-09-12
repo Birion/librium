@@ -551,7 +551,7 @@ class BookService:
         Args:
             title: The title of the book
             format_id: The ID of the book format
-            **kwargs: Additional book attributes
+            **kwargs: Additional book attributes (may include relationships)
 
         Returns:
             The created book
@@ -572,18 +572,20 @@ class BookService:
 
             logger.debug(kwargs)
 
-            # Create the book
+            # Create the book with minimal required fields first
             book = Book(title=title, format=format_obj)
             Session.add(book)
-            Session.flush()
+            Session.flush()  # ensure book.id exists for relationship rows
 
-            # Update the book attributes
-            for key, value in kwargs.items():
-                print(key, value)
-                setattr(book, key, value.strip() if isinstance(value, str) else value)
+            # Delegate relationship and remaining attribute handling to add_or_update
+            # Prepare data for add_or_update: it expects 'format' key (ID) for lookup
+            data_for_update = dict(kwargs)
+            data_for_update["format"] = format_id
 
-            logger.info(f"Book created: {title} (ID: {book.id})")
+            # Use the same transactional session to populate relationships
+            book = BookService.add_or_update(book, data_for_update)
 
+            logger.info(f"Book created: {book.title} (ID: {book.id})")
             return book
         except SQLAlchemyError as e:
             logger.error(f"Error creating book {title}: {e}")
