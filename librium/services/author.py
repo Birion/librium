@@ -4,11 +4,12 @@ Author service for the Librium application.
 This module provides a service for interacting with the Author model.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from sqlalchemy import select
 
 from librium.database import Author, Session, read_only, transactional
+from librium.services.series import SeriesService
 
 
 class AuthorService:
@@ -225,6 +226,116 @@ class AuthorService:
 
         author.deleted = True
         return True
+
+    # ---------- Formatting helpers moved from view to the service ----------
+    @staticmethod
+    def _add_book(book: Any, index: int) -> dict:
+        return {
+            "book": book.title,
+            "id": book.id,
+            "year": book.released,
+            "read": book.read,
+            "idx": index,
+            "uuid": book.uuid,
+        }
+
+    @staticmethod
+    def _count_read_for_series(author: Any, series_name: str) -> int:
+        series_list = [s for s in SeriesService.get_all() if s.name == series_name]
+        series = series_list[0] if series_list else None
+        if series:
+            books_in_series = SeriesService.get_books_in_series(series.id, None)
+            books = [
+                b
+                for b in books_in_series
+                if b.read and any(a.author_id == author.id for a in b.authors)
+            ]
+        else:
+            books = [b.book for b in author.books if b.book.read and not b.book.series]
+        return len(books)
+
+    @staticmethod
+    def _count_unread_for_series(author: Any, series_name: str) -> int:
+        series_list = [s for s in SeriesService.get_all() if s.name == series_name]
+        series = series_list[0] if series_list else None
+        if series:
+            books_in_series = SeriesService.get_books_in_series(series.id, None)
+            books = [
+                b
+                for b in books_in_series
+                if (not b.read) and any(a.author_id == author.id for a in b.authors)
+            ]
+        else:
+            books = [
+                b.book for b in author.books if (not b.book.read) and not b.book.series
+            ]
+        return len(books)
+
+    @staticmethod
+    def _author_series_entry(series_name: str, books: list, author: Any) -> dict:
+        return {
+            "series": series_name,
+            "status": {
+                "read": AuthorService._count_read_for_series(author, series_name),
+                "unread": AuthorService._count_unread_for_series(author, series_name),
+            },
+            "books": books,
+        }
+
+    @staticmethod
+    def format_authors(authors: List[Any]) -> List[dict]:
+        """
+        Format authors into the structure expected by the view/template.
+        This preserves existing functionality while moving logic into the service.
+        """
+        formatted: List[dict] = []
+        for author in authors:
+            authors_series: dict[str, list] = {"0": []}
+
+            # Collect series names for this author's books
+            series_names = set()
+            for book_author in author.books:
+                book = book_author.book
+                for series_index in getattr(book, "series", []) or []:
+                    # series_index.series.name might be used multiple times; set makes unique
+                    series_names.add(series_index.series.name)
+
+            # Initialize keys for each series name
+            for name in series_names:
+                authors_series[name] = []
+
+            # Add each book to appropriate bucket
+            for book_author in author.books:
+                book = book_author.book
+                if not getattr(book, "series", None):
+                    authors_series["0"].append(AuthorService._add_book(book, -1))
+                else:
+                    for series_index in book.series:
+                        authors_series[series_index.series.name].append(
+                            AuthorService._add_book(book, series_index.idx)
+                        )
+
+            # remove empty standalone bucket
+            if not authors_series["0"]:
+                del authors_series["0"]
+
+            # sort books inside each series by idx then title
+            for sname in list(authors_series.keys()):
+                authors_series[sname].sort(key=lambda x: x["book"])
+                authors_series[sname].sort(key=lambda x: x["idx"])
+
+            author_data = {
+                "author": author.name,
+                "series": [
+                    AuthorService._author_series_entry(s, authors_series[s], author)
+                    for s in authors_series
+                ],
+                "books": author.books,
+            }
+            author_data["series"].sort(key=lambda x: x["series"])
+            formatted.append(author_data)
+
+        return formatted
 
     @staticmethod
     @read_only
