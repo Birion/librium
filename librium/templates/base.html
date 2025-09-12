@@ -16,12 +16,14 @@
     <div class="content">
         <form id="login-form" class="ui form">
             <div class="field">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username" title="Your login name">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter username" aria-label="Username" title="Enter your username">
+                <small class="ui grey tiny text">Use the username provided by the administrator.</small>
             </div>
             <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password" title="Your account password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter password" aria-label="Password" title="Enter your password">
+                <small class="ui grey tiny text">Keep your password secure. It is case-sensitive.</small>
             </div>
             <div class="ui negative message" id="login-error" style="display: none;">
                 <p>Invalid username or password</p>

@@ -74,8 +74,16 @@ def get_raw(
     # Determine search filter
     search = arguments.get("search")
 
-    # Determine start_with filter
+    # Determine match position for search: any (default), start, end
+    position = (arguments.get("position") or "any").lower()
     start_with = None
+    ends_with = None
+    if position == "start":
+        start_with = search.lower() if search else None
+    elif position == "end":
+        ends_with = search.lower() if search else None
+
+    # Backward compatibility with explicit 'start' and 'name' params
     if "start" in arguments and arguments["start"]:
         start_with = arguments["start"].lower()
 
@@ -88,14 +96,21 @@ def get_raw(
 
     pagesize = get_pagesize(service)
 
-    if service == BookService or service == GenreService or service == SeriesService or service == YearService:
-        # Get paginated books
+    if (
+        service == BookService
+        or service == GenreService
+        or service == SeriesService
+        or service == YearService
+        or service.__name__ == "AuthorService"
+    ):
+        # Get paginated items via service
         paginated_items, total_count = service.get_paginated(
             page=page,
             page_size=pagesize,
             filter_read=read_filter,
             search=search,
             start_with=start_with,
+            ends_with=ends_with,
             exact_name=exact_name,
             sort_by=sort_by,
             sort_order=sort_order,
@@ -103,20 +118,21 @@ def get_raw(
         paginated_length = ceil(total_count / pagesize)
         if service == GenreService:
             paginated_items = {
-                key.name: GenreService.get_books_in_genre_formatted(key.id)
+                key.name: GenreService.get_books_in_genre_formatted(key.id, read_filter)
                 for key in paginated_items
             }
         if service == SeriesService:
             paginated_items = {
-                key.name: SeriesService.get_books_in_series_formatted(key.id)
+                key.name: SeriesService.get_books_in_series_formatted(
+                    key.id, read_filter
+                )
                 for key in paginated_items
             }
         if service == YearService:
             years = [year for year in {key.released for key in paginated_items}]
             years.sort()
             paginated_items = {
-                year: YearService.get_books_in_year_formatted(year)
-                for year in years
+                year: YearService.get_books_in_year_formatted(year) for year in years
             }
     else:
         # For other services, use the original in-memory pagination

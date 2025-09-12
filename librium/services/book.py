@@ -127,6 +127,7 @@ class BookService:
         filter_read: Optional[bool] = None,
         search: Optional[str] = None,
         start_with: Optional[str] = None,
+        ends_with: Optional[str] = None,
         exact_name: Optional[str] = None,
         sort_by: str = "title",
         sort_order: str = "asc",
@@ -156,7 +157,7 @@ class BookService:
             logger.debug(
                 f"Getting paginated books (page={page}, page_size={page_size}, "
                 f"filter_read={filter_read}, search={search}, start_with={start_with}, "
-                f"exact_name={exact_name})"
+                f"ends_with={ends_with}, exact_name={exact_name})"
             )
 
             # Build the base query
@@ -177,6 +178,10 @@ class BookService:
             # Apply exact_name filter if provided
             if exact_name:
                 query = query.where(Book.title == exact_name)
+
+            # Apply ends_with filter if provided
+            if ends_with:
+                query = query.where(Book.title.ilike(f"%{ends_with}"))
 
             total_count = len(Session.scalars(query).unique().all())
 
@@ -403,9 +408,7 @@ class BookService:
             The index of the book in the series, or 0.0 if not found
         """
         try:
-            logger.debug(
-                f"Getting index of book ID {book_id} in series ID {series_id}"
-            )
+            logger.debug(f"Getting index of book ID {book_id} in series ID {series_id}")
             index = (
                 Session.query(SeriesIndex)
                 .where(
@@ -548,7 +551,7 @@ class BookService:
         Args:
             title: The title of the book
             format_id: The ID of the book format
-            **kwargs: Additional book attributes
+            **kwargs: Additional book attributes (may include relationships)
 
         Returns:
             The created book
@@ -569,16 +572,20 @@ class BookService:
 
             logger.debug(kwargs)
 
-            # Create the book
+            # Create the book with minimal required fields first
             book = Book(title=title, format=format_obj)
-
-            # Update the book attributes
-            for key, value in kwargs.items():
-                setattr(book, key, value.strip() if isinstance(value, str) else value)
-
             Session.add(book)
+            Session.flush()  # ensure book.id exists for relationship rows
 
-            logger.info(f"Book created: {title} (ID: {book.id})")
+            # Delegate relationship and remaining attribute handling to add_or_update
+            # Prepare data for add_or_update: it expects 'format' key (ID) for lookup
+            data_for_update = dict(kwargs)
+            data_for_update["format"] = format_id
+
+            # Use the same transactional session to populate relationships
+            book = BookService.add_or_update(book, data_for_update)
+
+            logger.info(f"Book created: {book.title} (ID: {book.id})")
             return book
         except SQLAlchemyError as e:
             logger.error(f"Error creating book {title}: {e}")
@@ -621,6 +628,7 @@ class BookService:
 
             # Update the book attributes
             for key, value in kwargs.items():
+                print(key, value)
                 setattr(book, key, value.strip() if isinstance(value, str) else value)
 
             logger.info(f"Book updated: {book.title} (ID: {book.id})")

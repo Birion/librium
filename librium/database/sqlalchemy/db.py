@@ -207,6 +207,43 @@ class Book(Base):
         """Return the IDs of the series."""
         return [s.series.id for s in self.series]
 
+    @classmethod
+    def find_by_isbn(cls, session, isbn: Optional[str], include_deleted: bool = False):
+        """Find a single book by ISBN.
+
+        - Normalizes the input by removing hyphens and spaces.
+        - Respects soft-delete flag by default.
+        """
+        if not isbn:
+            return None
+        normalized = isbn.replace("-", "").replace(" ", "")
+        q = session.query(cls).filter(cls.isbn.in_([isbn, normalized]))
+        if not include_deleted:
+            q = q.filter(cls.deleted.is_(False))
+        return q.first()
+
+    @classmethod
+    def search_by_title(
+        cls,
+        session,
+        query: Optional[str],
+        include_deleted: bool = False,
+        limit: Optional[int] = None,
+    ) -> List["Book"]:
+        """Case-insensitive substring search by title.
+
+        Returns a list of books matching the query. By default excludes soft-deleted
+        records. You can pass limit to cap the number of results.
+        """
+        if not query:
+            return []
+        q = session.query(cls).filter(cls.title.ilike(f"%{query}%"))
+        if not include_deleted:
+            q = q.filter(cls.deleted.is_(False))
+        if limit is not None:
+            q = q.limit(limit)
+        return q.all()
+
     @staticmethod
     def validate_isbn(isbn):
         """Validate ISBN format."""
@@ -298,6 +335,27 @@ class Author(Base):
         """Return books by this author that are not part of a series."""
         return [b.book for b in self.books if not b.book.series]
 
+    @classmethod
+    def find_by_name(
+        cls,
+        session,
+        name: Optional[str],
+        include_deleted: bool = False,
+        limit: Optional[int] = None,
+    ) -> List["Author"]:
+        """Find authors by their display name (case-insensitive, substring).
+
+        Uses the consolidated `name` column. Returns an empty list on falsy input.
+        """
+        if not name:
+            return []
+        q = session.query(cls).filter(cls.name.ilike(f"%{name}%"))
+        if not include_deleted:
+            q = q.filter(cls.deleted.is_(False))
+        if limit is not None:
+            q = q.limit(limit)
+        return q.all()
+
     def __repr__(self):
         if self.name:
             return f"<Author(id={self.id}, name='{self.name}')>"
@@ -329,6 +387,24 @@ class Publisher(Base):
         if len(name) > MAX_NAME_LENGTH:
             return False
         return True
+
+    @classmethod
+    def find_by_name(
+        cls,
+        session,
+        name: Optional[str],
+        include_deleted: bool = False,
+        limit: Optional[int] = None,
+    ) -> List["Publisher"]:
+        """Find publishers by name (case-insensitive, substring)."""
+        if not name:
+            return []
+        q = session.query(cls).filter(cls.name.ilike(f"%{name}%"))
+        if not include_deleted:
+            q = q.filter(cls.deleted.is_(False))
+        if limit is not None:
+            q = q.limit(limit)
+        return q.all()
 
     def __repr__(self):
         return f"<Publisher(id={self.id}, name='{self.name}')>"
@@ -447,6 +523,24 @@ class Series(Base):
     def books_unread(self):
         """Return the unread books in the series."""
         return [si for si in self.books if not si.book.read]
+
+    @classmethod
+    def find_by_name(
+        cls,
+        session,
+        name: Optional[str],
+        include_deleted: bool = False,
+        limit: Optional[int] = None,
+    ) -> List["Series"]:
+        """Find series by name (case-insensitive, substring)."""
+        if not name:
+            return []
+        q = session.query(cls).filter(cls.name.ilike(f"%{name}%"))
+        if not include_deleted:
+            q = q.filter(cls.deleted.is_(False))
+        if limit is not None:
+            q = q.limit(limit)
+        return q.all()
 
     def __repr__(self):
         return f"<Series(id={self.id}, name='{self.name}')>"

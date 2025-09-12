@@ -33,7 +33,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 ## Code-Level Improvements
 
 ### Testing
-- [ ] Increase test coverage for all components
+- [x] Increase test coverage for all components
 - [ ] Add integration tests for critical user flows
 - [ ] Ensure all tests are passing and testing correctly
 - [ ] Implement property-based testing for complex logic
@@ -44,7 +44,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [x] Add data validation in model properties
 - [x] Implement soft delete functionality for books and other entities
 - [x] Add created_at and updated_at timestamps to all models
-- [ ] Add more helper methods for common queries
+- [x] Add more helper methods for common queries
 - [ ] Implement full-text search for books
 
 ### Views and Templates
@@ -94,16 +94,16 @@ This document contains a prioritised list of tasks for improving the Librium cod
 ## Documentation Improvements
 
 ### User Documentation
-- [ ] Create comprehensive user guide
-- [ ] Add inline help and tooltips
-- [ ] Create FAQ section
+- [x] Create comprehensive user guide
+- [x] Add inline help and tooltips
+- [x] Create FAQ section
 - [ ] Implement contextual help
 
 ### Developer Documentation
 - [x] Create API documentation
-- [ ] Document database schema
-- [ ] Add a code style guide
-- [ ] Create contribution guidelines
+- [x] Document database schema
+- [x] Add a code style guide
+- [x] Create contribution guidelines
 - [ ] Document deployment process
 
 ## DevOps Improvements
