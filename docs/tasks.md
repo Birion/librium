@@ -44,7 +44,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [x] Add data validation in model properties
 - [x] Implement soft delete functionality for books and other entities
 - [x] Add created_at and updated_at timestamps to all models
-- [ ] Add more helper methods for common queries
+- [x] Add more helper methods for common queries
 - [ ] Implement full-text search for books
 
 ### Views and Templates
