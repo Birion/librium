@@ -64,16 +64,14 @@ class TestBookService(TestServiceBase):
         mock_book.title = "Test Book"
         mock_book.deleted = False
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-        mock_session_instance.get.return_value = mock_book
+        # Set up the mock session (module-level Session API)
+        mock_session.get.return_value = mock_book
 
         # Call the service method
         book = BookService.get_by_id(1)
 
         # Assert that the correct methods were called
-        mock_session_instance.get.assert_called_once_with(Book, 1)
+        mock_session.get.assert_called_once_with(Book, 1)
         self.assertEqual(book.id, 1)
         self.assertEqual(book.title, "Test Book")
 

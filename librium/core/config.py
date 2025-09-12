@@ -72,6 +72,13 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     LOG_LEVEL = "DEBUG"
 
+    # JWT defaults for tests to avoid missing-key errors
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-key-for-tests")
+    JWT_TOKEN_LOCATION = ["headers"]
+    JWT_HEADER_NAME = "Authorization"
+    JWT_HEADER_TYPE = "Bearer"
+    JWT_COOKIE_CSRF_PROTECT = False
+
 
 class ProductionConfig(Config):
     """Production environment configuration."""

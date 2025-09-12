@@ -9,6 +9,7 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 
 from flask import Flask
+from flask_jwt_extended import JWTManager, create_access_token
 from werkzeug.datastructures import FileStorage
 
 from librium.database import Language
@@ -29,6 +30,16 @@ class TestAPIBase(unittest.TestCase):
         """Set up the test client."""
         self.app = Flask(__name__)
         self.app.config["TESTING"] = True
+        # Minimal JWT config for tests
+        self.app.config["JWT_SECRET_KEY"] = "dev-key-for-tests"
+        self.app.config["JWT_TOKEN_LOCATION"] = ["headers"]
+        self.app.config["JWT_HEADER_NAME"] = "Authorization"
+        self.app.config["JWT_HEADER_TYPE"] = "Bearer"
+        JWTManager(self.app)
+        # Build an access token for authenticated requests
+        with self.app.app_context():
+            token = create_access_token(identity="test-user")
+        self.auth_headers = {"Authorization": f"Bearer {token}"}
         self.app.register_blueprint(api_bp, url_prefix="/api/v1")
         self.client = self.app.test_client()
 
@@ -44,7 +55,7 @@ class TestAPIEndpoints(TestAPIBase):
         mock_service.get_all.return_value = mock_series
 
         # Make the request
-        response = self.client.get("/api/v1/series")
+        response = self.client.get("/api/v1/series", headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -63,7 +74,7 @@ class TestAPIEndpoints(TestAPIBase):
         mock_service.get_all.return_value = mock_genres
 
         # Make the request
-        response = self.client.get("/api/v1/genres")
+        response = self.client.get("/api/v1/genres", headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -85,7 +96,7 @@ class TestAPIEndpoints(TestAPIBase):
         mock_service.get_all.return_value = mock_languages
 
         # Make the request
-        response = self.client.get("/api/v1/languages")
+        response = self.client.get("/api/v1/languages", headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -107,7 +118,7 @@ class TestAPIEndpoints(TestAPIBase):
         mock_service.get_all.return_value = mock_publishers
 
         # Make the request
-        response = self.client.get("/api/v1/publishers")
+        response = self.client.get("/api/v1/publishers", headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -133,6 +144,7 @@ class TestAPIEndpoints(TestAPIBase):
                 "first_name": "Author",
                 "last_name": "1",
             },
+            headers=self.auth_headers,
         )
 
         # Check the response
@@ -145,7 +157,7 @@ class TestAPIEndpoints(TestAPIBase):
     def test_delete_book(self, mock_service):
         """Test deleting a book."""
         # Make the request
-        response = self.client.post("/api/v1/delete", json={"type": "book", "id": 1})
+        response = self.client.post("/api/v1/delete", json={"type": "book", "id": 1}, headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -166,9 +178,10 @@ class TestAPIEndpoints(TestAPIBase):
 
         # Make the request
         response = self.client.post(
-            "/api/v1/cover/12345678-1234-5678-1234-567812345678",
-            data={"cover": test_file},
+            "/api/v1/add/cover",
+            data={"cover": test_file, "uuid": "12345678-1234-5678-1234-567812345678"},
             content_type="multipart/form-data",
+            headers=self.auth_headers,
         )
 
         # Check the response
@@ -181,20 +194,20 @@ class TestAPIEndpoints(TestAPIBase):
         """Test exporting data in different formats."""
         # Test CSV export (default)
         mock_export.return_value = "export.csv"
-        response = self.client.get("/api/v1/export")
+        response = self.client.get("/api/v1/export", headers=self.auth_headers)
         self.assertEqual(response.status_code, 200)
         mock_export.assert_called_with("csv")
         mock_export.reset_mock()
 
         # Test JSON export
         mock_export.return_value = "export.json"
-        response = self.client.get("/api/v1/export?format=json")
+        response = self.client.get("/api/v1/export?format=json", headers=self.auth_headers)
         self.assertEqual(response.status_code, 200)
         mock_export.assert_called_with("json")
         mock_export.reset_mock()
 
         # Test invalid format
-        response = self.client.get("/api/v1/export?format=invalid")
+        response = self.client.get("/api/v1/export?format=invalid", headers=self.auth_headers)
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.data)
         self.assertIn("error", data)
@@ -207,7 +220,7 @@ class TestAPIEndpoints(TestAPIBase):
         mock_create_backup.return_value = "backup.sqlite"
 
         # Make the request
-        response = self.client.post("/api/v1/backup/create")
+        response = self.client.post("/api/v1/backup/create", headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -226,7 +239,7 @@ class TestAPIEndpoints(TestAPIBase):
         mock_list_backups.return_value = mock_backups
 
         # Make the request
-        response = self.client.get("/api/v1/backup/list")
+        response = self.client.get("/api/v1/backup/list", headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -240,7 +253,7 @@ class TestAPIEndpoints(TestAPIBase):
     def test_backup_restore(self, mock_restore):
         """Test restoring from a backup."""
         # Make the request
-        response = self.client.post("/api/v1/backup/restore/backup.sqlite")
+        response = self.client.post("/api/v1/backup/restore", data={"filename": "backup.sqlite"}, headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
@@ -252,7 +265,7 @@ class TestAPIEndpoints(TestAPIBase):
     def test_backup_delete(self, mock_delete):
         """Test deleting a backup."""
         # Make the request
-        response = self.client.delete("/api/v1/backup/delete/backup.sqlite")
+        response = self.client.post("/api/v1/backup/delete", data={"filename": "backup.sqlite"}, headers=self.auth_headers)
 
         # Check the response
         self.assertEqual(response.status_code, 200)
