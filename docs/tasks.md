@@ -94,16 +94,16 @@ This document contains a prioritised list of tasks for improving the Librium cod
 ## Documentation Improvements
 
 ### User Documentation
-- [ ] Create comprehensive user guide
-- [ ] Add inline help and tooltips
-- [ ] Create FAQ section
+- [x] Create comprehensive user guide
+- [x] Add inline help and tooltips
+- [x] Create FAQ section
 - [ ] Implement contextual help
 
 ### Developer Documentation
 - [x] Create API documentation
-- [ ] Document database schema
-- [ ] Add a code style guide
-- [ ] Create contribution guidelines
+- [x] Document database schema
+- [x] Add a code style guide
+- [x] Create contribution guidelines
 - [ ] Document deployment process
 
 ## DevOps Improvements
