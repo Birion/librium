@@ -7,9 +7,12 @@ import os
 import unittest
 from decimal import Decimal
 
+# Ensure test environment variables are set before importing app/db
+os.environ.setdefault("FLASK_ENV", "testing")
+os.environ.setdefault("SQLDATABASE", ":memory:")
+os.environ.setdefault("JWT_SECRET_KEY", "dev-key-for-tests")
+
 from flask import url_for
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 from librium import create_app
 from librium.database.sqlalchemy.db import (
@@ -21,6 +24,8 @@ from librium.database.sqlalchemy.db import (
     Language,
     Genre,
     Series,
+    Session as DBSession,
+    create_tables,
 )
 from librium.services.book import BookService
 from librium.services.author import AuthorService
@@ -53,12 +58,11 @@ class IntegrationTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
 
-        # Create the database and tables
-        engine = create_engine("sqlite:///:memory:")
-        Base.metadata.create_all(engine)
+        # Create the database and tables bound to the app's global engine/session
+        create_tables()
 
-        # Create a session
-        self.session = Session(engine)
+        # Create a session using the app's scoped Session
+        self.session = DBSession()
 
         # Seed the database with test data
         self._seed_database()
@@ -203,7 +207,7 @@ class TestBookFlows(IntegrationTestCase):
         self.assertEqual(response.status_code, 200)
 
         # Check that the book was added to the database
-        with Session(create_engine("sqlite:///:memory:")) as session:
+        with DBSession() as session:
             book = session.query(Book).filter_by(title="New Test Book").first()
             self.assertIsNotNone(book)
             self.assertEqual(book.format_id, 3)
@@ -252,7 +256,7 @@ class TestBookFlows(IntegrationTestCase):
         self.assertEqual(response.status_code, 200)
 
         # Check that the book was updated in the database
-        with Session(create_engine("sqlite:///:memory:")) as session:
+        with DBSession() as session:
             book = session.query(Book).filter_by(id=2).first()
             self.assertIsNotNone(book)
             self.assertEqual(book.title, "Updated Test Book 2")

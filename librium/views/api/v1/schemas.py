@@ -4,12 +4,15 @@ API validation schemas for Librium.
 This module provides validation schemas for the API endpoints.
 """
 
-from marshmallow import Schema, validate
+from marshmallow import Schema, validate, EXCLUDE
 from marshmallow.fields import Boolean, Integer, Raw, String
 
 
 class EntitySchema(Schema):
-    """Schema for validating entity creation requests."""
+    """Schema for validating entity creation requests.
+
+    Supports either a full name field (name) or separate name parts for authors.
+    """
 
     type = String(
         required=True,
@@ -18,11 +21,19 @@ class EntitySchema(Schema):
             error="Type must be one of: genre, publisher, language, series, author",
         ),
     )
-    name = String(required=True, validate=validate.Length(min=1, max=255))
+    # Allow name to be optional to support author creation with separate fields
+    name = String(required=False, validate=validate.Length(min=1, max=255))
+    first_name = String(required=False, validate=validate.Length(min=1, max=255))
+    middle_name = String(required=False, validate=validate.Length(min=1, max=255))
+    last_name = String(required=False, validate=validate.Length(min=1, max=255))
+    suffix = String(required=False, validate=validate.Length(min=1, max=50))
 
 
 class BookIdSchema(Schema):
     """Schema for validating book ID requests."""
+
+    class Meta:
+        unknown = EXCLUDE
 
     id = Integer(required=True, validate=validate.Range(min=1))
 

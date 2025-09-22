@@ -1,10 +1,10 @@
 import os
 import unittest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
-# Ensure in-memory DB per guidelines
-os.environ["SQLDATABASE"] = ":memory:"
+# Ensure in-memory DB per guidelines before imports
+os.environ.setdefault("FLASK_ENV", "testing")
+os.environ.setdefault("SQLDATABASE", ":memory:")
+os.environ.setdefault("JWT_SECRET_KEY", "dev-key-for-tests")
 
 from librium.database.sqlalchemy.db import (
     Base,
@@ -14,6 +14,9 @@ from librium.database.sqlalchemy.db import (
     Series,
     SeriesIndex,
     Format,
+    AuthorOrdering,
+    Session as DBSession,
+    create_tables,
 )  # noqa: E402
 from librium.services.book import BookService  # noqa: E402
 from librium.services.genre import GenreService  # noqa: E402
@@ -25,11 +28,11 @@ from librium.views.views.utils import get_raw  # noqa: E402
 class FilteringTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.engine = create_engine("sqlite:///:memory:")
-        Base.metadata.create_all(cls.engine)
+        # Create tables on the global app engine
+        create_tables()
 
     def setUp(self):
-        self.session = Session(self.engine)
+        self.session = DBSession()
         # Minimal fixtures
         fmt = Format(name="Hardcover")
         self.session.add(fmt)
@@ -48,11 +51,11 @@ class FilteringTestCase(unittest.TestCase):
         b2 = Book(title="A Bright End", read=False, format=fmt)
         b3 = Book(title="End of Night", read=True, format=fmt)
         b4 = Book(title="Starting Point", read=False, format=fmt)
-        # relate authors
-        b1.authors.append(type("BA", (), {"author": a1, "author_id": 0, "idx": 0})())
-        b2.authors.append(type("BA", (), {"author": a2, "author_id": 0, "idx": 0})())
-        b3.authors.append(type("BA", (), {"author": a3, "author_id": 0, "idx": 0})())
-        b4.authors.append(type("BA", (), {"author": a1, "author_id": 0, "idx": 0})())
+        # relate authors using AuthorOrdering
+        b1.authors.append(AuthorOrdering(book=b1, author=a1, idx=0))
+        b2.authors.append(AuthorOrdering(book=b2, author=a2, idx=0))
+        b3.authors.append(AuthorOrdering(book=b3, author=a3, idx=0))
+        b4.authors.append(AuthorOrdering(book=b4, author=a1, idx=0))
         # genres
         b1.genres.append(g1)
         b2.genres.append(g1)

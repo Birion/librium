@@ -34,7 +34,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 
 ### Testing
 - [x] Increase test coverage for all components
-- [ ] Add integration tests for critical user flows
+- [x] Add integration tests for critical user flows
 - [ ] Ensure all tests are passing and testing correctly
 - [ ] Implement property-based testing for complex logic
 - [ ] Add performance tests for critical operations
