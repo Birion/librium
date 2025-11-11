@@ -152,7 +152,7 @@ def add(args):
     Returns:
         JSON response with the new item
     """
-    if args["name"] == "":
+    if not args.get("name") and args.get("type") != "author":
         logger.warning("Missing name in add endpoint")
         return forbidden("Missing name")
 
@@ -172,22 +172,32 @@ def add(args):
     if args["type"] == "author":
         # Parse the author name
         options = {
-            "first_name": "",
-            "middle_name": "",
-            "last_name": "",
-            "suffix": "",
+            "first_name": args.get("first_name", ""),
+            "middle_name": args.get("middle_name", ""),
+            "last_name": args.get("last_name", ""),
+            "prefix": args.get("prefix", ""),
+            "suffix": args.get("suffix", ""),
         }
+        args["name"] = args["name"] or " ".join(
+            (
+                options["first_name"],
+                options["middle_name"],
+                options["last_name"],
+                options["prefix"],
+                options["suffix"],
+            )
+        )
         author = args["name"].split()
         for section in author:
             if re.search(r"^[a-z]", section):
                 idx = author.index(section)
                 author[idx] = author.pop(idx) + " " + author[idx]
-        if author[-1] in ["Jr", "Jr.", "III", "III."]:
+        if len(author) >= 1 and author[-1] in ["Jr", "Jr.", "III", "III."]:
             options["suffix"] = author.pop(-1)
 
         if len(author) == 1:
             options["last_name"] = author[0]
-        else:
+        elif len(author) > 1:
             (
                 options["first_name"],
                 *options["middle_name"],

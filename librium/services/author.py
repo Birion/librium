@@ -87,6 +87,8 @@ class AuthorService:
         """
         if not (first_name or last_name):
             raise ValueError("At least one of first_name or last_name must be provided")
+        prefix = prefix or None
+        suffix = suffix or None
         selector = (
             select(Author)
             .where(Author.first_name == first_name)
@@ -97,7 +99,7 @@ class AuthorService:
             .where(Author.deleted == False)
         )
 
-        return Session.scalar(selector).unique().one_or_none()
+        return Session.scalars(selector).unique().one_or_none()
 
     @staticmethod
     @read_only
