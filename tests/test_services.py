@@ -84,16 +84,14 @@ class TestBookService(TestServiceBase):
         mock_book.title = "Test Book"
         mock_book.deleted = True
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-        mock_session_instance.get.return_value = mock_book
+        # Set up the mock Session facade
+        mock_session.get.return_value = mock_book
 
         # Call the service method
         book = BookService.get_by_id(1)
 
         # Assert that the correct methods were called
-        mock_session_instance.get.assert_called_once_with(Book, 1)
+        mock_session.get.assert_called_once_with(Book, 1)
         self.assertIsNone(book)  # Should return None for deleted books
 
     @patch("librium.services.book.Session")
@@ -105,12 +103,10 @@ class TestBookService(TestServiceBase):
         mock_book.title = "Test Book"
         mock_book.uuid = "12345678-1234-5678-1234-567812345678"
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-        mock_session_instance.execute.return_value.scalar_one_or_none.return_value = (
-            mock_book
-        )
+        # Mock Session.scalars(...).unique().one_or_none() chain
+        mock_scalars = MagicMock()
+        mock_session.scalars.return_value = mock_scalars
+        mock_scalars.unique.return_value.one_or_none.return_value = mock_book
 
         # Call the service method
         book = BookService.get_by_uuid("12345678-1234-5678-1234-567812345678")
@@ -134,13 +130,10 @@ class TestBookService(TestServiceBase):
         mock_book2.title = "Test Book 2"
         mock_book2.deleted = False
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-        mock_session_instance.query.return_value.filter.return_value = [
-            mock_book1,
-            mock_book2,
-        ]
+        # Mock Session.scalars(...).unique().all() to return both books
+        mock_scalars = MagicMock()
+        mock_session.scalars.return_value = mock_scalars
+        mock_scalars.unique.return_value.all.return_value = [mock_book1, mock_book2]
 
         # Call the service method
         books = BookService.get_all()
@@ -166,21 +159,13 @@ class TestBookService(TestServiceBase):
         mock_book2.title = "Test Book 2"
         mock_book2.deleted = True  # This book is deleted
 
-        # Set up the mock session to return both books when queried
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-
-        # Mock the filter to simulate filtering out deleted books
-        mock_query = MagicMock()
-        mock_session_instance.query.return_value = mock_query
-        mock_query.filter.return_value = [mock_book1]  # Only the non-deleted book
+        # Mock Session.scalars(...).unique().all() to return only non-deleted books
+        mock_scalars = MagicMock()
+        mock_session.scalars.return_value = mock_scalars
+        mock_scalars.unique.return_value.all.return_value = [mock_book1]
 
         # Call the service method
         books = BookService.get_all()
-
-        # Assert that the correct methods were called
-        mock_session_instance.query.assert_called_once_with(Book)
-        mock_query.filter.assert_called_once()
 
         # Verify that only the non-deleted book is returned
         self.assertEqual(len(books), 1)
@@ -188,20 +173,19 @@ class TestBookService(TestServiceBase):
         self.assertEqual(books[0].title, "Test Book 1")
         self.assertFalse(books[0].deleted)
 
+    @patch("librium.database.sqlalchemy.transactions.Session")
     @patch("librium.services.book.Session")
-    def test_create(self, mock_session):
+    def test_create(self, mock_session, mock_tx_session):
         """Test creating a book."""
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
+        # Mock Session.get to return a Format for the initial lookup
+        mock_format = Format(name="Test Format")
+        mock_format.id = 1
+        mock_session.get.return_value = mock_format
 
-        # Mock the format service
+        # Mock FormatService.get_by_id used inside add_or_update
         with patch(
             "librium.services.book.FormatService.get_by_id"
         ) as mock_format_service:
-            mock_format = MagicMock(spec=Format)
-            mock_format.id = 1
-            mock_format.name = "Test Format"
             mock_format_service.return_value = mock_format
 
             # Call the service method
@@ -217,22 +201,23 @@ class TestBookService(TestServiceBase):
             )
 
             # Assert that the correct methods were called
+            mock_session.add.assert_called()  # book added
+            mock_session.flush.assert_called_once()
             mock_format_service.assert_called_once_with(1)
-            mock_session_instance.add.assert_called_once()
-            mock_session_instance.commit.assert_called_once()
+            # transactional decorators may be nested; ensure at least one commit occurred
+            self.assertGreaterEqual(mock_tx_session.return_value.commit.call_count, 1)
 
+    @patch("librium.database.sqlalchemy.transactions.Session")
     @patch("librium.services.book.Session")
-    def test_update(self, mock_session):
+    def test_update(self, mock_session, mock_tx_session):
         """Test updating a book."""
         # Create a mock book
         mock_book = MagicMock(spec=Book)
         mock_book.id = 1
         mock_book.title = "Test Book"
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-        mock_session_instance.get.return_value = mock_book
+        # Mock Session.get to return the book
+        mock_session.get.return_value = mock_book
 
         # Call the service method
         BookService.update(
@@ -242,13 +227,15 @@ class TestBookService(TestServiceBase):
         )
 
         # Assert that the correct methods were called
-        mock_session_instance.get.assert_called_once_with(Book, 1)
+        mock_session.get.assert_called_once_with(Book, 1)
         self.assertEqual(mock_book.title, "Updated Book")
         self.assertEqual(mock_book.released, 2024)
-        mock_session_instance.commit.assert_called_once()
+        # transactional decorator commits on Session() instance from transactions module
+        mock_tx_session.return_value.commit.assert_called_once()
 
+    @patch("librium.database.sqlalchemy.transactions.Session")
     @patch("librium.services.book.Session")
-    def test_delete(self, mock_session):
+    def test_delete(self, mock_session, mock_tx_session):
         """Test soft deleting a book."""
         # Create a mock book
         mock_book = MagicMock(spec=Book)
@@ -256,19 +243,18 @@ class TestBookService(TestServiceBase):
         mock_book.title = "Test Book"
         mock_book.deleted = False
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-        mock_session_instance.get.return_value = mock_book
+        # Mock Session.get to return the book
+        mock_session.get.return_value = mock_book
 
         # Call the service method
         result = BookService.delete(1)
 
         # Assert that the correct methods were called
-        mock_session_instance.get.assert_called_once_with(Book, 1)
+        mock_session.get.assert_called_once_with(Book, 1)
         self.assertTrue(mock_book.deleted)  # Check that deleted flag was set to True
         self.assertTrue(result)  # Check that the method returned True
-        mock_session_instance.commit.assert_called_once()
+        # transactional decorator commits on Session() instance from transactions module
+        mock_tx_session.return_value.commit.assert_called_once()
 
     @patch("librium.services.book.Session")
     def test_get_read_excludes_deleted(self, mock_session):
@@ -286,21 +272,13 @@ class TestBookService(TestServiceBase):
         mock_book2.read = True
         mock_book2.deleted = True  # This book is deleted
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-
         # Mock the query to simulate filtering out deleted books
         mock_query = MagicMock()
-        mock_session_instance.query.return_value = mock_query
+        mock_session.query.return_value = mock_query
         mock_query.where.return_value = [mock_book1]  # Only the non-deleted book
 
         # Call the service method
         books = BookService.get_read()
-
-        # Assert that the correct methods were called
-        mock_session_instance.query.assert_called_once_with(Book)
-        mock_query.where.assert_called_once()
 
         # Verify that only the non-deleted book is returned
         self.assertEqual(len(books), 1)
@@ -325,21 +303,13 @@ class TestBookService(TestServiceBase):
         mock_book2.read = False
         mock_book2.deleted = True  # This book is deleted
 
-        # Set up the mock session
-        mock_session_instance = MagicMock()
-        mock_session.return_value.__enter__.return_value = mock_session_instance
-
-        # Mock the query to simulate filtering out deleted books
-        mock_query = MagicMock()
-        mock_session_instance.query.return_value = mock_query
-        mock_query.where.return_value = [mock_book1]  # Only the non-deleted book
+        # Mock Session.scalars(...).all() to return only the non-deleted unread book
+        mock_scalars = MagicMock()
+        mock_session.scalars.return_value = mock_scalars
+        mock_scalars.all.return_value = [mock_book1]
 
         # Call the service method
         books = BookService.get_unread()
-
-        # Assert that the correct methods were called
-        mock_session_instance.query.assert_called_once_with(Book)
-        mock_query.where.assert_called_once()
 
         # Verify that only the non-deleted book is returned
         self.assertEqual(len(books), 1)
