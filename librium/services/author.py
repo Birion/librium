@@ -87,6 +87,7 @@ class AuthorService:
         """
         if not (first_name or last_name):
             raise ValueError("At least one of first_name or last_name must be provided")
+        middle_name = middle_name or None
         prefix = prefix or None
         suffix = suffix or None
         selector = (
