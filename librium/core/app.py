@@ -10,6 +10,7 @@ from librium.core.config import get_config
 from librium.core.logging import configure_logging, get_logger
 from librium.core.utils import parse_read_arg
 from librium.core.limit import limiter
+from librium.services import BookService
 from librium.views import book, covers, main
 from librium.views.api import bp as api_bp
 from librium.views.api.errors import too_many_requests
@@ -51,6 +52,8 @@ def configure_jinja_env(app: Flask) -> None:
             "url_for_self": create_url_for_self,
             "version": __version__,
             "app_name": app.config.get("APPLICATION_NAME"),
+            "read_books": BookService.get_read_number(),
+            "unread_books": BookService.get_unread_number(),
         }
     )
 

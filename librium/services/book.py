@@ -141,6 +141,7 @@ class BookService:
             filter_read: If provided, filter books by read status
             search: If provided, filter books by title containing this string
             start_with: If provided, filter books by title starting with this string
+            ends_with: If provided, filter books by title ending with this string
             exact_name: If provided, filter books by exact title match
             sort_by: Field to sort by (title, released, price, page_count, read)
             sort_order: Sort order (asc or desc)
@@ -258,13 +259,61 @@ class BookService:
         """
         try:
             logger.debug("Getting all unread books that are not deleted")
-            books = Session.scalars(
-                select(Book).where(Book.read.is_(False), Book.deleted.is_(False))
-            ).all()
+            books = list(
+                Session.query(Book).where(Book.read.is_(False), Book.deleted.is_(False))
+            )
             logger.debug(f"Found {len(books)} unread books that are not deleted")
             return books
         except SQLAlchemyError as e:
             logger.error(f"Error getting unread books: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_read_number() -> int:
+        """
+        Get the number of read books that are not deleted.
+
+        Returns:
+            The number of read books that are not deleted
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug("Getting number of read books")
+            count = (
+                Session.query(Book).where(Book.read, Book.deleted.is_(False)).count()
+            )
+            logger.debug(f"Found {count} read books")
+            return count
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting number of read books: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_unread_number() -> int:
+        """
+        Get the number of unread books that are not deleted.
+
+        Returns:
+            The number of unread books that are not deleted
+
+        Raises:
+            SQLAlchemyError: If there's an error during database operations
+        """
+        try:
+            logger.debug("Getting number of unread books")
+            count = (
+                Session.query(Book)
+                .where(Book.read.is_(False), Book.deleted.is_(False))
+                .count()
+            )
+            logger.debug(f"Found {count} unread books")
+            return count
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting number of unread books: {e}")
             raise
 
     @staticmethod
