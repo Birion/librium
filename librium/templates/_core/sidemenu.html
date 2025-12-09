@@ -46,8 +46,8 @@
         </div>
         <div class="item">Show only
             <div class="menu">
-                <a href="{{ url_for_self(read=true) }}" class="item">Read books ({{ read_books }})</a>
-                <a href="{{ url_for_self(read=false) }}" class="item">Unread books ({{ unread_books }})</a>
+                <a href="{{ url_for_self(read=true) }}" class="item">Read books ({{ read_books() }})</a>
+                <a href="{{ url_for_self(read=false) }}" class="item">Unread books ({{ unread_books() }})</a>
             </div>
         </div>
         <div class="item">

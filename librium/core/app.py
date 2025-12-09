@@ -52,8 +52,8 @@ def configure_jinja_env(app: Flask) -> None:
             "url_for_self": create_url_for_self,
             "version": __version__,
             "app_name": app.config.get("APPLICATION_NAME"),
-            "read_books": BookService.get_read_number(),
-            "unread_books": BookService.get_unread_number(),
+            "read_books": BookService.get_read_number,
+            "unread_books": BookService.get_unread_number,
         }
     )
 
