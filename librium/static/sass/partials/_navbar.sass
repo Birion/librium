@@ -1,6 +1,23 @@
 // Navigation bar styles
 // Defines styles for the main navigation bar and related elements
 
+#mobile-navbar, #main-sidebar
+  background-color: var(--navbar-bg) !important
+  color: var(--navbar-text) !important
+  border-bottom: 1px solid var(--border-color)
+
+  .item, .header.item
+    color: var(--navbar-text) !important
+    &:before
+      background: var(--border-color)
+
+#main-sidebar
+  background-color: var(--sidebar-bg) !important
+  border-right: 1px solid var(--border-color)
+
+  .item, .header.item
+    color: var(--sidebar-text) !important
+
 // Logo styling in the navigation menu
 .ui
   &.menu

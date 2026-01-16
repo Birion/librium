@@ -19,7 +19,7 @@ JS_VALIDATION_OUTPUT_PATH = f"gen/validation.{__version__}.js"
 CSS_OUTPUT_PATH = f"gen/packed.{__version__}.css"
 
 # Filter configurations
-SASS_FILTER = "libsass"
+SASS_FILTER = "sass"
 SCSS_FILTER = "pyscss"
 JS_FILTER = "jsmin"
 CSS_FILTER = "cssutils"

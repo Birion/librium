@@ -14,7 +14,7 @@
     {% set ico = "book" %}
 {% endif %}
 
-<nav class="ui big sidebar inverted vertical menu" id="main-sidebar" aria-label="Main Navigation">
+<nav class="ui big sidebar vertical menu" id="main-sidebar" aria-label="Main Navigation">
     <a href="{{ url_for("main.index") }}" class="ui header item" aria-label="{{ app_name }} Home">
         <span class="ui logo icon image" aria-hidden="true">
             <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
@@ -27,6 +27,12 @@
     <a href="{{ url_for("book.new") }}" class="item">
         Add a new book
     </a>
+    <div class="item">
+        <div class="ui toggle checkbox" id="dark-mode-toggle">
+            <input type="checkbox" name="dark-mode">
+            <label style="color: var(--sidebar-text) !important;">Dark Mode</label>
+        </div>
+    </div>
     {% if endpoint == "main" %}
         <div class="item" role="group" aria-label="Browse by">Browse by
             <div class="menu" role="menu">
@@ -61,13 +67,13 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="ui inverted icon menu">
+        <div class="ui icon menu" style="background: transparent; border: none; box-shadow: none;">
             <div class="item">
                 <form action="" method="get" role="search" aria-label="Search books">
-                    <div class="ui inverted transparent input">
-                        <input name="search" type="text" placeholder="Search..." aria-label="Search query">
+                    <div class="ui transparent input">
+                        <input name="search" type="text" placeholder="Search..." aria-label="Search query" style="color: var(--sidebar-text) !important;">
                     </div>
-                    <i class="circular search link inverted icon" aria-hidden="true" onclick="this.parentElement.submit()" role="button" tabindex="0"></i>
+                    <i class="circular search link icon" style="color: var(--sidebar-text) !important;" aria-hidden="true" onclick="this.parentElement.submit()" role="button" tabindex="0"></i>
                 </form>
             </div>
         </div>

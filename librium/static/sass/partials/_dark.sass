@@ -1,0 +1,163 @@
+// Dark mode specific overrides for Fomantic UI components
+body.dark-mode
+  background-color: var(--bg-color)
+
+  .ui.header
+    color: var(--text-color) !important
+
+  .ui.button.basic
+    color: var(--text-color) !important
+    box-shadow: 0 0 0 1px var(--border-color) inset !important
+    &:hover
+      background-color: rgba(255, 255, 255, 0.08) !important
+
+  .ui.segment, .ui.styled.accordion
+    background-color: var(--segment-bg)
+    color: var(--text-color)
+    border: 1px solid var(--border-color)
+
+  .ui.styled.accordion
+    .title
+      color: var(--text-color)
+      background-color: var(--accordion-title-bg)
+      border-top: 1px solid var(--border-color)
+
+      &:first-child
+        border-top: none
+
+      &.active
+        color: var(--text-color)
+
+    .content
+      background-color: var(--accordion-content-bg)
+      color: var(--text-color)
+
+  .ui.table
+    background-color: var(--segment-bg)
+    color: var(--text-color)
+    border: 1px solid var(--border-color)
+
+    thead th
+      background-color: rgba(255, 255, 255, 0.05)
+      color: var(--text-color)
+      border-bottom: 1px solid var(--border-color)
+
+    tbody td
+      border-top: 1px solid var(--border-color)
+      color: var(--text-color)
+      a
+        color: #54c8ff
+        &:hover
+          color: #70d5ff
+
+    tfoot th
+      background-color: rgba(255, 255, 255, 0.05)
+      color: var(--text-color)
+      border-top: 1px solid var(--border-color)
+
+  .ui.form
+    input:not([type]),
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="text"],
+    input[type="time"],
+    input[type="url"],
+    textarea
+      background-color: var(--input-bg)
+      color: var(--input-text)
+      border: 1px solid var(--border-color)
+
+    label,
+    .field > label:not(.button)
+      color: var(--text-color) !important
+
+  .ui.checkbox
+    label, &.toggle label
+      color: var(--text-color) !important
+
+  .ui.selection.dropdown
+    background-color: var(--dropdown-bg)
+    color: var(--dropdown-text)
+    border: 1px solid var(--border-color)
+
+    .menu
+      background-color: var(--dropdown-bg)
+      border: 1px solid var(--border-color)
+
+      .item
+        color: var(--dropdown-text)
+        border-top: 1px solid var(--border-color)
+
+        &:hover
+          background-color: rgba(255, 255, 255, 0.08)
+          color: #fff
+
+  .ui.modal
+    background-color: var(--modal-bg)
+    color: var(--modal-text)
+
+    > .header, > .content, > .actions
+      background-color: var(--modal-bg)
+      color: var(--modal-text)
+      border-bottom: 1px solid var(--border-color)
+
+    .ui.input input
+      background-color: var(--input-bg)
+      color: var(--input-text)
+      border: 1px solid var(--border-color)
+
+  .ui.popup
+    background-color: var(--modal-bg)
+    color: var(--modal-text)
+    border: 1px solid var(--border-color)
+    &:before
+      background-color: var(--modal-bg)
+      box-shadow: 1px 1px 0 0 var(--border-color)
+
+  .ui.pagination.menu
+    background-color: var(--segment-bg)
+    border: 1px solid var(--border-color)
+
+    .item
+      color: var(--text-color)
+      &:before
+        background: var(--border-color)
+
+      &:hover
+        background-color: rgba(255, 255, 255, 0.08)
+
+      &.active
+        background-color: rgba(255, 255, 255, 0.15)
+
+  .ui.label
+    background-color: rgba(255, 255, 255, 0.15) !important
+    color: rgba(255, 255, 255, 0.9) !important
+    border: 1px solid rgba(255, 255, 255, 0.2) !important
+
+    &.blue
+      background-color: #3d94d9 !important
+      color: #fff !important
+
+    &.teal
+      background-color: #00d1c1 !important
+      color: #fff !important
+
+    &.green
+      background-color: #2ecc71 !important
+      color: #fff !important
+
+    &.red
+      background-color: #ff4d4d !important
+      color: #fff !important
+
+    &.grey, &.gray
+      background-color: #555 !important
+      color: #eee !important
+
+    a
+      color: inherit !important

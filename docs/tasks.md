@@ -70,7 +70,11 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [x] Add accessibility features (ARIA attributes, keyboard navigation)
 - [x] Implement keyboard confirmation for the "Create a new ..." modal
 - [x] Implement progressive enhancement for JavaScript features
-- [ ] Add dark mode support
+- [x] Add dark mode support
+- [x] Improve dark mode consistency and visibility (sidebar, navbar, labels)
+- [x] Fix illegible labels in dark mode
+- [x] Fix form label visibility in dark mode (override high-specificity Fomantic UI selectors)
+- [x] Improve dark mode consistency and visibility (headers, basic buttons)
 
 ## Feature Improvements
 

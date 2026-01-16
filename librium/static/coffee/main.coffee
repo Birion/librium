@@ -9,6 +9,7 @@ $ ->
   initializeSearch()
   initializeSidebar()
   initializeKeyboardNavigation()
+  initializeDarkMode()
 
 # Initialize Semantic UI components
 initializeSemanticElements = ->
@@ -89,6 +90,29 @@ initializeSearch = ->
   $ ".sidebar .item form i"
     .click ->
       $(@).closest("form").submit()
+
+initializeDarkMode = ->
+  $toggle = $ "#dark-mode-toggle"
+  return unless $toggle.length
+
+  # Load preference from localStorage
+  isDark = localStorage.getItem("dark-mode") == "true"
+  
+  # Set initial state
+  if isDark
+    $("body").addClass "dark-mode"
+    $toggle.checkbox "set checked"
+
+  # Handle changes
+  $toggle.checkbox
+    onChange: ->
+      checked = $(@).is ":checked"
+      if checked
+        $("body").addClass "dark-mode"
+        localStorage.setItem "dark-mode", "true"
+      else
+        $("body").removeClass "dark-mode"
+        localStorage.setItem "dark-mode", "false"
 
 # Display a warning toast message
 # @param {string} message - The message to display
