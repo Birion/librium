@@ -2,20 +2,20 @@
 
 {% macro make_select(local_items, global_items, title) %}
     <div class="field">
-        <label for="{{ title }}s" title="Select one or more {{ title }}s">
+        <label for="{{ title }}s-dropdown" title="Select one or more {{ title }}s">
             {{ title|capitalize }}s
             <a href="#" style="float: right;" class="new-link" data-type="{{ title }}"
-               data-content="Add a new {{ title }}">
-                <i class="plus icon"></i>
+               data-content="Add a new {{ title }}" aria-label="Add new {{ title }}" role="button">
+                <i class="plus icon" aria-hidden="true"></i>
             </a>
         </label>
-        <div class="ui clearable multiple search selection dropdown" title="Search and select one or more {{ title }}s">
+        <div id="{{ title }}s-dropdown" class="ui clearable multiple search selection dropdown" title="Search and select one or more {{ title }}s" role="combobox" aria-expanded="false" aria-haspopup="listbox">
             <input type="hidden" name="{{ title }}s" value="{{ local_items|join(',') if local_items }}">
-            <i class="dropdown icon"></i>
+            <i class="dropdown icon" aria-hidden="true"></i>
             <div class="default text">Select {{ title }}</div>
-            <div class="menu">
+            <div class="menu" role="listbox">
                 {% for item in global_items %}
-                    <div class="item" data-value="{{ item.id }}">{{ item.name }}</div>
+                    <div class="item" data-value="{{ item.id }}" role="option">{{ item.name }}</div>
                 {% endfor %}
             </div>
         </div>
@@ -145,9 +145,9 @@
                         <h4 class="ui dividing header">
                             <span>Series</span>
                             <a href="#" class="new-link" data-type="series" data-content="Create new series"
-                               id="create-series"
+                               id="create-series" aria-label="Create new series" role="button"
                                style="float: right;">
-                                <i class="plus icon"></i>
+                                <i class="plus icon" aria-hidden="true"></i>
                             </a>
                         </h4>
                         <input type="hidden" name="series" id="series">
@@ -156,14 +156,14 @@
                                 <div class="stackable fields">
                                     <div class="eight wide field">
                                         <label for="series-name-{{ loop.index }}">Name</label>
-                                        <div class="ui fluid search selection dropdown">
-                                            <input type="hidden" name="series-name-{{ loop.index }}"
+                                        <div id="series-name-{{ loop.index }}-dropdown" class="ui fluid search selection dropdown" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                                            <input type="hidden" name="series-name-{{ loop.index }}" id="series-name-{{ loop.index }}"
                                                    value="{{ si.series.id }}">
-                                            <i class="dropdown icon"></i>
+                                            <i class="dropdown icon" aria-hidden="true"></i>
                                             <span class="text">Select series</span>
-                                            <div class="menu">
+                                            <div class="menu" role="listbox">
                                                 {% for s in series %}
-                                                    <div class="item" data-value="{{ s.id }}">{{ s.name }}</div>
+                                                    <div class="item" data-value="{{ s.id }}" role="option">{{ s.name }}</div>
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -172,13 +172,13 @@
                                         <label for="series-index-{{ loop.index }}">Index</label>
                                         <input name="series-index-{{ loop.index }}"
                                                id="series-index-{{ loop.index }}"
-                                               type="number"
+                                               type="number" aria-label="Series index"
                                                min="0" step="0.1" value="{{ si.index }}">
                                     </div>
                                     <div class="two wide field">
                                         <label></label>
-                                        <a class="ui red icon button remove series" title="Remove from book">
-                                            <i class="minus icon"></i>
+                                        <a class="ui red icon button remove series" title="Remove from book" aria-label="Remove series from book" role="button">
+                                            <i class="minus icon" aria-hidden="true"></i>
                                         </a>
 
                                     </div>
@@ -188,8 +188,8 @@
 
                         <div class="field">
                             <a id="add-series" class="ui basic fluid icon button"
-                               data-url="{{ url_for("api.api_v1.series") }}">
-                                <i class="plus icon"></i>
+                               data-url="{{ url_for("api.api_v1.series") }}" aria-label="Add series row" role="button">
+                                <i class="plus icon" aria-hidden="true"></i>
                             </a>
                         </div>
 

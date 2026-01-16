@@ -14,9 +14,9 @@
     {% set ico = "book" %}
 {% endif %}
 
-<div class="ui big sidebar inverted vertical menu" id="main-sidebar">
-    <a href="{{ url_for("main.index") }}" class="ui header item">
-        <span class="ui logo icon image">
+<nav class="ui big sidebar inverted vertical menu" id="main-sidebar" aria-label="Main Navigation">
+    <a href="{{ url_for("main.index") }}" class="ui header item" aria-label="{{ app_name }} Home">
+        <span class="ui logo icon image" aria-hidden="true">
             <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
                  alt="{{ app_name }} logo">
         </span>
@@ -28,15 +28,15 @@
         Add a new book
     </a>
     {% if endpoint == "main" %}
-        <div class="item">Browse by
-            <div class="menu">
+        <div class="item" role="group" aria-label="Browse by">Browse by
+            <div class="menu" role="menu">
                 {% for item in ["Books", "Authors", "Series", "Years", "Genres"] %}
-                    <a href="{{ url_for("main." + item|lower) }}" class="item">{{ item }}</a>
+                    <a href="{{ url_for("main." + item|lower) }}" class="item" role="menuitem">{{ item }}</a>
                 {% endfor %}
             </div>
         </div>
-        <div class="item">Sort by
-            <div class="menu">
+        <div class="item" role="group" aria-label="Sort by">Sort by
+            <div class="menu" role="menu">
                 {{ make_sorter("title", "Title", (request.args.sort_by == "title" or request.args.sort_by is not defined)) }}
                 <div class="divider"></div>
                 {{ make_sorter("released", "Year Released", request.args.sort_by == "released") }}
@@ -44,18 +44,18 @@
                 {{ make_sorter("read", "Read Status", request.args.sort_by == "read") }}
             </div>
         </div>
-        <div class="item">Show only
-            <div class="menu">
-                <a href="{{ url_for_self(read=true) }}" class="item">Read books ({{ read_books() }})</a>
-                <a href="{{ url_for_self(read=false) }}" class="item">Unread books ({{ unread_books() }})</a>
+        <div class="item" role="group" aria-label="Show only">Show only
+            <div class="menu" role="menu">
+                <a href="{{ url_for_self(read=true) }}" class="item" role="menuitem">Read books ({{ read_books() }})</a>
+                <a href="{{ url_for_self(read=false) }}" class="item" role="menuitem">Unread books ({{ unread_books() }})</a>
             </div>
         </div>
-        <div class="item">
+        <div class="item" role="group" aria-label="Export">
             Download export
-            <div class="menu">
+            <div class="menu" role="menu">
                 {% for filetype in ["csv", "json"] %}
                     <div data-url="{{ url_for("api.api_v1.export", format=filetype) }}"
-                         data-filename="export.{{ filetype }}" class="export link item">
+                         data-filename="export.{{ filetype }}" class="export link item" role="menuitem" tabindex="0">
                         {{ filetype|upper }}
                     </div>
                 {% endfor %}
@@ -63,13 +63,13 @@
         </div>
         <div class="ui inverted icon menu">
             <div class="item">
-                <form action="" method="get">
+                <form action="" method="get" role="search" aria-label="Search books">
                     <div class="ui inverted transparent input">
-                        <input name="search" type="text" placeholder="Search...">
+                        <input name="search" type="text" placeholder="Search..." aria-label="Search query">
                     </div>
-                    <i class="circular search link inverted icon"></i>
+                    <i class="circular search link inverted icon" aria-hidden="true" onclick="this.parentElement.submit()" role="button" tabindex="0"></i>
                 </form>
             </div>
         </div>
     {% endif %}
-</div>
+</nav>

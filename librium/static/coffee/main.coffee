@@ -8,22 +8,48 @@ $ ->
   initializeExportDownload()
   initializeSearch()
   initializeSidebar()
+  initializeKeyboardNavigation()
 
 # Initialize Semantic UI components
 initializeSemanticElements = ->
   $ ".ui.accordion"
-    .accordion()
+    .accordion
+      onOpening: ->
+        $(@).prev(".title").attr("aria-expanded", "true")
+        $(@).attr("aria-hidden", "false")
+      onClosing: ->
+        $(@).prev(".title").attr("aria-expanded", "false")
+        $(@).attr("aria-hidden", "true")
 
   $ "select.dropdown, .ui.dropdown"
     .dropdown
       fullTextSearch: true
       on: "hover"
+      onShow: ->
+        $(@).attr("aria-expanded", "true")
+      onHide: ->
+        $(@).attr("aria-expanded", "false")
 
   $ ".ui.checkbox"
     .checkbox()
 
   $ "*[data-content]"
     .popup()
+
+initializeKeyboardNavigation = ->
+  # Handle Enter/Space on role="button" and tabindex="0" elements
+  $ "[role='button'][tabindex='0'], [role='menuitem'][tabindex='0']"
+    .on "keydown", (e) ->
+      if e.which == 13 or e.which == 32 # Enter or Space
+        e.preventDefault()
+        $(@).click()
+
+  # Specific handler for accordion titles to allow keyboard toggling if not handled by Fomantic
+  $ ".ui.accordion .title[tabindex='0']"
+    .on "keydown", (e) ->
+      if e.which == 13 or e.which == 32
+        e.preventDefault()
+        $(@).parent().accordion('toggle', $(@).index() / 2)
 
 initializeSidebar = ->
   # Initialize sidebar

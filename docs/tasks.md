@@ -67,7 +67,8 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [x] Improve book listing clarity in mobile view
 - [x] Fix series selection overflow in book view
 - [x] Improve series field layout for better visual grouping
-- [ ] Add accessibility features (ARIA attributes, keyboard navigation)
+- [x] Add accessibility features (ARIA attributes, keyboard navigation)
+- [x] Implement keyboard confirmation for the "Create a new ..." modal
 - [ ] Implement progressive enhancement for JavaScript features
 - [ ] Add dark mode support
 

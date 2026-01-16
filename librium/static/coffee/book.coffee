@@ -156,6 +156,12 @@ initializeFormHandlers = ->
               $modal.find("#name").val(null)
               updateDropdown $type, data.id, data.name
 
+      # Handle Enter key in the input field
+      $modal.find("#name").off("keydown").on "keydown", (e) ->
+        if e.which == 13 # Enter
+          e.preventDefault()
+          $modal.find(".positive.button").click()
+
 # ===== Series Management =====
 
 # Initialize series management functionality
@@ -192,8 +198,11 @@ createSeriesFields = ($addButton) ->
   makeLink = (type, icon, color) ->
     $ "<a/>",
       "class": "ui #{color} icon button #{type} series"
+      "role": "button"
+      "aria-label": "#{type} series"
     .append $ "<i/>",
       "class": "#{icon} icon"
+      "aria-hidden": "true"
 
   # Create the main field container
   $field = makeDiv "stackable fields"
@@ -209,17 +218,22 @@ createSeriesFields = ($addButton) ->
 
   # Create selection dropdown
   $dropdownDiv = makeDiv "ui fluid search selection dropdown"
+  $dropdownDiv.attr "role", "combobox"
+  $dropdownDiv.attr "aria-expanded", "false"
+  $dropdownDiv.attr "aria-haspopup", "listbox"
   $dropdownDiv.appendTo $seriesField
 
   # Add hidden input for series name
   $ "<input/>",
     type: "hidden"
     name: "series-name-#{$lastID}"
+    id: "series-name-#{$lastID}"
   .appendTo $dropdownDiv
 
   # Add dropdown icon
   $ "<i/>",
     class: "dropdown icon"
+    "aria-hidden": "true"
   .appendTo $dropdownDiv
 
   # Add dropdown text
@@ -230,6 +244,7 @@ createSeriesFields = ($addButton) ->
 
   # Create dropdown menu
   $menuDiv = makeDiv "menu"
+  $menuDiv.attr "role", "listbox"
   $menuDiv.appendTo $dropdownDiv
 
   # Create index field
@@ -246,6 +261,7 @@ createSeriesFields = ($addButton) ->
     type: "number"
     min: 0
     step: 0.1
+    "aria-label": "Series index"
   .appendTo $idxField
 
   # Create button field
@@ -268,6 +284,7 @@ createSeriesFields = ($addButton) ->
         class: "item"
         "data-value": item.id
         text: item.name
+        role: "option"
       menuItem.appendTo $menuDiv
 
     # Initialize dropdown

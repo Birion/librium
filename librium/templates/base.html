@@ -6,23 +6,23 @@
 </head>
 <body>
 <!-- Mobile Top Bar -->
-<div class="ui top fixed inverted menu mobile-only">
-    <a class="item" id="sidebar-toggle">
-        <i class="sidebar icon"></i>
+<nav class="ui top fixed inverted menu mobile-only" aria-label="Mobile Navigation">
+    <a class="item" id="sidebar-toggle" aria-label="Toggle Sidebar" role="button" tabindex="0">
+        <i class="sidebar icon" aria-hidden="true"></i>
     </a>
     <div class="header item">
         {{ app_name }}
     </div>
-</div>
+</nav>
 
 {% include "_core/sidemenu.html" %}
-<div class="ui pusher">
+<div class="ui pusher" role="main">
 {% block content %}{% endblock %}
 </div>
 
 <!-- Login Modal -->
-<div class="ui mini modal" id="login-modal">
-    <div class="header">Login Required</div>
+<div class="ui mini modal" id="login-modal" role="dialog" aria-labelledby="login-header" aria-modal="true">
+    <div class="header" id="login-header">Login Required</div>
     <div class="content">
         <form id="login-form" class="ui form">
             <div class="field">

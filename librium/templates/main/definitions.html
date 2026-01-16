@@ -266,16 +266,16 @@
 {% endmacro %}
 
 {% macro make_head(title, active, icon=True, extra=False) %}
-    <div class="{{ "active" if active }} title">
+    <div class="{{ "active" if active }} title" role="button" aria-expanded="{{ "true" if active else "false" }}" tabindex="0">
         {% if icon %}
-            <i class="dropdown icon"></i>
+            <i class="dropdown icon" aria-hidden="true"></i>
         {% endif %}
         {{ title }}
     </div>
 {% endmacro %}
 
 {% macro make_content(active) %}
-    <div class="{{ "active" if active }} content">
+    <div class="{{ "active" if active }} content" role="region" aria-hidden="{{ "false" if active else "true" }}">
         <div class="ui raised segment">
             {{ caller() }}
         </div>
