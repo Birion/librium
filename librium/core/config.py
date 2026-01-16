@@ -45,6 +45,8 @@ class Config:
     COMPRESS_MIN_SIZE = 500  # Only compress responses larger than this size (in bytes)
 
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-key-please-change-in-production")
+    JWT_TOKEN_LOCATION = ["headers", "query_string"]
+    JWT_QUERY_STRING_NAME = "token"
 
     @classmethod
     def to_dict(cls) -> Dict[str, Any]:

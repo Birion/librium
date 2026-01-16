@@ -72,6 +72,12 @@ def update(id, **kwargs):
     logger.info(f"Book update view for ID: {id}, method: {request.method}")
 
     try:
+        # Check if this is a delete request from No-JS fallback
+        if request.form.get("delete") == "true":
+            logger.info(f"Deleting book ID {id} via form submission (No-JS fallback)")
+            BookService.delete(id)
+            return redirect(url_for("main.index"))
+
         # Get the book by ID
         book = BookService.get_by_id(id)
         if not book:
@@ -80,13 +86,23 @@ def update(id, **kwargs):
             kwargs["format_id"] = kwargs.pop("format", None)
             book = BookService.create(**kwargs)
             logger.info(f"Created new book with ID: {book.id}")
-            return jsonify({"url": url_for("book.index", id=book.id)})
+            if (
+                request.is_json
+                or request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            ):
+                return jsonify({"url": url_for("book.index", id=book.id)})
+            return redirect(url_for("book.index", id=book.id))
         else:
             logger.debug(f"Updating book: {book.title} (ID: {book.id})")
             # Update the book with the provided data
             book = BookService.add_or_update(book, kwargs)
             logger.info(f"Book updated: {book.title} (ID: {book.id})")
-            return jsonify({"url": url_for("book.index", id=id)})
+            if (
+                request.is_json
+                or request.headers.get("X-Requested-With") == "XMLHttpRequest"
+            ):
+                return jsonify({"url": url_for("book.index", id=id)})
+            return redirect(url_for("book.index", id=id))
     except ValueError as e:
         logger.error(f"Value error in book update view for ID {id}: {e}")
         return jsonify({"error": str(e)}), 400

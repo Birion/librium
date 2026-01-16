@@ -54,10 +54,10 @@
             Download export
             <div class="menu" role="menu">
                 {% for filetype in ["csv", "json"] %}
-                    <div data-url="{{ url_for("api.api_v1.export", format=filetype) }}"
-                         data-filename="export.{{ filetype }}" class="export link item" role="menuitem" tabindex="0">
+                    <a href="{{ url_for("api.api_v1.export", format=filetype) }}"
+                         download="export.{{ filetype }}" class="export item" role="menuitem" tabindex="0">
                         {{ filetype|upper }}
-                    </div>
+                    </a>
                 {% endfor %}
             </div>
         </div>

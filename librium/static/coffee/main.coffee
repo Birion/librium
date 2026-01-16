@@ -75,27 +75,15 @@ initializeFilterChanges = ->
       window.location = url.toString()
 
 initializeExportDownload = ->
-  $ ".export.link.item"
-    .click ->
-      $filename = $(@).data "filename"
-      $url = $(@).data "url"
-      $.ajax
-        url: $url
-        type: "GET"
-        success: (data) ->
-          # If the response is a JSON object, stringify it
-          if typeof data is "object"
-            data = JSON.stringify(data, null, 2)
-          # Create a blob from the data and trigger download
-          blob = new Blob([data], { type: "application/octet-stream" })
-          link = document.createElement("a")
-          link.href = URL.createObjectURL(blob)
-          link.download = $filename || "export.zip"
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        error: (error) ->
-          showWarning error.responseText
+  # Append JWT token to export links if available
+  token = window.getAuthToken?()
+  if token
+    $ ".export.item"
+      .each ->
+        url = new URL @.href, window.location.origin
+        url.searchParams.set "token", token
+        @.href = url.toString()
+
 
 initializeSearch = ->
   $ ".sidebar .item form i"
