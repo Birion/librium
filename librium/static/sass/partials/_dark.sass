@@ -36,6 +36,10 @@ body.dark-mode
     color: var(--text-color)
     border: 1px solid var(--border-color)
 
+    ::selection
+      background-color: var(--selection-bg) !important
+      color: var(--selection-text) !important
+
     thead th
       background-color: rgba(255, 255, 255, 0.05)
       color: var(--text-color)
@@ -71,6 +75,10 @@ body.dark-mode
       color: var(--input-text)
       border: 1px solid var(--border-color)
 
+      &::selection
+        background-color: var(--selection-bg) !important
+        color: var(--selection-text) !important
+
     label,
     .field > label:not(.button)
       color: var(--text-color) !important
@@ -93,8 +101,16 @@ body.dark-mode
         border-top: 1px solid var(--border-color)
 
         &:hover
-          background-color: rgba(255, 255, 255, 0.08)
-          color: #fff
+          background-color: var(--dropdown-hover-bg) !important
+          color: #fff !important
+
+        &.selected
+          background-color: var(--dropdown-selected-bg) !important
+          color: #fff !important
+
+        &.active
+          background-color: var(--dropdown-selected-bg) !important
+          color: #fff !important
 
   .ui.modal
     background-color: var(--modal-bg)
@@ -109,6 +125,10 @@ body.dark-mode
       background-color: var(--input-bg)
       color: var(--input-text)
       border: 1px solid var(--border-color)
+
+      &::selection
+        background-color: var(--selection-bg) !important
+        color: var(--selection-text) !important
 
   .ui.popup
     background-color: var(--modal-bg)
@@ -160,5 +180,7 @@ body.dark-mode
 
     a
       color: inherit !important
-  .statistic > .value, .statistic > .label
-    color: var(--text-color) !important
+
+  .statistic
+    .value, .label
+      color: var(--text-color) !important

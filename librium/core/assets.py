@@ -2,6 +2,7 @@ from typing import Dict
 from librium.__version__ import __version__
 
 from flask_assets import Bundle, Environment
+from webassets.filter import get_filter
 
 # Asset paths
 SASS_PERSONAL_PATH = "sass/*.sass"
@@ -19,7 +20,7 @@ JS_VALIDATION_OUTPUT_PATH = f"gen/validation.{__version__}.js"
 CSS_OUTPUT_PATH = f"gen/packed.{__version__}.css"
 
 # Filter configurations
-SASS_FILTER = "sass"
+SASS_FILTER = get_filter("sass")
 SCSS_FILTER = "pyscss"
 JS_FILTER = "jsmin"
 CSS_FILTER = "cssutils"

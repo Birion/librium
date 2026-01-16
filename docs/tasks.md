@@ -75,6 +75,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [x] Fix illegible labels in dark mode
 - [x] Fix form label visibility in dark mode (override high-specificity Fomantic UI selectors)
 - [x] Improve dark mode consistency and visibility (headers, basic buttons)
+- [x] Fix input selection and dropdown selection visibility in dark mode
 
 ## Feature Improvements
 
