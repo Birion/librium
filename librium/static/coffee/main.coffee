@@ -7,6 +7,7 @@ $ ->
   initializeFilterChanges()
   initializeExportDownload()
   initializeSearch()
+  initializeSidebar()
 
 # Initialize Semantic UI components
 initializeSemanticElements = ->
@@ -23,6 +24,19 @@ initializeSemanticElements = ->
 
   $ "*[data-content]"
     .popup()
+
+initializeSidebar = ->
+  # Initialize sidebar
+  $ "#main-sidebar"
+    .sidebar
+      transition: "overlay"
+      mobileTransition: "uncover"
+
+  # Sidebar toggle button
+  $ "#sidebar-toggle"
+    .click ->
+      $ "#main-sidebar"
+        .sidebar "toggle"
 
 # Handle filter changes
 initializeFilterChanges = ->

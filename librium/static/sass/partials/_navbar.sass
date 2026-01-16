@@ -14,9 +14,41 @@
           &:hover
             transform: scale(1.05)
 
+// Responsive visibility helpers
+.mobile-only
+  display: none !important
+
+@media only screen and (max-width: 767px)
+  .mobile-only
+    display: flex !important
+  .mobile-hide
+    display: none !important
+
+// Sidebar visibility on large screens
+#main-sidebar
+  @media only screen and (min-width: 768px)
+    visibility: visible !important
+    transform: translate3d(0, 0, 0) !important
+    width: 260px !important // Standard Fomantic UI big sidebar width
+    display: flex !important
+
+// Adjust pusher when sidebar is visible on large screens
+.ui.pusher
+  @media only screen and (min-width: 768px)
+    margin-left: 260px !important
+    width: calc(100% - 260px) !important
+    transform: none !important
+
 // Main content container positioning
 .main
   &.container
     margin-top: 7em
     flex: 1 0 auto  // Allow container to grow but not shrink
     padding-bottom: 2em  // Add space at the bottom
+
+@media only screen and (max-width: 767px)
+  .main
+    &.container
+      margin-top: 5em
+      padding-left: 1em
+      padding-right: 1em

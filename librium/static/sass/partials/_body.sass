@@ -2,12 +2,13 @@
 // Defines the main background and layout for the application body
 
 body
-  // Set background image and properties
-  background: url("../img/background.jpg") fixed !important
-  background-size: 100%
-  height: auto !important
-
   // Ensure content fills the viewport
   min-height: 100vh
   display: flex
   flex-direction: column
+
+body, .ui.pusher
+  // Set background image and properties
+  background: url("../img/background.jpg") fixed !important
+  background-size: cover
+  height: auto !important

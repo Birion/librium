@@ -14,13 +14,13 @@
     {% set ico = "book" %}
 {% endif %}
 
-<div class="ui big visible sidebar inverted vertical menu">
+<div class="ui big sidebar inverted vertical menu" id="main-sidebar">
     <a href="{{ url_for("main.index") }}" class="ui header item">
         <span class="ui logo icon image">
             <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
                  alt="{{ app_name }} logo">
         </span>
-        <span>
+        <span class="mobile-hide">
             {{ app_name }}
         </span>
     </a>

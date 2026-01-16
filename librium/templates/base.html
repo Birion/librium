@@ -5,6 +5,16 @@
     {% include "_core/_head.html" %}
 </head>
 <body>
+<!-- Mobile Top Bar -->
+<div class="ui top fixed inverted menu mobile-only">
+    <a class="item" id="sidebar-toggle">
+        <i class="sidebar icon"></i>
+    </a>
+    <div class="header item">
+        {{ app_name }}
+    </div>
+</div>
+
 {% include "_core/sidemenu.html" %}
 <div class="ui pusher">
 {% block content %}{% endblock %}
