@@ -64,6 +64,9 @@ This document contains a prioritised list of tasks for improving the Librium cod
 ### Frontend
 - [x] Optimise asset loading for better performance
 - [x] Implement responsive design for mobile devices
+- [x] Improve book listing clarity in mobile view
+- [x] Fix series selection overflow in book view
+- [x] Improve series field layout for better visual grouping
 - [ ] Add accessibility features (ARIA attributes, keyboard navigation)
 - [ ] Implement progressive enhancement for JavaScript features
 - [ ] Add dark mode support

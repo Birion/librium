@@ -86,7 +86,7 @@
             {{ make_series(series.series) }}
         </div>
     {% endif %}
-    <table class="ui structured table">
+    <table class="ui stackable structured table">
         <thead>
         <tr>
             <th class="one wide"></th>
@@ -109,7 +109,7 @@
 {% endmacro %}
 
 {% macro make_series_content(books) %}
-    <table class="ui structured table">
+    <table class="ui stackable structured table">
         <thead>
         <tr>
             <th class="two wide"></th>
@@ -144,12 +144,12 @@
 {% endmacro %}
 
 {% macro make_book_content(book) %}
-    <div class="ui grid">
+    <div class="ui stackable grid">
         <div class="four wide column">
             {{ make_book_cover(book) }}
         </div>
         <div class="twelve wide column">
-            <table class="ui structured table">
+            <table class="ui stackable structured table">
                 <thead>
                 <tr>
                     <th class="two wide center aligned">Released</th>
@@ -192,7 +192,7 @@
 {% endmacro %}
 
 {% macro make_year_content(year, books) %}
-    <table class="ui structured table">
+    <table class="ui stackable structured table">
         <thead>
         <tr>
             <th class="two wide"></th>
@@ -227,7 +227,7 @@
 {% endmacro %}
 
 {% macro make_genre_content(books) %}
-    <table class="ui structured table">
+    <table class="ui stackable structured table">
         <thead>
         <tr>
             <th class="two wide"></th>

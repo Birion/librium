@@ -160,6 +160,11 @@ initializeFormHandlers = ->
 
 # Initialize series management functionality
 initializeSeriesManagement = ->
+  # Initialize existing dropdowns in the series section
+  $ ".series .ui.dropdown"
+    .dropdown
+      on: "click"
+
   # Handle series removal
   $ ".remove.series"
     .click ->
@@ -184,23 +189,52 @@ createSeriesFields = ($addButton) ->
       for: "series-#{target}-#{$lastID}"
       text: target[0].toUpperCase() + target[1...]
 
-  makeLink = (type, icon) ->
+  makeLink = (type, icon, color) ->
     $ "<a/>",
-      "class": "ui teal button #{type} series"
+      "class": "ui #{color} icon button #{type} series"
     .append $ "<i/>",
       "class": "#{icon} icon"
 
   # Create the main field container
-  $field = makeDiv "fields"
+  $field = makeDiv "stackable fields"
   $addButton.parent().before $field
 
-  # Create index field
-  $idxField = makeDiv "one wide field"
-  $idxField.appendTo $field
+  # Create series field
+  $seriesField = makeDiv "eight wide field"
+  $seriesField.appendTo $field
 
-  # Create empty field for spacing
-  $emptyField = $idxField.clone()
-  $emptyField.prependTo $field
+  # Add series label
+  $seriesLabel = makeLabel "name"
+  $seriesLabel.appendTo $seriesField
+
+  # Create selection dropdown
+  $dropdownDiv = makeDiv "ui fluid search selection dropdown"
+  $dropdownDiv.appendTo $seriesField
+
+  # Add hidden input for series name
+  $ "<input/>",
+    type: "hidden"
+    name: "series-name-#{$lastID}"
+  .appendTo $dropdownDiv
+
+  # Add dropdown icon
+  $ "<i/>",
+    class: "dropdown icon"
+  .appendTo $dropdownDiv
+
+  # Add dropdown text
+  $ "<span/>",
+    class: "text"
+    text: "Select series"
+  .appendTo $dropdownDiv
+
+  # Create dropdown menu
+  $menuDiv = makeDiv "menu"
+  $menuDiv.appendTo $dropdownDiv
+
+  # Create index field
+  $idxField = makeDiv "six wide field"
+  $idxField.appendTo $field
 
   # Add index label and input
   $idxLabel = makeLabel "index"
@@ -214,43 +248,17 @@ createSeriesFields = ($addButton) ->
     step: 0.1
   .appendTo $idxField
 
-  # Create series field
-  $seriesField = makeDiv "eight wide field"
-  $seriesField.prependTo $field
+  # Create button field
+  $buttonField = makeDiv "two wide field"
+  $buttonField.appendTo $field
 
-  # Add series label
-  $seriesLabel = makeLabel "name"
-  $seriesLabel.appendTo $seriesField
+  # Add button label
+  $buttonLabel = $ "<label/>"
+  $buttonLabel.appendTo $buttonField
 
-  # Create buttons container
-  $buttonsDiv = makeDiv "ui fluid buttons"
-  $buttonsDiv.appendTo $seriesField
-
-  # Create dropdown button
-  $buttonDiv = makeDiv "ui fluid dropdown search icon button"
-  $buttonDiv.appendTo $buttonsDiv
-
-  # Add hidden input for series name
-  $ "<input/>",
-    type: "hidden"
-    name: "series-name-#{$lastID}"
-  .appendTo $buttonDiv
-
-  # Add dropdown text
-  $ "<span/>",
-    class: "text"
-    text: "Select series"
-  .appendTo $buttonDiv
-
-  # Create dropdown menu
-  $menuDiv = makeDiv "menu"
-  $menuDiv.appendTo $buttonDiv
-
-  # Add edit and remove buttons
-  $editLink = makeLink "edit", "pencil"
-  $editLink.appendTo $buttonsDiv
-  $removeLink = makeLink "remove", "minus"
-  $removeLink.appendTo $buttonsDiv
+  # Add remove button
+  $removeLink = makeLink "remove", "minus", "red"
+  $removeLink.appendTo $buttonField
 
   # Load series data from server
   $.getJSON $addButton.data("url"), [], (data) ->
@@ -263,7 +271,12 @@ createSeriesFields = ($addButton) ->
       menuItem.appendTo $menuDiv
 
     # Initialize dropdown
-    $buttonDiv.dropdown()
+    $dropdownDiv.dropdown
+      on: "click"
+
+  $field = $ ""
+
+  initializeSeriesManagement()
 
 # ===== File Upload =====
 
