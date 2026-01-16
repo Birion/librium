@@ -1,0 +1,557 @@
+@import url("https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i|Source+Sans+Pro:700&display=swap&subset=latin-ext");
+:root {
+  --bg-color: #ffffff;
+  --text-color: rgba(0, 0, 0, 0.87);
+  --border-color: rgba(34, 36, 38, 0.15);
+  --segment-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-text: rgba(0, 0, 0, 0.87);
+  --dropdown-bg: #ffffff;
+  --dropdown-text: rgba(0, 0, 0, 0.87);
+  --modal-bg: #ffffff;
+  --modal-text: rgba(0, 0, 0, 0.87);
+  --accordion-title-bg: transparent;
+  --accordion-content-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-text: rgba(0, 0, 0, 0.87);
+  --navbar-bg: #ffffff;
+  --navbar-text: rgba(0, 0, 0, 0.87);
+  --primary-color: #2185d0;
+  --secondary-color: #1b1c1d;
+  --teal-color: #00b5ad;
+  --teal-shadow: rgba(0, 181, 173, 0.2);
+  --selection-bg: #2185d0;
+  --selection-text: #ffffff;
+}
+
+body.dark-mode {
+  --bg-color: #1b1c1d;
+  --text-color: rgba(255, 255, 255, 0.9);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --segment-bg: #242526;
+  --input-bg: #333;
+  --input-text: #fff;
+  --dropdown-bg: #333;
+  --dropdown-text: #fff;
+  --dropdown-hover-bg: rgba(255, 255, 255, 0.08);
+  --dropdown-selected-bg: rgba(255, 255, 255, 0.12);
+  --modal-bg: #242526;
+  --modal-text: #fff;
+  --accordion-title-bg: rgba(255, 255, 255, 0.05);
+  --accordion-content-bg: #242526;
+  --sidebar-bg: #1b1c1d;
+  --sidebar-text: rgba(255, 255, 255, 0.9);
+  --navbar-bg: #1b1c1d;
+  --navbar-text: rgba(255, 255, 255, 0.9);
+  --selection-bg: #3d94d9;
+  --selection-text: #ffffff;
+}
+
+#mobile-navbar, #main-sidebar {
+  background-color: var(--navbar-bg) !important;
+  color: var(--navbar-text) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+#mobile-navbar .item, #mobile-navbar .header.item, #main-sidebar .item, #main-sidebar .header.item {
+  color: var(--navbar-text) !important;
+}
+#mobile-navbar .item:before, #mobile-navbar .header.item:before, #main-sidebar .item:before, #main-sidebar .header.item:before {
+  background: var(--border-color);
+}
+
+#main-sidebar {
+  background-color: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--border-color);
+}
+#main-sidebar .item, #main-sidebar .header.item {
+  color: var(--sidebar-text) !important;
+}
+
+.ui.menu .item img.logo {
+  margin-right: 1.5em;
+  max-height: 2.5rem;
+  transition: transform 0.2s ease-in-out;
+}
+.ui.menu .item img.logo:hover {
+  transform: scale(1.05);
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .mobile-only {
+    display: flex !important;
+  }
+  .mobile-hide {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 768px) {
+  #main-sidebar {
+    visibility: visible !important;
+    transform: translate3d(0, 0, 0) !important;
+    width: 260px !important;
+    display: flex !important;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .ui.pusher {
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+    transform: none !important;
+  }
+}
+
+.main.container {
+  margin-top: 7em;
+  flex: 1 0 auto;
+  padding-bottom: 2em;
+}
+
+@media only screen and (max-width: 767px) {
+  .main.container {
+    margin-top: 5em;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body, .ui.pusher {
+  background: url("../img/background.jpg") fixed !important;
+  background-size: cover;
+  height: auto !important;
+}
+
+body.dark-mode {
+  background-color: var(--bg-color);
+}
+body.dark-mode .ui.header {
+  color: var(--text-color) !important;
+}
+body.dark-mode .ui.button.basic {
+  color: var(--text-color) !important;
+  box-shadow: 0 0 0 1px var(--border-color) inset !important;
+}
+body.dark-mode .ui.button.basic:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+body.dark-mode .ui.segment, body.dark-mode .ui.styled.accordion {
+  background-color: var(--segment-bg);
+  color: var(--text-color);
+}
+body.dark-mode .ui.styled.accordion .title {
+  color: var(--text-color);
+  background-color: var(--accordion-title-bg);
+  border-top: 1px solid var(--border-color);
+}
+body.dark-mode .ui.styled.accordion .title:first-child {
+  border-top: none;
+}
+body.dark-mode .ui.styled.accordion .title.active {
+  color: var(--text-color);
+}
+body.dark-mode .ui.styled.accordion .content {
+  background-color: var(--accordion-content-bg);
+  color: var(--text-color);
+}
+body.dark-mode .ui.table {
+  background-color: var(--segment-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.table ::selection {
+  background-color: var(--selection-bg) !important;
+  color: var(--selection-text) !important;
+}
+body.dark-mode .ui.table thead th {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+body.dark-mode .ui.table tbody td {
+  border-top: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+body.dark-mode .ui.table tbody td a {
+  color: #54c8ff;
+}
+body.dark-mode .ui.table tbody td a:hover {
+  color: #70d5ff;
+}
+body.dark-mode .ui.table tfoot th {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-color);
+  border-top: 1px solid var(--border-color);
+}
+body.dark-mode .ui.form input:not([type]),
+body.dark-mode .ui.form input[type=date],
+body.dark-mode .ui.form input[type=datetime-local],
+body.dark-mode .ui.form input[type=email],
+body.dark-mode .ui.form input[type=number],
+body.dark-mode .ui.form input[type=password],
+body.dark-mode .ui.form input[type=search],
+body.dark-mode .ui.form input[type=tel],
+body.dark-mode .ui.form input[type=text],
+body.dark-mode .ui.form input[type=time],
+body.dark-mode .ui.form input[type=url],
+body.dark-mode .ui.form textarea {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.form input:not([type])::selection,
+body.dark-mode .ui.form input[type=date]::selection,
+body.dark-mode .ui.form input[type=datetime-local]::selection,
+body.dark-mode .ui.form input[type=email]::selection,
+body.dark-mode .ui.form input[type=number]::selection,
+body.dark-mode .ui.form input[type=password]::selection,
+body.dark-mode .ui.form input[type=search]::selection,
+body.dark-mode .ui.form input[type=tel]::selection,
+body.dark-mode .ui.form input[type=text]::selection,
+body.dark-mode .ui.form input[type=time]::selection,
+body.dark-mode .ui.form input[type=url]::selection,
+body.dark-mode .ui.form textarea::selection {
+  background-color: var(--selection-bg) !important;
+  color: var(--selection-text) !important;
+}
+body.dark-mode .ui.form label,
+body.dark-mode .ui.form .field > label:not(.button) {
+  color: var(--text-color) !important;
+}
+body.dark-mode .ui.checkbox label, body.dark-mode .ui.checkbox.toggle label {
+  color: var(--text-color) !important;
+}
+body.dark-mode .ui.selection.dropdown {
+  background-color: var(--dropdown-bg);
+  color: var(--dropdown-text);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.selection.dropdown .menu {
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.selection.dropdown .menu .item {
+  color: var(--dropdown-text);
+  border-top: 1px solid var(--border-color);
+}
+body.dark-mode .ui.selection.dropdown .menu .item:hover {
+  background-color: var(--dropdown-hover-bg) !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.selection.dropdown .menu .item.selected {
+  background-color: var(--dropdown-selected-bg) !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.selection.dropdown .menu .item.active {
+  background-color: var(--dropdown-selected-bg) !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.modal {
+  background-color: var(--modal-bg);
+  color: var(--modal-text);
+}
+body.dark-mode .ui.modal > .header, body.dark-mode .ui.modal > .content, body.dark-mode .ui.modal > .actions {
+  background-color: var(--modal-bg);
+  color: var(--modal-text);
+  border-bottom: 1px solid var(--border-color);
+}
+body.dark-mode .ui.modal .ui.input input {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.modal .ui.input input::selection {
+  background-color: var(--selection-bg) !important;
+  color: var(--selection-text) !important;
+}
+body.dark-mode .ui.popup {
+  background-color: var(--modal-bg);
+  color: var(--modal-text);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.popup:before {
+  background-color: var(--modal-bg);
+  box-shadow: 1px 1px 0 0 var(--border-color);
+}
+body.dark-mode .ui.pagination.menu {
+  background-color: var(--segment-bg);
+  border: 1px solid var(--border-color);
+}
+body.dark-mode .ui.pagination.menu .item {
+  color: var(--text-color);
+}
+body.dark-mode .ui.pagination.menu .item:before {
+  background: var(--border-color);
+}
+body.dark-mode .ui.pagination.menu .item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+body.dark-mode .ui.pagination.menu .item.active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+body.dark-mode .ui.label {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+body.dark-mode .ui.label.blue {
+  background-color: #3d94d9 !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.label.teal {
+  background-color: #00d1c1 !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.label.green {
+  background-color: #2ecc71 !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.label.red {
+  background-color: #ff4d4d !important;
+  color: #fff !important;
+}
+body.dark-mode .ui.label.grey, body.dark-mode .ui.label.gray {
+  background-color: #555 !important;
+  color: #eee !important;
+}
+body.dark-mode .ui.label a {
+  color: inherit !important;
+}
+body.dark-mode .statistic .value, body.dark-mode .statistic .label {
+  color: var(--text-color) !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--teal-color);
+  box-shadow: 0 0 0 1px var(--teal-shadow);
+}
+
+body {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+h1 {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+h3 {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+h4 {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+.year.label {
+  font-family: "Source Sans Pro";
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.ui.button, .ui.header, .ui.menu {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.text.container {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.input > input {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.accordion .title:not(.ui) {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.steps .step .title {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.category.search > .results .category > .name {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.search > .results .result .title {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.search > .results > .message .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.modal .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.popup .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.message .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.list .list > .item .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.list > .item .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.card > .content > .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.form input:not([type]) {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=email] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=number] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=password] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=search] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=tel] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=text] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=url] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=color] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=date] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=datetime] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=datetime-local] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=month] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=time] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui input[type=week] {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.ui.cards > .card > .content > .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.ui.items > .item > .content > .header {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.ui.statistic .statistic > .label {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.statistic > .label {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.ui.statistic .statistic > .value {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.ui.statistic > .value {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.ui.pagination.menu {
+  display: flex;
+  justify-content: center;
+  margin: 1.5em 0;
+}
+.ui.pagination.menu .item {
+  min-width: 3.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+.ui.pagination.menu .item:hover {
+  background-color: var(--border-color);
+}
+.ui.pagination.menu .item.active {
+  font-weight: bold;
+}
+
+/*# sourceMappingURL=personal.css.map */

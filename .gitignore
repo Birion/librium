@@ -186,6 +186,5 @@ gunicorn_config.py
 *.ods
 *.jpg
 /librium-bck.sqlite
-/librium/static/sass/personal.css
 *.sqlite
 /uwsgi.ini

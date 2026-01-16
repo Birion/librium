@@ -2,10 +2,9 @@ from typing import Dict
 from librium.__version__ import __version__
 
 from flask_assets import Bundle, Environment
-from webassets.filter import get_filter
 
 # Asset paths
-SASS_PERSONAL_PATH = "sass/*.sass"
+CSS_PERSONAL_PATH = "sass/personal.css"
 COFFEE_CORE_PATH = "coffee/main.coffee"
 COFFEE_AUTH_PATH = "coffee/auth.coffee"
 COFFEE_LOGIN_PATH = "coffee/login.coffee"
@@ -20,14 +19,9 @@ JS_VALIDATION_OUTPUT_PATH = f"gen/validation.{__version__}.js"
 CSS_OUTPUT_PATH = f"gen/packed.{__version__}.css"
 
 # Filter configurations
-SASS_FILTER = get_filter("sass")
-SCSS_FILTER = "pyscss"
 JS_FILTER = "jsmin"
 CSS_FILTER = "cssutils"
 COFFEE_FILTER = "coffeescript"
-
-# Dependencies
-DEPENDS_SASS = "sass/**/*.sass"
 
 
 def create_asset_bundles() -> Dict[str, Bundle]:
@@ -57,10 +51,9 @@ def create_asset_bundles() -> Dict[str, Bundle]:
         ),
         # CSS bundle
         "all-css": Bundle(
-            SASS_PERSONAL_PATH,
-            filters=[SASS_FILTER, CSS_FILTER],
+            CSS_PERSONAL_PATH,
+            filters=[CSS_FILTER],
             output=f"{CSS_OUTPUT_PATH}",
-            depends=DEPENDS_SASS,
         ),
     }
 
