@@ -96,7 +96,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Implement custom shelves/collections
 - [ ] Add support for reading lists
 - [ ] Implement advanced search with multiple criteria
-- [ ] Add statistics and visualisations for the collection
+- [x] Add statistics and visualisations for the collection
 - [x] Implement export to various formats (CSV, JSON, etc.)
 
 ## Documentation Improvements

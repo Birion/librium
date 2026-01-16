@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistics{% endblock %}
+
+{% block content %}
+    <div class="ui main container">
+        <div class="ui styled fluid accordion">
+            <h1 class="ui header">
+                <i class="chart bar icon"></i>
+                <span class="content">
+                    Collection Statistics
+                    <span class="ui sub header">Insights into your library</span>
+                </span>
+            </h1>
+            <div class="ui four statistics">
+                <div class="statistic">
+                    <div class="value">
+                        {{ _total_books }}
+                    </div>
+                    <div class="label">
+                        Total Books
+                    </div>
+                </div>
+                <div class="statistic">
+                    <div class="value">
+                        {{ _read_books }}
+                    </div>
+                    <div class="label">
+                        Read
+                    </div>
+                </div>
+                <div class="statistic">
+                    <div class="value">
+                        {{ _unread_books }}
+                    </div>
+                    <div class="label">
+                        Unread
+                    </div>
+                </div>
+                <div class="statistic">
+                    <div class="value">
+                        {% if _total_books > 0 %}
+                            {{ (_read_books / _total_books * 100)|round(1) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                    <div class="label">
+                        Completion
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div class="ui stackable grid">
+            <div class="eight wide column">
+                <div class="ui segment">
+                    <h3 class="ui header">Read vs Unread</h3>
+                    <canvas id="readStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui segment">
+                    <h3 class="ui header">Books per Format</h3>
+                    <canvas id="formatChart"></canvas>
+                </div>
+            </div>
+            <div class="sixteen wide column">
+                <div class="ui segment">
+                    <h3 class="ui header">Books per Genre</h3>
+                    <canvas id="genreChart"></canvas>
+                </div>
+            </div>
+            <div class="sixteen wide column">
+                <div class="ui segment">
+                    <h3 class="ui header">Books per Year</h3>
+                    <canvas id="yearChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#e0e0e0' : '#666';
+            const gridColor = isDarkMode ? '#444' : '#eee';
+
+            Chart.defaults.color = textColor;
+
+            // Read Status Chart
+            new Chart(document.getElementById('readStatusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Read', 'Unread'],
+                    datasets: [{
+                        data: [{{ _read_books }}, {{ _unread_books }}],
+                        backgroundColor: ['#21ba45', '#db2828'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Format Chart
+            const formatData = {{ books_per_format|tojson }};
+            new Chart(document.getElementById('formatChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(formatData),
+                    datasets: [{
+                        data: Object.values(formatData),
+                        backgroundColor: [
+                            '#2185d0', '#6435c9', '#a333c8', '#e03997', '#f2711c', '#fbbd08', '#b5cc18', '#00b5ad'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Genre Chart
+            const genreData = {{ books_per_genre|tojson }};
+            const sortedGenres = Object.entries(genreData).sort((a, b) => b[1] - a[1]);
+            new Chart(document.getElementById('genreChart'), {
+                type: 'bar',
+                data: {
+                    labels: sortedGenres.map(x => x[0]),
+                    datasets: [{
+                        label: 'Books',
+                        data: sortedGenres.map(x => x[1]),
+                        backgroundColor: '#2185d0'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                autoSkip: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor }
+                        }
+                    }
+                }
+            });
+
+            // Year Chart
+            const yearData = {{ books_per_year|tojson }};
+            new Chart(document.getElementById('yearChart'), {
+                type: 'line',
+                data: {
+                    labels: Object.keys(yearData),
+                    datasets: [{
+                        label: 'Books Released',
+                        data: Object.values(yearData),
+                        borderColor: '#2185d0',
+                        backgroundColor: 'rgba(33, 133, 208, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            grid: {display: false}
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {color: gridColor},
+                            ticks: {stepSize: 1}
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

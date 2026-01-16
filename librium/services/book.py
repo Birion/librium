@@ -723,6 +723,78 @@ class BookService:
             raise
 
     @staticmethod
+    @read_only
+    def get_statistics() -> Dict[str, Any]:
+        """
+        Get various statistics about the book collection.
+
+        Returns:
+            A dictionary containing:
+                - total_books: Total number of books
+                - read_books: Number of books read
+                - unread_books: Number of books unread
+                - books_per_genre: Dictionary mapping genre names to book counts
+                - books_per_year: Dictionary mapping years to book counts
+                - books_per_format: Dictionary mapping format names to book counts
+        """
+        from sqlalchemy import func
+
+        from librium.database.sqlalchemy.db import Format, Genre, book_genres
+
+        # Total, Read, Unread
+        total = (
+            Session.query(func.count(Book.id)).filter(Book.deleted.is_(False)).scalar()
+            or 0
+        )
+        read = (
+            Session.query(func.count(Book.id))
+            .filter(Book.deleted.is_(False), Book.read.is_(True))
+            .scalar()
+            or 0
+        )
+        unread = total - read
+
+        # Books per Genre
+        genre_stats = (
+            Session.query(Genre.name, func.count(Book.id))
+            .join(book_genres, Genre.id == book_genres.c.genre_id)
+            .join(Book, Book.id == book_genres.c.book_id)
+            .filter(Book.deleted.is_(False))
+            .group_by(Genre.name)
+            .all()
+        )
+        books_per_genre = {name: count for name, count in genre_stats}
+
+        # Books per Year
+        year_stats = (
+            Session.query(Book.released, func.count(Book.id))
+            .filter(Book.deleted.is_(False), Book.released.isnot(None))
+            .group_by(Book.released)
+            .order_by(Book.released)
+            .all()
+        )
+        books_per_year = {year: count for year, count in year_stats}
+
+        # Books per Format
+        format_stats = (
+            Session.query(Format.name, func.count(Book.id))
+            .join(Book, Format.id == Book.format_id)
+            .filter(Book.deleted.is_(False))
+            .group_by(Format.name)
+            .all()
+        )
+        books_per_format = {name: count for name, count in format_stats}
+
+        return {
+            "_total_books": total,
+            "_read_books": read,
+            "_unread_books": unread,
+            "books_per_genre": books_per_genre,
+            "books_per_year": books_per_year,
+            "books_per_format": books_per_format,
+        }
+
+    @staticmethod
     @transactional
     def add_or_update(book: Book, data: Dict[str, Any]) -> Book:
         """

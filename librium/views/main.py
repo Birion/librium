@@ -61,3 +61,11 @@ def years(args):
 @use_args(UserArgs, location="query")
 def genres(args):
     return render_template("main/index.html", **get_genres(args))
+
+
+@bp.route("/statistics")
+def statistics():
+    from librium.services import BookService
+
+    stats = BookService.get_statistics()
+    return render_template("main/statistics.html", **stats)
