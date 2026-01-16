@@ -12,7 +12,7 @@
                     <span class="ui sub header">Insights into your library</span>
                 </span>
             </h1>
-            <div class="ui four statistics">
+            <div class="ui three statistics">
                 <div class="statistic">
                     <div class="value">
                         {{ _total_books }}
@@ -31,14 +31,6 @@
                 </div>
                 <div class="statistic">
                     <div class="value">
-                        {{ _unread_books }}
-                    </div>
-                    <div class="label">
-                        Unread
-                    </div>
-                </div>
-                <div class="statistic">
-                    <div class="value">
                         {% if _total_books > 0 %}
                             {{ (_read_books / _total_books * 100)|round(1) }}%
                         {% else %}
@@ -47,6 +39,16 @@
                     </div>
                     <div class="label">
                         Completion
+                    </div>
+                </div>
+            </div>
+            <div class="ui one statistics">
+                <div class="statistic">
+                    <div class="value" id="total-value-stat">
+                        {{ total_price|round(2) }}
+                    </div>
+                    <div class="label">
+                        Total Value
                     </div>
                 </div>
             </div>
@@ -79,6 +81,12 @@
                     <canvas id="yearChart"></canvas>
                 </div>
             </div>
+            <div class="sixteen wide column">
+                <div class="ui segment">
+                    <h3 class="ui header">Total Price per Year</h3>
+                    <canvas id="priceYearChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -90,6 +98,10 @@
             const gridColor = isDarkMode ? '#444' : '#eee';
 
             Chart.defaults.color = textColor;
+
+            // Initialize Semantic UI components
+            $('.ui.dropdown').dropdown();
+            $('.ui.checkbox').checkbox();
 
             // Read Status Chart
             new Chart(document.getElementById('readStatusChart'), {
@@ -195,6 +207,135 @@
                     }
                 }
             });
+
+            // Initialize Semantic UI components
+            // Note: Basic initialization is handled by core JS, but we re-initialize
+            // to ensure handlers are attached to these specific elements in the sidebar.
+            $('#currency-select').dropdown();
+            $('#inflation-toggle').checkbox();
+
+            // Currency and Inflation Logic
+            const inflationFactors = {{ inflation_factors|tojson }};
+            const rawPriceData = {{ price_per_year|tojson }};
+            const rawTotalTotal = {{ total_price }};
+
+            const getInflationFactor = (year, currency) => {
+                const factors = inflationFactors[currency] || {};
+                return factors[year] || 1.0;
+            };
+
+            const currencySelect = document.getElementById('currency-select');
+            const inflationToggleContainer = document.getElementById('inflation-toggle');
+            const inflationToggle = inflationToggleContainer ? inflationToggleContainer.querySelector('input') : null;
+            const totalValueStat = document.getElementById('total-value-stat');
+
+            const getFormattedValue = (value) => {
+                const currency = currencySelect ? currencySelect.value : 'USD';
+                const selectedOption = currencySelect ? currencySelect.options[currencySelect.selectedIndex] : null;
+                const symbol = selectedOption ? selectedOption.getAttribute('data-symbol') : '$';
+                return `${symbol}${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            };
+
+            const updatePriceChart = () => {
+                if (!currencySelect || !priceYearChart) return;
+
+                const currency = currencySelect.value;
+                const adjustInflation = inflationToggle ? inflationToggle.checked : false;
+
+                const labels = Object.keys(rawPriceData);
+                const data = labels.map(year => {
+                    let price = rawPriceData[year];
+                    if (adjustInflation) {
+                        price *= getInflationFactor(parseInt(year), currency);
+                    }
+                    return price;
+                });
+
+                priceYearChart.data.labels = labels;
+                priceYearChart.data.datasets[0].data = data;
+                priceYearChart.data.datasets[0].label = `Total Price (${currency}${adjustInflation ? ' Adjusted' : ''})`;
+                priceYearChart.update();
+
+                // Update total value stat
+                let totalAdjusted = 0;
+                let priceWithYear = 0;
+                Object.keys(rawPriceData).forEach(year => {
+                   let p = rawPriceData[year];
+                   priceWithYear += p;
+                   if (adjustInflation) p *= getInflationFactor(parseInt(year), currency);
+                   totalAdjusted += p;
+                });
+                
+                const priceWithoutYear = rawTotalTotal - priceWithYear;
+                totalAdjusted += priceWithoutYear;
+
+                if (totalValueStat) {
+                    totalValueStat.innerText = getFormattedValue(totalAdjusted);
+                }
+            };
+
+            if (currencySelect) {
+                // Restore from localStorage
+                const savedCurrency = localStorage.getItem('librium_stats_currency');
+                if (savedCurrency) {
+                    currencySelect.value = savedCurrency;
+                    $(currencySelect).dropdown('set selected', savedCurrency);
+                }
+
+                currencySelect.addEventListener('change', () => {
+                    localStorage.setItem('librium_stats_currency', currencySelect.value);
+                    updatePriceChart();
+                });
+            }
+
+            if (inflationToggle) {
+                inflationToggle.addEventListener('change', updatePriceChart);
+            }
+
+            const priceYearChart = new Chart(document.getElementById('priceYearChart'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Total Price',
+                        data: [],
+                        borderColor: '#f2711c',
+                        backgroundColor: 'rgba(242, 113, 28, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: {
+                                callback: function(value) {
+                                    if (!currencySelect) return value;
+                                    const symbol = currencySelect.options[currencySelect.selectedIndex].getAttribute('data-symbol');
+                                    return symbol + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (!currencySelect) return context.dataset.label + ': ' + context.parsed.y;
+                                    const symbol = currencySelect.options[currencySelect.selectedIndex].getAttribute('data-symbol');
+                                    return context.dataset.label + ': ' + symbol + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            updatePriceChart();
         });
     </script>
 {% endblock %}

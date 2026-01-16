@@ -97,6 +97,7 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Add support for reading lists
 - [ ] Implement advanced search with multiple criteria
 - [x] Add statistics and visualisations for the collection
+- [x] Add price statistics and inflation adjustment to collection view using live online data
 - [x] Implement export to various formats (CSV, JSON, etc.)
 
 ## Documentation Improvements

@@ -740,6 +740,7 @@ class BookService:
         from sqlalchemy import func
 
         from librium.database.sqlalchemy.db import Format, Genre, book_genres
+        from librium.core.inflation import InflationService
 
         # Total, Read, Unread
         total = (
@@ -785,6 +786,29 @@ class BookService:
         )
         books_per_format = {name: count for name, count in format_stats}
 
+        # Price per Year
+        price_year_stats = (
+            # Aggregates total price per release year
+            Session.query(Book.released, func.sum(Book.price))
+            .filter(Book.deleted.is_(False), Book.released.isnot(None))
+            .group_by(Book.released)
+            .order_by(Book.released)
+            .all()
+        )
+        price_per_year = {year: float(total or 0) for year, total in price_year_stats}
+
+        # Total price
+        total_price = (
+            Session.query(func.sum(Book.price)).filter(Book.deleted.is_(False)).scalar()
+            or 0
+        )
+
+        # Inflation Data
+        inflation_factors = {
+            currency: InflationService.get_inflation_factors(currency)
+            for currency in ["USD", "EUR", "GBP", "CZK"]
+        }
+
         return {
             "_total_books": total,
             "_read_books": read,
@@ -792,6 +816,9 @@ class BookService:
             "books_per_genre": books_per_genre,
             "books_per_year": books_per_year,
             "books_per_format": books_per_format,
+            "price_per_year": price_per_year,
+            "total_price": float(total_price),
+            "inflation_factors": inflation_factors,
         }
 
     @staticmethod
