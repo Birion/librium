@@ -1,3 +1,4 @@
+@use "sass:list"
 // Typography and font styles
 // Defines font families, mixins, and typography-related styles
 
@@ -16,7 +17,7 @@ $release-font: $font-source-sans-pro
   $type-output: ()
   $types: 'email', 'number', 'password', 'search', 'tel', 'text', 'url', 'color', 'date', 'datetime', 'datetime-local', 'month', 'time', 'week'
   @each $t in $types
-    $type-output: append($type-output, 'input[type=#{$t}]')
+    $type-output: list.append($type-output, 'input[type=#{$t}]')
   @return $type-output
 
 $inputs-list: make-input-types()
