@@ -39,12 +39,11 @@
     {% if request.endpoint == "main.statistics" %}
         <div class="item">
             <label style="color: var(--sidebar-text) !important; display: block; margin-bottom: 0.5em;">Currency</label>
-            <select class="ui dropdown" id="currency-select">
-                <option value="USD" data-symbol="$">USD ($)</option>
-                <option value="EUR" data-symbol="€">EUR (€)</option>
-                <option value="GBP" data-symbol="£">GBP (£)</option>
-                <option value="CZK" data-symbol="Kč">CZK (Kč)</option>
-            </select>
+            <div style="color: var(--sidebar-text) !important;">
+                {% set currency_symbols = {"USD": "$", "EUR": "€", "GBP": "£", "CZK": "Kč"} %}
+                {{ default_currency }} ({{ currency_symbols.get(default_currency, "$") }})
+                <input type="hidden" id="currency-select-value" value="{{ default_currency }}" data-symbol="{{ currency_symbols.get(default_currency, '$') }}">
+            </div>
         </div>
         <div class="item">
             <div class="ui toggle checkbox" id="inflation-toggle">

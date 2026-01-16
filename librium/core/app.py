@@ -54,6 +54,7 @@ def configure_jinja_env(app: Flask) -> None:
             "app_name": app.config.get("APPLICATION_NAME"),
             "read_books": BookService.get_read_number,
             "unread_books": BookService.get_unread_number,
+            "default_currency": app.config.get("DEFAULT_CURRENCY"),
         }
     )
 

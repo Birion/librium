@@ -48,6 +48,9 @@ class Config:
     JWT_TOKEN_LOCATION = ["headers", "query_string"]
     JWT_QUERY_STRING_NAME = "token"
 
+    # Inflation and currency settings
+    DEFAULT_CURRENCY = os.getenv("DEFAULT_CURRENCY", "USD")
+
     @classmethod
     def to_dict(cls) -> Dict[str, Any]:
         """Convert configuration to dictionary."""

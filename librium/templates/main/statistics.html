@@ -208,10 +208,9 @@
                 }
             });
 
-            // Initialize Semantic UI components
-            // Note: Basic initialization is handled by core JS, but we re-initialize
+            // Initialise Semantic UI components
+            // Note: Basic initialization is handled by core JS, but we re-initialise
             // to ensure handlers are attached to these specific elements in the sidebar.
-            $('#currency-select').dropdown();
             $('#inflation-toggle').checkbox();
 
             // Currency and Inflation Logic
@@ -224,22 +223,20 @@
                 return factors[year] || 1.0;
             };
 
-            const currencySelect = document.getElementById('currency-select');
+            const currencyInfo = document.getElementById('currency-select-value');
             const inflationToggleContainer = document.getElementById('inflation-toggle');
             const inflationToggle = inflationToggleContainer ? inflationToggleContainer.querySelector('input') : null;
             const totalValueStat = document.getElementById('total-value-stat');
 
             const getFormattedValue = (value) => {
-                const currency = currencySelect ? currencySelect.value : 'USD';
-                const selectedOption = currencySelect ? currencySelect.options[currencySelect.selectedIndex] : null;
-                const symbol = selectedOption ? selectedOption.getAttribute('data-symbol') : '$';
+                const symbol = currencyInfo ? currencyInfo.getAttribute('data-symbol') : '$';
                 return `${symbol}${value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             };
 
             const updatePriceChart = () => {
-                if (!currencySelect || !priceYearChart) return;
+                if (!currencyInfo || !priceYearChart) return;
 
-                const currency = currencySelect.value;
+                const currency = currencyInfo.value;
                 const adjustInflation = inflationToggle ? inflationToggle.checked : false;
 
                 const labels = Object.keys(rawPriceData);
@@ -274,20 +271,6 @@
                 }
             };
 
-            if (currencySelect) {
-                // Restore from localStorage
-                const savedCurrency = localStorage.getItem('librium_stats_currency');
-                if (savedCurrency) {
-                    currencySelect.value = savedCurrency;
-                    $(currencySelect).dropdown('set selected', savedCurrency);
-                }
-
-                currencySelect.addEventListener('change', () => {
-                    localStorage.setItem('librium_stats_currency', currencySelect.value);
-                    updatePriceChart();
-                });
-            }
-
             if (inflationToggle) {
                 inflationToggle.addEventListener('change', updatePriceChart);
             }
@@ -314,8 +297,8 @@
                             grid: { color: gridColor },
                             ticks: {
                                 callback: function(value) {
-                                    if (!currencySelect) return value;
-                                    const symbol = currencySelect.options[currencySelect.selectedIndex].getAttribute('data-symbol');
+                                    if (!currencyInfo) return value;
+                                    const symbol = currencyInfo.getAttribute('data-symbol');
                                     return symbol + value.toLocaleString();
                                 }
                             }
@@ -325,8 +308,8 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    if (!currencySelect) return context.dataset.label + ': ' + context.parsed.y;
-                                    const symbol = currencySelect.options[currencySelect.selectedIndex].getAttribute('data-symbol');
+                                    if (!currencyInfo) return context.dataset.label + ': ' + context.parsed.y;
+                                    const symbol = currencyInfo.getAttribute('data-symbol');
                                     return context.dataset.label + ': ' + symbol + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2});
                                 }
                             }

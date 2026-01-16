@@ -804,10 +804,10 @@ class BookService:
         )
 
         # Inflation Data
-        inflation_factors = {
-            currency: InflationService.get_inflation_factors(currency)
-            for currency in ["USD", "EUR", "GBP", "CZK"]
-        }
+        from flask import current_app
+
+        currency = current_app.config.get("DEFAULT_CURRENCY", "USD")
+        inflation_factors = {currency: InflationService.get_inflation_factors(currency)}
 
         return {
             "_total_books": total,
@@ -819,6 +819,7 @@ class BookService:
             "price_per_year": price_per_year,
             "total_price": float(total_price),
             "inflation_factors": inflation_factors,
+            "currency": currency,
         }
 
     @staticmethod
