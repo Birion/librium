@@ -14,7 +14,7 @@
     {% set ico = "book" %}
 {% endif %}
 
-<nav class="ui big sidebar vertical menu" id="main-sidebar" aria-label="Main Navigation">
+<nav class="ui big sidebar vertical pointing menu" id="main-sidebar" aria-label="Main Navigation">
     <a href="{{ url_for("main.index") }}" class="ui header item" aria-label="{{ app_name }} Home">
         <span class="ui logo icon image" aria-hidden="true">
             <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
@@ -27,15 +27,15 @@
     <a href="{{ url_for("book.new") }}" class="item">
         Add a new book
     </a>
-    <a href="{{ url_for("main.statistics") }}" class="item">
-        Statistics
-    </a>
     <div class="item">
         <div class="ui toggle checkbox" id="dark-mode-toggle">
             <input type="checkbox" name="dark-mode">
             <label style="color: var(--sidebar-text) !important;">Dark Mode</label>
         </div>
     </div>
+    <a href="{{ url_for("main.statistics") }}" class="item">
+        Statistics
+    </a>
     {% if request.endpoint == "main.statistics" %}
         <div class="item">
             <label style="color: var(--sidebar-text) !important; display: block; margin-bottom: 0.5em;">Currency</label>
@@ -52,7 +52,8 @@
             </div>
         </div>
     {% endif %}
-    {% if endpoint == "main" %}
+    {% if endpoint == "main" and not request.endpoint == "main.statistics" %}
+        <div class="ui hidden divider"></div>
         <div class="item" role="group" aria-label="Browse by">Browse by
             <div class="menu" role="menu">
                 {% for item in ["Books", "Authors", "Series", "Years", "Genres"] %}
