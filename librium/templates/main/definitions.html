@@ -38,7 +38,7 @@
 {% macro make_index(idx, circular=True) %}
     {% if idx is sequence() %}
         {% for index in idx %}
-        	{{ fix_index(index, circular) }}
+            {{ fix_index(index, circular) }}
         {% endfor %}
     {% else %}
         {{ fix_index(idx, circular) }}
@@ -265,12 +265,28 @@
     </table>
 {% endmacro %}
 
-{% macro make_head(title, active, icon=True, extra=False) %}
-    <div class="{{ "active" if active }} title" role="button" aria-expanded="{{ "true" if active else "false" }}" tabindex="0">
-        {% if icon %}
-            <i class="dropdown icon" aria-hidden="true"></i>
+{% macro make_head(title, count, active, extra=False) %}
+    {% if extra %}
+        {% if count|length > 1 %}
+            {% set e = " books" %}
+        {% else %}
+            {% set e = " book" %}
         {% endif %}
-        {{ title }}
+    {% else %}
+        {% set e = "" %}
+    {% endif %}
+    <div class="{{ "active " if active }}title" role="button" aria-expanded="{{ "true" if active else "false" }}"
+         tabindex="0">
+        <div class="ui horizontal basic segments">
+            <div class="ui seamless left attached basic vertically fitted compact segment">{{ title }}</div>
+            <div class="ui seamless right attached right aligned basic vertically fitted compact segment">
+                {% if count != True and count != False %}
+                    <div class="ui red horizontal label">{{ count|length }}{{ e }}</div>
+                {% else %}
+                    <i class="{{ "green check" if count else "red times" }} icon"></i>
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endmacro %}
 
@@ -282,4 +298,5 @@
     </div>
 {% endmacro %}
 
-{% macro favicon_for_debug(filename, ext) %}img/{% if config["DEBUG"] %}{{ filename }}-dev{% else %}{{ filename }}{% endif %}.{{ ext }}{% endmacro %}
+{% macro favicon_for_debug(filename, ext) %}img/
+    {% if config["DEBUG"] %}{{ filename }}-dev{% else %}{{ filename }}{% endif %}.{{ ext }}{% endmacro %}

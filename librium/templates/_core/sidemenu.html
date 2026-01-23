@@ -59,6 +59,10 @@
                 {% for item in ["Books", "Authors", "Series", "Years", "Genres"] %}
                     <a href="{{ url_for("main." + item|lower) }}" class="item" role="menuitem">{{ item }}</a>
                 {% endfor %}
+                <div class="ui tiny divider"></div>
+                <a href="{{ url_for("main.problems") }}" class="item" role="menuitem">
+                    Problems
+                </a>
             </div>
         </div>
         <div class="item" role="group" aria-label="Sort by">Sort by

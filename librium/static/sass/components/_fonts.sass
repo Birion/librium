@@ -1,4 +1,4 @@
-@use "sass:list"
+@use 'sass:list'
 // Typography and font styles
 // Defines font families, mixins, and typography-related styles
 
@@ -25,7 +25,7 @@ $inputs-list: make-input-types()
 // Typography mixins
 @mixin bodyfont
   font-family: $body-fonts
-  letter-spacing: 0.01em
+  letter-spacing: .01em
 
 @mixin add-header($direct: false)
   @if $direct
@@ -45,16 +45,16 @@ $inputs-list: make-input-types()
 // Base typography
 body
   +bodyfont
-  line-height: 1.5
   color: var(--text-color)
+  line-height: 1.5
 
 // Heading styles
 @for $i from 1 through 4
   h#{$i}
     +bodyfont
-    margin-top: 1em
-    margin-bottom: 0.5em
     line-height: 1.2
+    margin-bottom: .5em
+    margin-top: 1em
 
 // Year label styling
 .year

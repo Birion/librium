@@ -1,27 +1,27 @@
 @import url("https://fonts.googleapis.com/css?family=Cabin:400,400i,700,700i|Source+Sans+Pro:700&display=swap&subset=latin-ext");
 :root {
-  --bg-color: #ffffff;
+  --bg-color: #fff;
   --text-color: rgba(0, 0, 0, 0.87);
   --border-color: rgba(34, 36, 38, 0.15);
-  --segment-bg: #ffffff;
-  --input-bg: #ffffff;
+  --segment-bg: #fff;
+  --input-bg: #fff;
   --input-text: rgba(0, 0, 0, 0.87);
-  --dropdown-bg: #ffffff;
+  --dropdown-bg: #fff;
   --dropdown-text: rgba(0, 0, 0, 0.87);
-  --modal-bg: #ffffff;
+  --modal-bg: #fff;
   --modal-text: rgba(0, 0, 0, 0.87);
   --accordion-title-bg: transparent;
-  --accordion-content-bg: #ffffff;
-  --sidebar-bg: #ffffff;
+  --accordion-content-bg: #fff;
+  --sidebar-bg: #fff;
   --sidebar-text: rgba(0, 0, 0, 0.87);
-  --navbar-bg: #ffffff;
+  --navbar-bg: #fff;
   --navbar-text: rgba(0, 0, 0, 0.87);
   --primary-color: #2185d0;
   --secondary-color: #1b1c1d;
   --teal-color: #00b5ad;
   --teal-shadow: rgba(0, 181, 173, 0.2);
   --selection-bg: #2185d0;
-  --selection-text: #ffffff;
+  --selection-text: #fff;
 }
 
 body.dark-mode {
@@ -44,18 +44,25 @@ body.dark-mode {
   --navbar-bg: #1b1c1d;
   --navbar-text: rgba(255, 255, 255, 0.9);
   --selection-bg: #3d94d9;
-  --selection-text: #ffffff;
+  --selection-text: #fff;
 }
 
-#mobile-navbar, #main-sidebar {
+#mobile-navbar,
+#main-sidebar {
   background-color: var(--navbar-bg) !important;
-  color: var(--navbar-text) !important;
   border-bottom: 1px solid var(--border-color);
-}
-#mobile-navbar .item, #mobile-navbar .header.item, #main-sidebar .item, #main-sidebar .header.item {
   color: var(--navbar-text) !important;
 }
-#mobile-navbar .item:before, #mobile-navbar .header.item:before, #main-sidebar .item:before, #main-sidebar .header.item:before {
+#mobile-navbar .item,
+#mobile-navbar .header.item,
+#main-sidebar .item,
+#main-sidebar .header.item {
+  color: var(--navbar-text) !important;
+}
+#mobile-navbar .item::before,
+#mobile-navbar .header.item::before,
+#main-sidebar .item::before,
+#main-sidebar .header.item::before {
   background: var(--border-color);
 }
 
@@ -63,7 +70,16 @@ body.dark-mode {
   background-color: var(--sidebar-bg) !important;
   border-right: 1px solid var(--border-color);
 }
-#main-sidebar .item, #main-sidebar .header.item {
+@media only screen and (min-width: 768px) {
+  #main-sidebar {
+    display: flex !important;
+    transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    width: 260px !important;
+  }
+}
+#main-sidebar .item,
+#main-sidebar .header.item {
   color: var(--sidebar-text) !important;
 }
 
@@ -89,25 +105,16 @@ body.dark-mode {
   }
 }
 @media only screen and (min-width: 768px) {
-  #main-sidebar {
-    visibility: visible !important;
-    transform: translate3d(0, 0, 0) !important;
-    width: 260px !important;
-    display: flex !important;
-  }
-}
-
-@media only screen and (min-width: 768px) {
   .ui.pusher {
     margin-left: 260px !important;
-    width: calc(100% - 260px) !important;
     transform: none !important;
+    width: calc(100% - 260px) !important;
   }
 }
 
 .main.container {
-  margin-top: 7em;
   flex: 1 0 auto;
+  margin-top: 7em;
   padding-bottom: 2em;
 }
 
@@ -119,9 +126,9 @@ body.dark-mode {
   }
 }
 body {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 body, .ui.pusher {
@@ -130,258 +137,257 @@ body, .ui.pusher {
   height: auto !important;
 }
 
-body.dark-mode {
+.dark-mode {
   background-color: var(--bg-color);
 }
-body.dark-mode .ui.header {
+.dark-mode .ui.header {
   color: var(--text-color) !important;
 }
-body.dark-mode .ui.button.basic {
-  color: var(--text-color) !important;
+.dark-mode .ui.button.basic {
   box-shadow: 0 0 0 1px var(--border-color) inset !important;
+  color: var(--text-color) !important;
 }
-body.dark-mode .ui.button.basic:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+.dark-mode .ui.button.basic:hover {
+  background-color: var(--dropdown-hover-bg) !important;
 }
-body.dark-mode .ui.segment, body.dark-mode .ui.styled.accordion {
+.dark-mode .ui.segment,
+.dark-mode .ui.styled.accordion {
   background-color: var(--segment-bg);
   color: var(--text-color);
 }
-body.dark-mode .ui.styled.accordion .title {
-  color: var(--text-color);
+.dark-mode .ui.styled.accordion .title {
   background-color: var(--accordion-title-bg);
   border-top: 1px solid var(--border-color);
-}
-body.dark-mode .ui.styled.accordion .title:first-child {
-  border-top: none;
-}
-body.dark-mode .ui.styled.accordion .title.active {
   color: var(--text-color);
 }
-body.dark-mode .ui.styled.accordion .content {
+.dark-mode .ui.styled.accordion .title:first-child {
+  border-top: 0;
+}
+.dark-mode .ui.styled.accordion .title.active {
+  color: var(--text-color);
+}
+.dark-mode .ui.styled.accordion .content {
   background-color: var(--accordion-content-bg);
   color: var(--text-color);
 }
-body.dark-mode .ui.table {
+.dark-mode .ui.table {
   background-color: var(--segment-bg);
-  color: var(--text-color);
   border: 1px solid var(--border-color);
+  color: var(--text-color);
 }
-body.dark-mode .ui.table ::selection {
+.dark-mode .ui.table ::selection {
   background-color: var(--selection-bg) !important;
   color: var(--selection-text) !important;
 }
-body.dark-mode .ui.table thead th {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--text-color);
+.dark-mode .ui.table thead th {
+  background-color: var(--accordion-title-bg);
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
 }
-body.dark-mode .ui.table tbody td {
+.dark-mode .ui.table tbody td {
   border-top: 1px solid var(--border-color);
   color: var(--text-color);
 }
-body.dark-mode .ui.table tbody td a {
+.dark-mode .ui.table tbody td a {
   color: #54c8ff;
 }
-body.dark-mode .ui.table tbody td a:hover {
+.dark-mode .ui.table tbody td a:hover {
   color: #70d5ff;
 }
-body.dark-mode .ui.table tfoot th {
-  background-color: rgba(255, 255, 255, 0.05);
+.dark-mode .ui.table tfoot th {
+  background-color: var(--accordion-title-bg);
+  border-top: 1px solid var(--border-color);
   color: var(--text-color);
-  border-top: 1px solid var(--border-color);
 }
-body.dark-mode .ui.form input:not([type]),
-body.dark-mode .ui.form input[type=date],
-body.dark-mode .ui.form input[type=datetime-local],
-body.dark-mode .ui.form input[type=email],
-body.dark-mode .ui.form input[type=number],
-body.dark-mode .ui.form input[type=password],
-body.dark-mode .ui.form input[type=search],
-body.dark-mode .ui.form input[type=tel],
-body.dark-mode .ui.form input[type=text],
-body.dark-mode .ui.form input[type=time],
-body.dark-mode .ui.form input[type=url],
-body.dark-mode .ui.form textarea {
+.dark-mode .ui.form input:not([type]),
+.dark-mode .ui.form input[type=date],
+.dark-mode .ui.form input[type=datetime-local],
+.dark-mode .ui.form input[type=email],
+.dark-mode .ui.form input[type=number],
+.dark-mode .ui.form input[type=password],
+.dark-mode .ui.form input[type=search],
+.dark-mode .ui.form input[type=tel],
+.dark-mode .ui.form input[type=text],
+.dark-mode .ui.form input[type=time],
+.dark-mode .ui.form input[type=url],
+.dark-mode .ui.form textarea {
   background-color: var(--input-bg);
-  color: var(--input-text);
   border: 1px solid var(--border-color);
+  color: var(--input-text);
 }
-body.dark-mode .ui.form input:not([type])::selection,
-body.dark-mode .ui.form input[type=date]::selection,
-body.dark-mode .ui.form input[type=datetime-local]::selection,
-body.dark-mode .ui.form input[type=email]::selection,
-body.dark-mode .ui.form input[type=number]::selection,
-body.dark-mode .ui.form input[type=password]::selection,
-body.dark-mode .ui.form input[type=search]::selection,
-body.dark-mode .ui.form input[type=tel]::selection,
-body.dark-mode .ui.form input[type=text]::selection,
-body.dark-mode .ui.form input[type=time]::selection,
-body.dark-mode .ui.form input[type=url]::selection,
-body.dark-mode .ui.form textarea::selection {
+.dark-mode .ui.form input:not([type])::selection,
+.dark-mode .ui.form input[type=date]::selection,
+.dark-mode .ui.form input[type=datetime-local]::selection,
+.dark-mode .ui.form input[type=email]::selection,
+.dark-mode .ui.form input[type=number]::selection,
+.dark-mode .ui.form input[type=password]::selection,
+.dark-mode .ui.form input[type=search]::selection,
+.dark-mode .ui.form input[type=tel]::selection,
+.dark-mode .ui.form input[type=text]::selection,
+.dark-mode .ui.form input[type=time]::selection,
+.dark-mode .ui.form input[type=url]::selection,
+.dark-mode .ui.form textarea::selection {
   background-color: var(--selection-bg) !important;
   color: var(--selection-text) !important;
 }
-body.dark-mode .ui.form label,
-body.dark-mode .ui.form .field > label:not(.button) {
+.dark-mode .ui.form label > label:not(.button),
+.dark-mode .ui.form .field > label:not(.button) {
   color: var(--text-color) !important;
 }
-body.dark-mode .ui.checkbox label, body.dark-mode .ui.checkbox.toggle label {
+.dark-mode .ui.checkbox label, .dark-mode .ui.checkbox.toggle label {
   color: var(--text-color) !important;
 }
-body.dark-mode .ui.selection.dropdown {
-  background-color: var(--dropdown-bg);
-  color: var(--dropdown-text);
-  border: 1px solid var(--border-color);
-}
-body.dark-mode .ui.selection.dropdown .menu {
+.dark-mode .ui.selection.dropdown {
   background-color: var(--dropdown-bg);
   border: 1px solid var(--border-color);
-}
-body.dark-mode .ui.selection.dropdown .menu .item {
   color: var(--dropdown-text);
+}
+.dark-mode .ui.selection.dropdown .menu {
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--border-color);
+}
+.dark-mode .ui.selection.dropdown .menu .item {
   border-top: 1px solid var(--border-color);
+  color: var(--dropdown-text);
 }
-body.dark-mode .ui.selection.dropdown .menu .item:hover {
+.dark-mode .ui.selection.dropdown .menu .item:hover {
   background-color: var(--dropdown-hover-bg) !important;
-  color: #fff !important;
+  color: var(--dropdown-text) !important;
 }
-body.dark-mode .ui.selection.dropdown .menu .item.selected {
+.dark-mode .ui.selection.dropdown .menu .item.selected {
   background-color: var(--dropdown-selected-bg) !important;
-  color: #fff !important;
+  color: var(--dropdown-text) !important;
 }
-body.dark-mode .ui.selection.dropdown .menu .item.active {
+.dark-mode .ui.selection.dropdown .menu .item.active {
   background-color: var(--dropdown-selected-bg) !important;
-  color: #fff !important;
+  color: var(--dropdown-text) !important;
 }
-body.dark-mode .ui.modal {
+.dark-mode .ui.modal {
   background-color: var(--modal-bg);
   color: var(--modal-text);
 }
-body.dark-mode .ui.modal > .header, body.dark-mode .ui.modal > .content, body.dark-mode .ui.modal > .actions {
+.dark-mode .ui.modal > .header, .dark-mode .ui.modal > .content, .dark-mode .ui.modal > .actions {
   background-color: var(--modal-bg);
-  color: var(--modal-text);
   border-bottom: 1px solid var(--border-color);
+  color: var(--modal-text);
 }
-body.dark-mode .ui.modal .ui.input input {
+.dark-mode .ui.modal .ui.input input {
   background-color: var(--input-bg);
-  color: var(--input-text);
   border: 1px solid var(--border-color);
+  color: var(--input-text);
 }
-body.dark-mode .ui.modal .ui.input input::selection {
+.dark-mode .ui.modal .ui.input input::selection {
   background-color: var(--selection-bg) !important;
   color: var(--selection-text) !important;
 }
-body.dark-mode .ui.popup {
+.dark-mode .ui.popup {
   background-color: var(--modal-bg);
-  color: var(--modal-text);
   border: 1px solid var(--border-color);
+  color: var(--modal-text);
 }
-body.dark-mode .ui.popup:before {
+.dark-mode .ui.popup::before {
   background-color: var(--modal-bg);
   box-shadow: 1px 1px 0 0 var(--border-color);
 }
-body.dark-mode .ui.pagination.menu {
+.dark-mode .ui.pagination.menu {
   background-color: var(--segment-bg);
   border: 1px solid var(--border-color);
 }
-body.dark-mode .ui.pagination.menu .item {
+.dark-mode .ui.pagination.menu .item {
   color: var(--text-color);
 }
-body.dark-mode .ui.pagination.menu .item:before {
+.dark-mode .ui.pagination.menu .item::before {
   background: var(--border-color);
 }
-body.dark-mode .ui.pagination.menu .item:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+.dark-mode .ui.pagination.menu .item:hover {
+  background-color: var(--dropdown-hover-bg);
 }
-body.dark-mode .ui.pagination.menu .item.active {
-  background-color: rgba(255, 255, 255, 0.15);
+.dark-mode .ui.pagination.menu .item.active {
+  background-color: var(--dropdown-selected-bg);
 }
-body.dark-mode .ui.label {
+.dark-mode .ui.label {
   background-color: rgba(255, 255, 255, 0.15) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
-body.dark-mode .ui.label.blue {
+.dark-mode .ui.label.blue {
   background-color: #3d94d9 !important;
-  color: #fff !important;
+  color: var(--input-text) !important;
 }
-body.dark-mode .ui.label.teal {
+.dark-mode .ui.label.teal {
   background-color: #00d1c1 !important;
-  color: #fff !important;
+  color: var(--input-text) !important;
 }
-body.dark-mode .ui.label.green {
+.dark-mode .ui.label.green {
   background-color: #2ecc71 !important;
-  color: #fff !important;
+  color: var(--input-text) !important;
 }
-body.dark-mode .ui.label.red {
+.dark-mode .ui.label.red {
   background-color: #ff4d4d !important;
-  color: #fff !important;
+  color: var(--input-text) !important;
 }
-body.dark-mode .ui.label.grey, body.dark-mode .ui.label.gray {
+.dark-mode .ui.label.grey, .dark-mode .ui.label.gray {
   background-color: #555 !important;
   color: #eee !important;
 }
-body.dark-mode .ui.label a {
+.dark-mode .ui.label a {
   color: inherit !important;
 }
-body.dark-mode .statistic .value, body.dark-mode .statistic .label {
+.dark-mode .statistic .value,
+.dark-mode .statistic .label {
   color: var(--text-color) !important;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type=number] {
   -moz-appearance: textfield;
 }
-
 input:focus {
-  outline: none;
   border-color: var(--teal-color);
   box-shadow: 0 0 0 1px var(--teal-shadow);
+  outline: none;
 }
 
 body {
   font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.01em;
-  line-height: 1.5;
   color: var(--text-color);
+  line-height: 1.5;
 }
 
 h1 {
   font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.01em;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
   line-height: 1.2;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
 }
 
 h2 {
   font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.01em;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
   line-height: 1.2;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
 }
 
 h3 {
   font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.01em;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
   line-height: 1.2;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
 }
 
 h4 {
   font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: 0.01em;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
   line-height: 1.2;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
 }
 
 .year.label {
@@ -541,10 +547,10 @@ h4 {
   margin: 1.5em 0;
 }
 .ui.pagination.menu .item {
-  min-width: 3.3rem;
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
+  min-width: 3.3rem;
   transition: background-color 0.2s ease;
 }
 .ui.pagination.menu .item:hover {
@@ -552,6 +558,10 @@ h4 {
 }
 .ui.pagination.menu .item.active {
   font-weight: bold;
+}
+
+.title > .segments {
+  margin: 0 !important;
 }
 
 /*# sourceMappingURL=personal.css.map */

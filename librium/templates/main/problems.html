@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% from "main/definitions.html" import make_head, make_content, make_book_content %}
+
+{% block title %}Books with Problems{% endblock %}
+
+{% block content %}
+    <div class="ui main container">
+        <div class="ui fluid styled segment">
+            <h1 class="ui header">Books with Problems</h1>
+        </div>
+
+    <div class="ui hidden divider"></div>
+
+        <div class="ui fluid styled accordion">
+            {% for (title, contents) in [("a cover image", missing_cover), ("an ISBN", missing_isbn), ("an author", missing_author), ("a publisher", missing_publisher), ("a language", missing_language), ("a genre", missing_genre)] %}
+                {% if contents|length > 0 %}
+                    {{ make_head("Books missing " ~ title, contents, False, extra=True) }}
+                    {% call make_content(False) %}
+                        {% for b in contents %}
+                            {{ make_book_content(b) }}
+                            {% if not loop.last %}
+                                <div class="ui divider"></div>{% endif %}
+                        {% endfor %}
+                    {% endcall %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

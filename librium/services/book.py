@@ -19,7 +19,7 @@ from librium.database import (
     read_only,
     transactional,
 )
-from librium.database.sqlalchemy.db import book_genres, book_publishers
+from librium.database.sqlalchemy.db import book_genres, book_languages, book_publishers
 from librium.services.author import AuthorService
 from librium.services.format import FormatService
 from librium.services.genre import GenreService
@@ -720,6 +720,106 @@ class BookService:
             return True
         except SQLAlchemyError as e:
             logger.error(f"Error soft deleting book with ID {book_id}: {e}")
+            raise
+
+    @staticmethod
+    @read_only
+    def get_problems() -> Dict[str, List[Book]]:
+        """
+        Get books with missing attributes.
+
+        Returns:
+            A dictionary containing lists of books with problems:
+                - missing_cover
+                - missing_isbn
+                - missing_author
+                - missing_publisher
+                - missing_language
+                - missing_genre
+        """
+        try:
+            logger.debug("Getting books with problems")
+
+            # Books missing a cover image
+            missing_cover = (
+                Session.scalars(
+                    select(Book).where(
+                        Book.deleted.is_(False), Book.has_cover.is_(False)
+                    )
+                )
+                .unique()
+                .all()
+            )
+
+            # Books missing an ISBN
+            missing_isbn = (
+                Session.scalars(
+                    select(Book).where(
+                        Book.deleted.is_(False), (Book.isbn == None) | (Book.isbn == "")
+                    )
+                )
+                .unique()
+                .all()
+            )
+
+            # Books missing an author
+            missing_author = (
+                Session.scalars(
+                    select(Book)
+                    .where(Book.deleted.is_(False))
+                    .outerjoin(AuthorOrdering)
+                    .where(AuthorOrdering.author_id == None)
+                )
+                .unique()
+                .all()
+            )
+
+            # Books missing a publisher
+            missing_publisher = (
+                Session.scalars(
+                    select(Book)
+                    .where(Book.deleted.is_(False))
+                    .outerjoin(book_publishers, Book.id == book_publishers.c.book_id)
+                    .where(book_publishers.c.publisher_id == None)
+                )
+                .unique()
+                .all()
+            )
+
+            # Books missing a language
+            missing_language = (
+                Session.scalars(
+                    select(Book)
+                    .where(Book.deleted.is_(False))
+                    .outerjoin(book_languages, Book.id == book_languages.c.book_id)
+                    .where(book_languages.c.language_id == None)
+                )
+                .unique()
+                .all()
+            )
+
+            # Books missing a genre
+            missing_genre = (
+                Session.scalars(
+                    select(Book)
+                    .where(Book.deleted.is_(False))
+                    .outerjoin(book_genres, Book.id == book_genres.c.book_id)
+                    .where(book_genres.c.genre_id == None)
+                )
+                .unique()
+                .all()
+            )
+
+            return {
+                "missing_cover": missing_cover,
+                "missing_isbn": missing_isbn,
+                "missing_author": missing_author,
+                "missing_publisher": missing_publisher,
+                "missing_language": missing_language,
+                "missing_genre": missing_genre,
+            }
+        except SQLAlchemyError as e:
+            logger.error(f"Error getting books with problems: {e}")
             raise
 
     @staticmethod

@@ -69,3 +69,11 @@ def statistics():
 
     stats = BookService.get_statistics()
     return render_template("main/statistics.html", **stats)
+
+
+@bp.route("/problems")
+def problems():
+    from librium.services import BookService
+
+    problems = BookService.get_problems()
+    return render_template("main/problems.html", **problems)

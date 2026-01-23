@@ -15,7 +15,7 @@
                 </div>
             </div>
             {% endset %}
-            {{ make_head(title, active, False) }}
+            {{ make_head(a.author, a.books, active, extra=True) }}
             {% call make_content(active) %}
                 {% for series in a.series %}
                     {% if (request.args.read is undefined) or (read_only and series.status.read > 0) or (read_only or series.status.unread > 0) %}
@@ -29,15 +29,7 @@
     {% elif series is defined %}
         {% set active = series|length == 1 %}
         {% for s, books in series.items() %}
-            {% set title %}
-            <div class="ui stackable grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ s }}</div>
-                <div class="two wide column">
-                    <div class="ui teal horizontal label">{{ books|length }} book{{ "s" if books|length > 1 }}</div>
-                </div>
-            </div>
-            {% endset %}
-            {{ make_head(title, active, False) }}
+            {{ make_head(s, books, active, extra=True) }}
             {% call make_content(active) %}
                 {{ make_series_content(books) }}
             {% endcall %}
@@ -45,13 +37,7 @@
     {% elif books is defined %}
         {% set active = books|length == 1 %}
         {% for b in books %}
-            {% set title %}
-            <div class="ui stackable grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ b.title }}</div>
-                <div class="two wide column"><i class="{{ "green check" if b.read else "red times" }} icon"></i></div>
-            </div>
-            {% endset %}
-            {{ make_head(title, active, False) }}
+            {{ make_head(b.title, b.read, active) }}
             {% call make_content(active) %}
                 {{ make_book_content(b) }}
             {% endcall %}
@@ -59,15 +45,7 @@
     {% elif years is defined %}
         {% set active = years|length == 1 %}
         {% for year, books in years.items() %}
-            {% set title %}
-            <div class="ui stackable grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ year }}</div>
-                <div class="two wide column">
-                    <div class="ui teal horizontal label">{{ books|length }} book{{ "s" if books|length > 1 }}</div>
-                </div>
-            </div>
-            {% endset %}
-            {{ make_head(title, active, False) }}
+            {{ make_head(year, books, active, extra=True) }}
             {% call make_content(active) %}
                 {{ make_year_content(year, books) }}
             {% endcall %}
@@ -75,15 +53,7 @@
     {% elif genres is defined %}
         {% set active = genres|length == 1 %}
         {% for gr, books in genres.items() %}
-            {% set title %}
-            <div class="ui stackable grid">
-                <div class="fourteen wide column"><i class="dropdown icon"></i>{{ gr }}</div>
-                <div class="two wide column">
-                    <div class="ui teal horizontal label">{{ books|length }} book{{ "s" if books|length > 1 }}</div>
-                </div>
-            </div>
-            {% endset %}
-            {{ make_head(title, active, False) }}
+            {{ make_head(gr, books, active, extra=True) }}
             {% call make_content(active) %}
                 {{ make_genre_content(books) }}
             {% endcall %}

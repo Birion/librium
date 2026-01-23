@@ -1,28 +1,31 @@
+// sass-lint:disable force-element-nesting
 // Dark mode specific overrides for Fomantic UI components
-body.dark-mode
+.dark-mode
   background-color: var(--bg-color)
 
   .ui.header
     color: var(--text-color) !important
 
   .ui.button.basic
-    color: var(--text-color) !important
     box-shadow: 0 0 0 1px var(--border-color) inset !important
-    &:hover
-      background-color: rgba(255, 255, 255, 0.08) !important
+    color: var(--text-color) !important
 
-  .ui.segment, .ui.styled.accordion
+    &:hover
+      background-color: var(--dropdown-hover-bg) !important
+
+  .ui.segment,
+  .ui.styled.accordion
     background-color: var(--segment-bg)
     color: var(--text-color)
 
   .ui.styled.accordion
     .title
-      color: var(--text-color)
       background-color: var(--accordion-title-bg)
       border-top: 1px solid var(--border-color)
+      color: var(--text-color)
 
       &:first-child
-        border-top: none
+        border-top: 0
 
       &.active
         color: var(--text-color)
@@ -33,98 +36,105 @@ body.dark-mode
 
   .ui.table
     background-color: var(--segment-bg)
-    color: var(--text-color)
     border: 1px solid var(--border-color)
+    color: var(--text-color)
 
     ::selection
       background-color: var(--selection-bg) !important
       color: var(--selection-text) !important
 
     thead th
-      background-color: rgba(255, 255, 255, 0.05)
-      color: var(--text-color)
+      background-color: var(--accordion-title-bg)
       border-bottom: 1px solid var(--border-color)
+      color: var(--text-color)
 
     tbody td
       border-top: 1px solid var(--border-color)
       color: var(--text-color)
+
       a
         color: #54c8ff
+
         &:hover
           color: #70d5ff
 
     tfoot th
-      background-color: rgba(255, 255, 255, 0.05)
-      color: var(--text-color)
+      background-color: var(--accordion-title-bg)
       border-top: 1px solid var(--border-color)
+      color: var(--text-color)
 
   .ui.form
     input:not([type]),
-    input[type="date"],
-    input[type="datetime-local"],
-    input[type="email"],
-    input[type="number"],
-    input[type="password"],
-    input[type="search"],
-    input[type="tel"],
-    input[type="text"],
-    input[type="time"],
-    input[type="url"],
+    input[type='date'],
+    input[type='datetime-local'],
+    input[type='email'],
+    input[type='number'],
+    input[type='password'],
+    input[type='search'],
+    input[type='tel'],
+    input[type='text'],
+    input[type='time'],
+    input[type='url'],
     textarea
       background-color: var(--input-bg)
-      color: var(--input-text)
       border: 1px solid var(--border-color)
+      color: var(--input-text)
 
       &::selection
         background-color: var(--selection-bg) !important
         color: var(--selection-text) !important
 
     label,
-    .field > label:not(.button)
-      color: var(--text-color) !important
+    .field
+      & > label
+        &:not(.button)
+          color: var(--text-color) !important
 
   .ui.checkbox
-    label, &.toggle label
+    label,
+    &.toggle label
       color: var(--text-color) !important
 
   .ui.selection.dropdown
     background-color: var(--dropdown-bg)
-    color: var(--dropdown-text)
     border: 1px solid var(--border-color)
+    color: var(--dropdown-text)
 
     .menu
       background-color: var(--dropdown-bg)
       border: 1px solid var(--border-color)
 
       .item
-        color: var(--dropdown-text)
         border-top: 1px solid var(--border-color)
+        color: var(--dropdown-text)
 
         &:hover
           background-color: var(--dropdown-hover-bg) !important
-          color: #fff !important
+          color: var(--dropdown-text) !important
 
         &.selected
           background-color: var(--dropdown-selected-bg) !important
-          color: #fff !important
+          color: var(--dropdown-text) !important
 
         &.active
           background-color: var(--dropdown-selected-bg) !important
-          color: #fff !important
+          color: var(--dropdown-text) !important
 
   .ui.modal
     background-color: var(--modal-bg)
     color: var(--modal-text)
 
-    > .header, > .content, > .actions
+    & > .header,
+    & > .content,
+    & > .actions
       background-color: var(--modal-bg)
-      color: var(--modal-text)
       border-bottom: 1px solid var(--border-color)
+      color: var(--modal-text)
 
     .ui.input input
       background-color: var(--input-bg)
-      color: var(--input-text)
       border: 1px solid var(--border-color)
+      color: var(--input-text)
 
       &::selection
         background-color: var(--selection-bg) !important
@@ -132,9 +142,10 @@ body.dark-mode
 
   .ui.popup
     background-color: var(--modal-bg)
-    color: var(--modal-text)
     border: 1px solid var(--border-color)
-    &:before
+    color: var(--modal-text)
+
+    &::before
       background-color: var(--modal-bg)
       box-shadow: 1px 1px 0 0 var(--border-color)
 
@@ -144,35 +155,36 @@ body.dark-mode
 
     .item
       color: var(--text-color)
-      &:before
+
+      &::before
         background: var(--border-color)
 
       &:hover
-        background-color: rgba(255, 255, 255, 0.08)
+        background-color: var(--dropdown-hover-bg)
 
       &.active
-        background-color: rgba(255, 255, 255, 0.15)
+        background-color: var(--dropdown-selected-bg)
 
   .ui.label
     background-color: rgba(255, 255, 255, 0.15) !important
-    color: rgba(255, 255, 255, 0.9) !important
     border: 1px solid rgba(255, 255, 255, 0.2) !important
+    color: rgba(255, 255, 255, 0.9) !important
 
     &.blue
       background-color: #3d94d9 !important
-      color: #fff !important
+      color: var(--input-text) !important
 
     &.teal
       background-color: #00d1c1 !important
-      color: #fff !important
+      color: var(--input-text) !important
 
     &.green
       background-color: #2ecc71 !important
-      color: #fff !important
+      color: var(--input-text) !important
 
     &.red
       background-color: #ff4d4d !important
-      color: #fff !important
+      color: var(--input-text) !important
 
     &.grey, &.gray
       background-color: #555 !important
@@ -182,5 +194,6 @@ body.dark-mode
       color: inherit !important
 
   .statistic
-    .value, .label
+    .value,
+    .label
       color: var(--text-color) !important

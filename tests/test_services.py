@@ -303,10 +303,14 @@ class TestBookService(TestServiceBase):
         mock_book2.read = False
         mock_book2.deleted = True  # This book is deleted
 
-        # Mock Session.scalars(...).all() to return only the non-deleted unread book
-        mock_scalars = MagicMock()
-        mock_session.scalars.return_value = mock_scalars
-        mock_scalars.all.return_value = [mock_book1]
+        # Mock Session.query(...).where(...).all()
+        # The actual implementation in get_unread uses list(Session.query(Book).where(...))
+        mock_query = MagicMock()
+        mock_session.query.return_value = mock_query
+        mock_where = MagicMock()
+        mock_query.where.return_value = mock_where
+        # list() on the mock_where will call __iter__
+        mock_where.__iter__.return_value = iter([mock_book1])
 
         # Call the service method
         books = BookService.get_unread()
@@ -317,6 +321,51 @@ class TestBookService(TestServiceBase):
         self.assertEqual(books[0].title, "Test Book 1")
         self.assertFalse(books[0].read)
         self.assertFalse(books[0].deleted)
+
+    @patch("librium.services.book.Session")
+    def test_get_problems(self, mock_session):
+        """Test get_problems method."""
+        # Mock books for different problems
+        book_no_cover = MagicMock(
+            spec=Book, title="No Cover", has_cover=False, deleted=False
+        )
+        book_no_isbn = MagicMock(spec=Book, title="No ISBN", isbn=None, deleted=False)
+        book_no_author = MagicMock(spec=Book, title="No Author", deleted=False)
+        book_no_publisher = MagicMock(spec=Book, title="No Publisher", deleted=False)
+        book_no_language = MagicMock(spec=Book, title="No Language", deleted=False)
+        book_no_genre = MagicMock(spec=Book, title="No Genre", deleted=False)
+
+        # We need to mock Session.scalars(...).unique().all() for each call in get_problems
+        # There are 6 calls in get_problems
+        mock_scalars = MagicMock()
+        mock_session.scalars.return_value = mock_scalars
+        mock_unique = MagicMock()
+        mock_scalars.unique.return_value = mock_unique
+
+        mock_unique.all.side_effect = [
+            [book_no_cover],  # missing_cover
+            [book_no_isbn],  # missing_isbn
+            [book_no_author],  # missing_author
+            [book_no_publisher],  # missing_publisher
+            [book_no_language],  # missing_language
+            [book_no_genre],  # missing_genre
+        ]
+
+        problems = BookService.get_problems()
+
+        self.assertIn("missing_cover", problems)
+        self.assertIn("missing_isbn", problems)
+        self.assertIn("missing_author", problems)
+        self.assertIn("missing_publisher", problems)
+        self.assertIn("missing_language", problems)
+        self.assertIn("missing_genre", problems)
+
+        self.assertEqual(problems["missing_cover"], [book_no_cover])
+        self.assertEqual(problems["missing_isbn"], [book_no_isbn])
+        self.assertEqual(problems["missing_author"], [book_no_author])
+        self.assertEqual(problems["missing_publisher"], [book_no_publisher])
+        self.assertEqual(problems["missing_language"], [book_no_language])
+        self.assertEqual(problems["missing_genre"], [book_no_genre])
 
 
 if __name__ == "__main__":
