@@ -14,7 +14,7 @@
     {% set ico = "book" %}
 {% endif %}
 
-<nav class="ui big sidebar vertical pointing menu" id="main-sidebar" aria-label="Main Navigation">
+<nav class="ui big sidebar vertical accordion menu" id="main-sidebar" aria-label="Main Navigation">
     <a href="{{ url_for("main.index") }}" class="ui header item" aria-label="{{ app_name }} Home">
         <span class="ui logo icon image" aria-hidden="true">
             <img class="logo" src="{{ url_for("static", filename=favicon_for_debug("logo", "svg")) }}"
@@ -30,7 +30,7 @@
     <div class="item">
         <div class="ui toggle checkbox" id="dark-mode-toggle">
             <input type="checkbox" name="dark-mode">
-            <label style="color: var(--sidebar-text) !important;">Dark Mode</label>
+            <label for="dark-mode" style="color: var(--sidebar-text) !important;">Dark Mode</label>
         </div>
     </div>
     <a href="{{ url_for("main.statistics") }}" class="item">
@@ -42,65 +42,88 @@
             <div style="color: var(--sidebar-text) !important;">
                 {% set currency_symbols = {"USD": "$", "EUR": "€", "GBP": "£", "CZK": "Kč"} %}
                 {{ default_currency }} ({{ currency_symbols.get(default_currency, "$") }})
-                <input type="hidden" id="currency-select-value" value="{{ default_currency }}" data-symbol="{{ currency_symbols.get(default_currency, '$') }}">
+                <input type="hidden" id="currency-select-value" value="{{ default_currency }}"
+                       data-symbol="{{ currency_symbols.get(default_currency, '$') }}">
             </div>
         </div>
         <div class="item">
             <div class="ui toggle checkbox" id="inflation-toggle">
-                <label>
-                    <input type="checkbox" name="inflation">
-                </label>
+                <input type="checkbox" name="inflation">
                 <label for="inflation" style="color: var(--sidebar-text) !important;">Adjust for Inflation</label>
             </div>
         </div>
     {% endif %}
     {% if endpoint == "main" and not request.endpoint == "main.statistics" %}
-        <div class="ui hidden divider"></div>
-        <div class="item" role="group" aria-label="Browse by">Browse by
-            <div class="menu" role="menu">
-                {% for item in ["Books", "Authors", "Series", "Years", "Genres"] %}
-                    <a href="{{ url_for("main." + item|lower) }}" class="item" role="menuitem">{{ item }}</a>
-                {% endfor %}
-                <div class="ui tiny divider"></div>
-                <a href="{{ url_for("main.problems") }}" class="item" role="menuitem">
-                    Problems
-                </a>
+        <div class="item" role="group" aria-label="Browse by">
+            <a class="title">
+                <i class="dropdown icon"></i>
+                Browse by
+            </a>
+            <div class="content">
+                <div class="menu" role="menu">
+                    {% for item in ["Books", "Authors", "Series", "Years", "Genres"] %}
+                        <a href="{{ url_for("main." + item|lower) }}" class="item" role="menuitem">{{ item }}</a>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        </div>
-        <div class="item" role="group" aria-label="Sort by">Sort by
-            <div class="menu" role="menu">
-                {{ make_sorter("title", "Title", (request.args.sort_by == "title" or request.args.sort_by is not defined)) }}
-                <div class="divider"></div>
-                {{ make_sorter("released", "Year Released", request.args.sort_by == "released") }}
-                {{ make_sorter("price", "Price", request.args.sort_by == "price") }}
-                {{ make_sorter("read", "Read Status", request.args.sort_by == "read") }}
+        <a href="{{ url_for("main.problems") }}" class="item" role="menuitem">
+            Problems
+        </a>
+        <div class="item" role="group" aria-label="Sort by">
+            <a class="title">
+                <i class="dropdown icon"></i>
+                Sort by
+            </a>
+            <div class="content">
+                <div class="menu" role="menu">
+                    {{ make_sorter("title", "Title", (request.args.sort_by == "title" or request.args.sort_by is not defined)) }}
+                    <div class="divider"></div>
+                    {{ make_sorter("released", "Year Released", request.args.sort_by == "released") }}
+                    {{ make_sorter("price", "Price", request.args.sort_by == "price") }}
+                    {{ make_sorter("read", "Read Status", request.args.sort_by == "read") }}
+                </div>
             </div>
         </div>
-        <div class="item" role="group" aria-label="Show only">Show only
-            <div class="menu" role="menu">
-                <a href="{{ url_for_self(read=true) }}" class="item" role="menuitem">Read books ({{ read_books() }})</a>
-                <a href="{{ url_for_self(read=false) }}" class="item" role="menuitem">Unread books ({{ unread_books() }})</a>
+        <div class="item" role="group" aria-label="Show only">
+            <a class="title">
+                <i class="dropdown icon"></i>
+                Show only
+            </a>
+            <div class="content">
+                <div class="menu" role="menu">
+                    <a href="{{ url_for_self(read=true) }}" class="item" role="menuitem">Read books
+                        ({{ read_books() }})</a>
+                    <a href="{{ url_for_self(read=false) }}" class="item" role="menuitem">Unread books
+                        ({{ unread_books() }})</a>
+                </div>
             </div>
         </div>
         <div class="item" role="group" aria-label="Export">
-            Download export
-            <div class="menu" role="menu">
-                {% for filetype in ["csv", "json"] %}
-                    <a href="{{ url_for("api.api_v1.export", format=filetype) }}"
-                         download="export.{{ filetype }}" class="export item" role="menuitem" tabindex="0">
-                        {{ filetype|upper }}
-                    </a>
-                {% endfor %}
+            <a class="title">
+                <i class="dropdown icon"></i>
+                Download export
+            </a>
+            <div class="content">
+                <div class="menu" role="menu">
+                    {% for filetype in ["csv", "json"] %}
+                        <a href="{{ url_for("api.api_v1.export", format=filetype) }}"
+                           download="export.{{ filetype }}" class="export item" role="menuitem" tabindex="0">
+                            {{ filetype|upper }}
+                        </a>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="ui icon menu" style="background: transparent; border: none; box-shadow: none;">
             <div class="item">
                 <form action="" method="get" role="search" aria-label="Search books">
                     <div class="ui transparent input">
-                        <input name="search" type="text" placeholder="Search..." aria-label="Search query" style="color: var(--sidebar-text) !important;">
+                        <input name="search" type="text" placeholder="Search..." aria-label="Search query"
+                               style="color: var(--sidebar-text) !important;">
                     </div>
-                    <i class="circular search link icon" style="color: var(--sidebar-text) !important;" aria-hidden="true" onclick="this.parentElement.submit()" role="button" tabindex="0"></i>
+                    <i class="circular search link icon" style="color: var(--sidebar-text) !important;"
+                       aria-hidden="true" onclick="this.parentElement.submit()" role="button" tabindex="0"></i>
                 </form>
             </div>
         </div>
