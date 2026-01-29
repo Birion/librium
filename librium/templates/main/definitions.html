@@ -298,5 +298,12 @@
     </div>
 {% endmacro %}
 
-{% macro favicon_for_debug(filename, ext) %}img/
-    {% if config["DEBUG"] %}{{ filename }}-dev{% else %}{{ filename }}{% endif %}.{{ ext }}{% endmacro %}
+{% macro favicon_for_debug(filename, ext) -%}
+    img/
+    {%- if config["DEBUG"] -%}
+        {{ filename }}-dev
+    {%- else -%}
+        {{ filename }}
+    {%- endif -%}
+    .{{ ext }}
+{%- endmacro %}
