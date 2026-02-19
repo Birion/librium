@@ -95,12 +95,20 @@ initializeDarkMode = ->
   $toggle = $ "#dark-mode-toggle"
   return unless $toggle.length
 
+  $invertable_elements = [
+    "label.ui.placeholder.segment",
+    "div.ui.search.selection.dropdown",
+    "div.field > div.ui.input",
+  ]
+
   # Load preference from localStorage
   isDark = localStorage.getItem("dark-mode") == "true"
   
   # Set initial state
   if isDark
     $("body").addClass "dark-mode"
+    for el in $invertable_elements
+      $(el).addClass "inverted"
     $toggle.checkbox "set checked"
 
   # Handle changes
@@ -109,9 +117,13 @@ initializeDarkMode = ->
       checked = $(@).is ":checked"
       if checked
         $("body").addClass "dark-mode"
+        for el in $invertable_elements
+          $(el).addClass "inverted"
         localStorage.setItem "dark-mode", "true"
       else
         $("body").removeClass "dark-mode"
+        for el in $invertable_elements
+          $(el).removeClass "inverted"
         localStorage.setItem "dark-mode", "false"
 
 # Display a warning toast message

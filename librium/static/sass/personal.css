@@ -289,7 +289,7 @@ body, .ui.pusher {
   color: var(--modal-text);
 }
 .dark-mode .ui.popup::before {
-  background-color: var(--modal-bg);
+  background-color: var(--modal-bg) !important;
   box-shadow: 1px 1px 0 0 var(--border-color);
 }
 .dark-mode .ui.pagination.menu {
