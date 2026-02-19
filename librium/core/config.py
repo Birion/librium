@@ -51,6 +51,11 @@ class Config:
     # Inflation and currency settings
     DEFAULT_CURRENCY = os.getenv("DEFAULT_CURRENCY", "USD")
 
+    # Caching settings
+    CACHE_TYPE = "FileSystemCache"
+    CACHE_DIR = "cache"
+    CACHE_DEFAULT_TIMEOUT = 300
+
     @classmethod
     def to_dict(cls) -> Dict[str, Any]:
         """Convert configuration to dictionary."""
@@ -76,6 +81,9 @@ class TestingConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     LOG_LEVEL = "DEBUG"
+
+    # Disable caching in tests
+    CACHE_TYPE = "NullCache"
 
     # JWT defaults for tests to avoid missing-key errors
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-key-for-tests")

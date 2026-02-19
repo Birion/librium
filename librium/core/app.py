@@ -1,5 +1,6 @@
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, render_template, request, url_for, jsonify
+from flask_caching import Cache
 from flask_compress import Compress
 from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
@@ -26,6 +27,9 @@ load_dotenv(find_dotenv())
 
 # Get logger for this module
 logger = get_logger("core.app")
+
+# Initialize cache
+cache = Cache()
 
 
 def configure_flask_app(app: Flask) -> None:
@@ -150,6 +154,9 @@ def create_app():
 
     # Initialise extensions
     assets.init_app(app)
+
+    # Initialise and configure Flask-Caching
+    cache.init_app(app)
 
     # Initialise and configure Flask-Compress
     compress = Compress()

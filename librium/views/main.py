@@ -65,15 +65,25 @@ def genres(args):
 
 @bp.route("/statistics")
 def statistics():
+    from librium.core.app import cache
     from librium.services import BookService
 
-    stats = BookService.get_statistics()
+    @cache.cached(timeout=600)
+    def get_cached_stats():
+        return BookService.get_statistics()
+
+    stats = get_cached_stats()
     return render_template("main/statistics.html", **stats)
 
 
 @bp.route("/problems")
 def problems():
+    from librium.core.app import cache
     from librium.services import BookService
 
-    problems = BookService.get_problems()
+    @cache.cached(timeout=600)
+    def get_cached_problems():
+        return BookService.get_problems()
+
+    problems = get_cached_problems()
     return render_template("main/problems.html", **problems)
