@@ -126,8 +126,8 @@ This document contains a prioritised list of tasks for improving the Librium cod
 - [ ] Create deployment documentation
 
 ### Performance
-- [ ] Implement caching for frequently accessed data
-- [ ] Optimize database queries
-- [ ] Implement lazy loading for images
+- [x] Implement caching for frequently accessed data
+- [x] Optimize database queries
+- [x] Implement lazy loading for images
 - [x] Add compression for static assets
 - [ ] Implement server-side rendering for critical content
