@@ -8,15 +8,17 @@
                     {{ title|capitalize }}s
                 </label>
             </div>
-            <select name="{{ title }}s" value="{{ local_items|join(',') if local_items }}" id="{{ title }}s"
-                    class="ui clearable multiple search fluid selection dropdown" role="combobox" aria-expanded="false"
-                    title="Search and select one or more {{ title }}s" aria-haspopup="listbox" multiple="">
-                <option value="">Select {{ title }}</option>
+        <div id="{{ title }}s-dropdown" class="ui clearable multiple search selection dropdown" title="Search and select one or more {{ title }}s" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+            <input type="hidden" name="{{ title }}s" value="{{ local_items|join(',') if local_items }}">
+            <i class="dropdown icon" aria-hidden="true"></i>
+            <div class="default text">Select {{ title }}</div>
+            <div class="menu" role="listbox">
                 {% for item in global_items %}
-                    <option value="{{ item.id }}" data-value="{{ item.id }}" role="option">{{ item.name }}</option>
+                    <div class="item" data-value="{{ item.id }}" role="option">{{ item.name }}</div>
                 {% endfor %}
-            </select>
-                <a href="#" style="float: right;" class="ui label new-link" data-type="{{ title }}"
+            </div>
+        </div>
+            <a href="#" style="float: right;" class="ui label new-link" data-type="{{ title }}"
                    data-content="Add a new {{ title }}" aria-label="Add new {{ title }}" role="button">
                     <i class="plus icon" aria-hidden="true"></i>
                 </a>

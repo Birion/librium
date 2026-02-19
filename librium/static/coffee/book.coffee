@@ -66,8 +66,7 @@ initializeModals = ->
 # @param {string|number} value - The value of the new option
 # @param {string} text - The display text of the new option
 updateDropdown = (id, value, text) ->
-  console.log id, value, text
-  dropdown = $ "select[name=#{id}s]"
+  dropdown = $ "input[name=#{id}s]"
     .parent()
   menu = dropdown.find(".menu")
 
@@ -80,6 +79,20 @@ updateDropdown = (id, value, text) ->
   # Add to menu and refresh dropdown
   menu.append option
   dropdown.dropdown "refresh"
+
+  selectDropdown = $ "select[name=#{id}s]"
+    .parent()
+  menu = selectDropdown.find(".menu")
+
+  # Create new option element
+  option = $ "<option/>",
+    text: text
+  option.attr("data-value", value)
+  option.attr("value", value)
+
+  # Add to menu and refresh dropdown
+  selectDropdown.append option
+  selectDropdown.dropdown "refresh"
 
 # Get the value of a form field, handling special cases
 # @param {HTMLElement} f - The form field element
