@@ -205,7 +205,11 @@ class SeriesService:
             if filter_read is not None:
                 query = query.join(Series.books).where(Book.read.is_(filter_read))
 
-            total_count = len(Session.scalars(query).unique().all())
+            from sqlalchemy import func
+
+            total_count = Session.scalar(
+                select(func.count()).select_from(query.subquery())
+            )
 
             # Only 'name' is supported for sorting
             order_attr = Series.name

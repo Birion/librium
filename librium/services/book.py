@@ -184,7 +184,11 @@ class BookService:
             if ends_with:
                 query = query.where(Book.title.ilike(f"%{ends_with}"))
 
-            total_count = len(Session.scalars(query).unique().all())
+            from sqlalchemy import func
+
+            total_count = Session.scalar(
+                select(func.count()).select_from(query.subquery())
+            )
 
             # Apply sorting
             if sort_by == "title":

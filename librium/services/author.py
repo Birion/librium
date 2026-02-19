@@ -413,7 +413,9 @@ class AuthorService:
             query = (
                 query.join(Author.books).join(Book).where(Book.read.is_(filter_read))
             )
-        total_count = len(Session.scalars(query).unique().all())
+        from sqlalchemy import func
+
+        total_count = Session.scalar(select(func.count()).select_from(query.subquery()))
         # sorting
         order_attr = Author.last_name
         if sort_order.lower() == "desc":
