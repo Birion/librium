@@ -2,22 +2,24 @@
 
 {% macro make_select(local_items, global_items, title) %}
     <div class="field">
-        <label for="{{ title }}s-dropdown" title="Select one or more {{ title }}s">
-            {{ title|capitalize }}s
-            <a href="#" style="float: right;" class="new-link" data-type="{{ title }}"
-               data-content="Add a new {{ title }}" aria-label="Add new {{ title }}" role="button">
-                <i class="plus icon" aria-hidden="true"></i>
-            </a>
-        </label>
-        <div id="{{ title }}s-dropdown" class="ui clearable multiple search selection dropdown" title="Search and select one or more {{ title }}s" role="combobox" aria-expanded="false" aria-haspopup="listbox">
-            <input type="hidden" name="{{ title }}s" value="{{ local_items|join(',') if local_items }}">
-            <i class="dropdown icon" aria-hidden="true"></i>
-            <div class="default text">Select {{ title }}</div>
-            <div class="menu" role="listbox">
-                {% for item in global_items %}
-                    <div class="item" data-value="{{ item.id }}" role="option">{{ item.name }}</div>
-                {% endfor %}
+        <div class="ui labeled input">
+            <div class="ui label">
+                <label for="{{ title }}s-dropdown" title="Select one or more {{ title }}s">
+                    {{ title|capitalize }}s
+                </label>
             </div>
+            <select name="{{ title }}s" value="{{ local_items|join(',') if local_items }}" id="{{ title }}s"
+                    class="ui clearable multiple search fluid selection dropdown" role="combobox" aria-expanded="false"
+                    title="Search and select one or more {{ title }}s" aria-haspopup="listbox" multiple="">
+                <option value="">Select {{ title }}</option>
+                {% for item in global_items %}
+                    <option value="{{ item.id }}" data-value="{{ item.id }}" role="option">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+                <a href="#" style="float: right;" class="ui label new-link" data-type="{{ title }}"
+                   data-content="Add a new {{ title }}" aria-label="Add new {{ title }}" role="button">
+                    <i class="plus icon" aria-hidden="true"></i>
+                </a>
         </div>
     </div>
 {% endmacro %}
@@ -32,7 +34,7 @@
                     {% if book and book.has_cover %}
                         <img class="ui bordered rounded centered image"
                              src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
-                             alt="{{ book.title }} cover">
+                             alt="{{ book.title }} cover" loading="lazy">
                         <div class="ui center aligned">
                             <input id="fileinput" type="file" class="ui invisible file input" accept="image/*"
                                    data-url="{{ url_for("api.api_v1.add_cover") }}">
@@ -60,35 +62,53 @@
                     <form id="book" class="ui equal width form" action="{{ url }}" method="post">
                         <div class="fields">
                             <div class="field">
-                                <label for="title" title="The book's title shown in lists and details">Title</label>
-                                <input name="title" id="title" type="text" value="{{ book.title if book }}"
-                                       placeholder="Enter book title" aria-label="Book title"
-                                       title="Enter the full book title">
+                                <div class="ui labeled input">
+                                    <div class="ui label">
+                                        <label for="title"
+                                               title="The book's title shown in lists and details">Title</label>
+                                    </div>
+                                    <input name="title" id="title" type="text" value="{{ book.title if book }}"
+                                           placeholder="Enter book title" aria-label="Book title"
+                                           title="Enter the full book title">
+                                </div>
                             </div>
                             <div class="field">
-                                <label for="isbn"
-                                       title="International Standard Book Number (digits only or with hyphens)">ISBN</label>
-                                <input name="isbn" id="isbn" type="text" placeholder="e.g., 9780123456789"
-                                       aria-label="ISBN" title="Enter a 10 or 13-digit ISBN (hyphens allowed)"
-                                       value="{{ book.isbn if book and book.isbn }}">
+                                <div class="ui labeled input">
+                                    <div class="ui label">
+                                        <label for="isbn"
+                                               title="International Standard Book Number (digits only or with hyphens)">ISBN</label>
+                                    </div>
+                                    <input name="isbn" id="isbn" type="text" placeholder="e.g., 9780123456789"
+                                           aria-label="ISBN" title="Enter a 10 or 13-digit ISBN (hyphens allowed)"
+                                           value="{{ book.isbn if book and book.isbn }}">
+                                </div>
                             </div>
                         </div>
                         <div class="fields">
                             <div class="field">
-                                <label for="uuid" title="Unique identifier generated by the system">UUID</label>
-                                <input type="text" name="uuid" id="uuid" value="{{ book.uuid if book }}"
-                                       title="This value is read-only"
-                                       readonly>
+                                <div class="ui labeled input">
+                                    <div class="ui label">
+                                        <label for="uuid" title="Unique identifier generated by the system">UUID</label>
+                                    </div>
+                                    <input type="text" name="uuid" id="uuid" value="{{ book.uuid if book }}"
+                                           title="This value is read-only"
+                                           readonly>
+                                </div>
                             </div>
                             <div class="field">
-                                <label for="format" title="The physical or digital format (e.g., Hardcover, eBook)">Format</label>
-                                <select name="format" id="format" class="ui fluid dropdown"
-                                        title="Choose the book's format">
-                                    <option value="">Select format</option>
-                                    {% for format in formats %}
-                                        <option value="{{ format.id }}" {{ "selected" if book and format == book.format }}>{{ format.name }}</option>
-                                    {% endfor %}
-                                </select>
+                                <div class="ui labeled input">
+                                    <div class="ui label">
+                                        <label for="format"
+                                               title="The physical or digital format (e.g., Hardcover, eBook)">Format</label>
+                                    </div>
+                                    <select name="format" id="format" class="ui fluid dropdown"
+                                            title="Choose the book's format">
+                                        <option value="">Select format</option>
+                                        {% for format in formats %}
+                                            <option value="{{ format.id }}" {{ "selected" if book and format == book.format }}>{{ format.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="fields">
@@ -156,14 +176,18 @@
                                 <div class="stackable fields">
                                     <div class="eight wide field">
                                         <label for="series-name-{{ loop.index }}">Name</label>
-                                        <div id="series-name-{{ loop.index }}-dropdown" class="ui fluid search selection dropdown" role="combobox" aria-expanded="false" aria-haspopup="listbox">
-                                            <input type="hidden" name="series-name-{{ loop.index }}" id="series-name-{{ loop.index }}"
+                                        <div id="series-name-{{ loop.index }}-dropdown"
+                                             class="ui fluid search selection dropdown" role="combobox"
+                                             aria-expanded="false" aria-haspopup="listbox">
+                                            <input type="hidden" name="series-name-{{ loop.index }}"
+                                                   id="series-name-{{ loop.index }}"
                                                    value="{{ si.series.id }}">
                                             <i class="dropdown icon" aria-hidden="true"></i>
                                             <span class="text">Select series</span>
                                             <div class="menu" role="listbox">
                                                 {% for s in series %}
-                                                    <div class="item" data-value="{{ s.id }}" role="option">{{ s.name }}</div>
+                                                    <div class="item" data-value="{{ s.id }}"
+                                                         role="option">{{ s.name }}</div>
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -177,7 +201,8 @@
                                     </div>
                                     <div class="two wide field">
                                         <label></label>
-                                        <a class="ui red icon button remove series" title="Remove from book" aria-label="Remove series from book" role="button">
+                                        <a class="ui red icon button remove series" title="Remove from book"
+                                           aria-label="Remove series from book" role="button">
                                             <i class="minus icon" aria-hidden="true"></i>
                                         </a>
 

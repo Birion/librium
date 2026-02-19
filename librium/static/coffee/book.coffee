@@ -66,7 +66,8 @@ initializeModals = ->
 # @param {string|number} value - The value of the new option
 # @param {string} text - The display text of the new option
 updateDropdown = (id, value, text) ->
-  dropdown = $ "input[name=#{id}s]"
+  console.log id, value, text
+  dropdown = $ "select[name=#{id}s]"
     .parent()
   menu = dropdown.find(".menu")
 
