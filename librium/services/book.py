@@ -759,7 +759,8 @@ class BookService:
             missing_isbn = (
                 Session.scalars(
                     select(Book).where(
-                        Book.deleted.is_(False), (Book.isbn == None) | (Book.isbn == "")
+                        Book.deleted.is_(False),
+                        (Book.isbn.is_(None)) | (Book.isbn == ""),
                     )
                 )
                 .unique()
@@ -772,7 +773,7 @@ class BookService:
                     select(Book)
                     .where(Book.deleted.is_(False))
                     .outerjoin(AuthorOrdering)
-                    .where(AuthorOrdering.author_id == None)
+                    .where(AuthorOrdering.author_id.is_(None))
                 )
                 .unique()
                 .all()
@@ -784,7 +785,7 @@ class BookService:
                     select(Book)
                     .where(Book.deleted.is_(False))
                     .outerjoin(book_publishers, Book.id == book_publishers.c.book_id)
-                    .where(book_publishers.c.publisher_id == None)
+                    .where(book_publishers.c.publisher_id.is_(None))
                 )
                 .unique()
                 .all()
@@ -796,7 +797,7 @@ class BookService:
                     select(Book)
                     .where(Book.deleted.is_(False))
                     .outerjoin(book_languages, Book.id == book_languages.c.book_id)
-                    .where(book_languages.c.language_id == None)
+                    .where(book_languages.c.language_id.is_(None))
                 )
                 .unique()
                 .all()
@@ -808,7 +809,7 @@ class BookService:
                     select(Book)
                     .where(Book.deleted.is_(False))
                     .outerjoin(book_genres, Book.id == book_genres.c.book_id)
-                    .where(book_genres.c.genre_id == None)
+                    .where(book_genres.c.genre_id.is_(None))
                 )
                 .unique()
                 .all()
