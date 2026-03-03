@@ -45,12 +45,12 @@
     {% endif %}
 {% endmacro %}
 
-{% macro make_book_cover(book) -%}
-    {%- set src = url_for("covers.static", filename=book.uuid + ".jpg") -%}
-    {%- set alt = book.title + " cover" -%}
+{% macro make_book_cover(title, id, uuid) -%}
+    {%- set src = url_for("covers.static", filename=uuid + ".jpg") -%}
+    {%- set alt = title + " cover" -%}
     {%- set class = "ui bordered fluid image" -%}
     {%- set data_html = "<img class='" + class + "' src='" + src + "' loading='lazy'>" -%}
-    <a href="{{ url_for("book.index", id=book.id) }}">
+    <a href="{{ url_for("book.index", id=id) }}">
         <img class="{{ class }}" src="{{ src }}" alt="{{ alt }}" loading="lazy"
              data-html="{{ data_html|e }}" data-variation="basic" data-position="bottom center">
     </a>
@@ -68,7 +68,7 @@
 {% macro make_author_book(book) %}
     <tr>
         <td class="two wide">
-            {{ make_book_cover(book) }}
+            {{ make_book_cover(book.book, book.id, book.uuid) }}
         </td>
         <td class="eight wide">
             <a href="{{ url_for("book.index", id=book.id) }}">{{ book.book }}</a>
@@ -128,7 +128,7 @@
         {% for book in books %}
             <tr>
                 <td>
-                    {{ make_book_cover(book) }}
+                    {{ make_book_cover(book.name, book.id, book.uuid) }}
                 </td>
                 <td class="right aligned">
                     {{ make_index(book.idx) }}
@@ -149,48 +149,48 @@
 {% endmacro %}
 
 {% macro make_book_content(book) %}
-            <table class="ui stackable structured table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th class="two wide center aligned">Released</th>
-                    <th class="four wide">Authors</th>
-                    <th colspan="2" class="center aligned">Series</th>
-                    <th class="two wide">Link</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                <td>
-                                {{ make_book_cover(book) }}
-                </td>
-                    <td class="center aligned two wide">
-                        {{ book.released }}
-                    </td>
-                    <td class="six wide">
-                        {% for author in book.authors %}
-                            {{ make_author(author.author.name) }}
-                        {% endfor %}
-                    </td>
-                    <td class="four wide">
-                        {% for series in book.series %}
-                            <div class="right aligned">{{ make_series(series.series.name) }}</div>
-                        {% endfor %}
-                    </td>
-                    <td class="one wide">
-                        {% for series in book.series %}
-                            <div>{{ make_index(series.index, False) }}</div>
-                        {% endfor %}
-                    </td>
-                    <td class="two wide">
-                        <a href="{{ url_for("book.index", id=book.id) }}">
-                            Link
-                            <i class="small fitted linkify icon"></i>
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <table class="ui stackable structured table">
+        <thead>
+        <tr>
+            <th class="two wide"></th>
+            <th class="two wide center aligned">Released</th>
+            <th class="four wide">Authors</th>
+            <th colspan="2" class="center aligned">Series</th>
+            <th class="two wide">Link</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                {{ make_book_cover(book.title, book.id, book.uuid) }}
+            </td>
+            <td class="center aligned two wide">
+                {{ book.released }}
+            </td>
+            <td class="six wide">
+                {% for author in book.authors %}
+                    {{ make_author(author.author.name) }}
+                {% endfor %}
+            </td>
+            <td class="four wide">
+                {% for series in book.series %}
+                    <div class="right aligned">{{ make_series(series.series.name) }}</div>
+                {% endfor %}
+            </td>
+            <td class="one wide">
+                {% for series in book.series %}
+                    <div>{{ make_index(series.index, False) }}</div>
+                {% endfor %}
+            </td>
+            <td class="two wide">
+                <a href="{{ url_for("book.index", id=book.id) }}">
+                    Link
+                    <i class="small fitted linkify icon"></i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 {% endmacro %}
 
 {% macro make_year_content(year, books) %}
@@ -208,7 +208,7 @@
         {% for book in books %}
             <tr>
                 <td>
-                    {{ make_book_cover(book) }}
+                    {{ make_book_cover(book.name, book.id, book.uuid) }}
                 </td>
                 <td><a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a></td>
                 <td>{% for author in book.authors %}{{ make_author(author.author.name) }}{% endfor %}</td>
@@ -242,7 +242,7 @@
         {% for book in books %}
             <tr>
                 <td>
-                    {{ make_book_cover(book) }}
+                    {{ make_book_cover(book.name, book.id, book.uuid) }}
                 </td>
                 <td>
                     <a href="{{ url_for("book.index", id=book.id) }}">{{ book.name }}</a>
