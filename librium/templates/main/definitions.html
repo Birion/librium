@@ -45,12 +45,16 @@
     {% endif %}
 {% endmacro %}
 
-{% macro make_book_cover(book) %}
+{% macro make_book_cover(book) -%}
+    {%- set src = url_for("covers.static", filename=book.uuid + ".jpg") -%}
+    {%- set alt = book.title + " cover" -%}
+    {%- set class = "ui bordered fluid image" -%}
+    {%- set data_html = "<img class='" + class + "' src='" + src + "' loading='lazy'>" -%}
     <a href="{{ url_for("book.index", id=book.id) }}">
-        <img class="ui bordered fluid image" src="{{ url_for("covers.static", filename=book.uuid + ".jpg") }}"
-             alt="{{ book.title }} cover" loading="lazy">
+        <img class="{{ class }}" src="{{ src }}" alt="{{ alt }}" loading="lazy"
+             data-html="{{ data_html|e }}" data-variation="basic" data-position="bottom center">
     </a>
-{% endmacro %}
+{%- endmacro %}
 
 {% macro make_sorter(sort, text, active) %}
     {% set dir = "up" if not active or request.args.sort_order == "asc" else "down" %}
@@ -80,6 +84,7 @@
         </td>
     </tr>
 {% endmacro %}
+
 {% macro make_author_content(series, read) %}
     {% if series.series != "0" %}
         <div class="ui medium header">
@@ -144,14 +149,10 @@
 {% endmacro %}
 
 {% macro make_book_content(book) %}
-    <div class="ui stackable grid">
-        <div class="four wide column">
-            {{ make_book_cover(book) }}
-        </div>
-        <div class="twelve wide column">
             <table class="ui stackable structured table">
                 <thead>
                 <tr>
+                    <th></th>
                     <th class="two wide center aligned">Released</th>
                     <th class="four wide">Authors</th>
                     <th colspan="2" class="center aligned">Series</th>
@@ -160,6 +161,9 @@
                 </thead>
                 <tbody>
                 <tr>
+                <td>
+                                {{ make_book_cover(book) }}
+                </td>
                     <td class="center aligned two wide">
                         {{ book.released }}
                     </td>
@@ -187,8 +191,6 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
 {% endmacro %}
 
 {% macro make_year_content(year, books) %}

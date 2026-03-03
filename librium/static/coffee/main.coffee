@@ -34,7 +34,7 @@ initializeSemanticElements = ->
   $ ".ui.checkbox"
     .checkbox()
 
-  $ "*[data-content]"
+  $ "*[data-content], *[data-html]"
     .popup()
 
 initializeKeyboardNavigation = ->
