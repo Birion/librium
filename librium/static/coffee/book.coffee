@@ -309,14 +309,6 @@ createSeriesFields = ($addButton) ->
   $seriesField = $ ""
   $idxField = $ ""
   $buttonField = $ ""
-  $removeLink = $ ""
-  $seriesLabel = $ ""
-  $dropdownDiv = $ ""
-  $menuDiv = $ ""
-  $idxLabel = $ ""
-  $addButton = $ ""
-
-  initializeSeriesManagement()
 
 # ===== File Upload =====
 
