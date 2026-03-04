@@ -151,6 +151,10 @@ def add(args):
     Returns:
         JSON response with the new item
     """
+
+    for key, val in args.items():
+        args[key] = val.strip()
+
     if not args.get("name") and args.get("type") != "author":
         logger.warning("Missing name in add endpoint")
         return forbidden("Missing name")
@@ -186,11 +190,12 @@ def add(args):
                 options["suffix"],
             )
         )
-        author = args["name"].split()
-        for section in author:
-            if re.search(r"^[a-z]", section):
-                idx = author.index(section)
-                author[idx] = author.pop(idx) + " " + author[idx]
+        author: list[str] = args["name"].split()
+        if len(author) > 1:
+            for section in author:
+                if re.search(r"^[a-z]", section):
+                    idx = author.index(section)
+                    author[idx] = author.pop(idx) + " " + author[idx]
         if len(author) >= 1 and author[-1] in ["Jr", "Jr.", "III", "III."]:
             options["suffix"] = author.pop(-1)
 
@@ -287,7 +292,7 @@ def add_cover(**kwargs):
     Add a cover image for a book.
 
     Args:
-        args: The validated request arguments containing cover and uuid
+        kwargs: The validated request arguments containing cover and uuid
 
     Returns:
         JSON response indicating success or failure
