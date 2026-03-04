@@ -148,20 +148,12 @@
                             </div>
                         </div>
                         <div class="fields">
-                            <div class="eight wide field">
-                                {{ make_select(book.author_ids if book else None, authors, "author") }}
-                            </div>
-                            <div class="eight wide field">
-                                {{ make_select(book.genre_ids if book else None, genres, "genre") }}
-                            </div>
+                            {{ make_select(book.author_ids if book else None, authors, "author") }}
+                            {{ make_select(book.genre_ids if book else None, genres, "genre") }}
                         </div>
                         <div class="fields">
-                            <div class="eight wide field">
-                                {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
-                            </div>
-                            <div class="eight wide field">
-                                {{ make_select(book.language_ids if book else None, languages, "language") }}
-                            </div>
+                            {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
+                            {{ make_select(book.language_ids if book else None, languages, "language") }}
                         </div>
 
                         <h4 class="ui dividing header">
@@ -175,8 +167,8 @@
                         <input type="hidden" name="series" id="series">
                         {% if book %}
                             {% for si in book.series %}
-                                <div class="stackable fields">
-                                    <div class="eight wide field">
+                                <div class="fields">
+                                    <div class="field">
                                         <label for="series-name-{{ loop.index }}">Name</label>
                                         <div id="series-name-{{ loop.index }}-dropdown"
                                              class="ui fluid search selection dropdown" role="combobox"
@@ -194,14 +186,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="six wide field">
+                                    <div class="field">
                                         <label for="series-index-{{ loop.index }}">Index</label>
                                         <input name="series-index-{{ loop.index }}"
                                                id="series-index-{{ loop.index }}"
                                                type="number" aria-label="Series index"
                                                min="0" step="0.1" value="{{ si.index }}">
                                     </div>
-                                    <div class="two wide field">
+                                    <div class="field">
                                         <label></label>
                                         <a class="ui red icon button remove series" title="Remove from book"
                                            aria-label="Remove series from book" role="button">

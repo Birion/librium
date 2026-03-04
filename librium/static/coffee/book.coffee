@@ -219,11 +219,11 @@ createSeriesFields = ($addButton) ->
       "aria-hidden": "true"
 
   # Create the main field container
-  $field = makeDiv "stackable fields"
+  $field = makeDiv "fields"
   $addButton.parent().before $field
 
   # Create series field
-  $seriesField = makeDiv "eight wide field"
+  $seriesField = makeDiv "field"
   $seriesField.appendTo $field
 
   # Add series label
@@ -262,7 +262,7 @@ createSeriesFields = ($addButton) ->
   $menuDiv.appendTo $dropdownDiv
 
   # Create index field
-  $idxField = makeDiv "six wide field"
+  $idxField = makeDiv "field"
   $idxField.appendTo $field
 
   # Add index label and input
@@ -279,7 +279,7 @@ createSeriesFields = ($addButton) ->
   .appendTo $idxField
 
   # Create button field
-  $buttonField = makeDiv "two wide field"
+  $buttonField = makeDiv "field"
   $buttonField.appendTo $field
 
   # Add button label
@@ -306,6 +306,15 @@ createSeriesFields = ($addButton) ->
       on: "click"
 
   $field = $ ""
+  $seriesField = $ ""
+  $idxField = $ ""
+  $buttonField = $ ""
+  $removeLink = $ ""
+  $seriesLabel = $ ""
+  $dropdownDiv = $ ""
+  $menuDiv = $ ""
+  $idxLabel = $ ""
+  $addButton = $ ""
 
   initializeSeriesManagement()
 
