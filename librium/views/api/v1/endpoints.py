@@ -11,7 +11,6 @@ from pathlib import Path
 
 from flask import jsonify, request, send_file, url_for
 from flask_jwt_extended import create_access_token, jwt_required
-from flask_limiter import ExemptionScope
 from webargs.flaskparser import use_args, use_kwargs
 
 from librium.core.limit import limiter
