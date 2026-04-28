@@ -1,17 +1,18 @@
+// sass-lint:disable no-vendor-prefixes
 // Input component styles
 // Styles for form input elements and controls
 
 input
 
-  // Remove spinner buttons from number inputs (WebKit browsers)
-  &[type='number']::-webkit-inner-spin-button,
-  &[type='number']::-webkit-outer-spin-button
-    -webkit-appearance: none
-    margin: 0
-
-  // Firefox number input styling
   &[type='number']
+    // Firefox number input styling
     -moz-appearance: textfield
+
+    // Remove spinner buttons from number inputs (WebKit browsers)
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button
+      -webkit-appearance: none
+      margin: 0
 
   // Focus styles for all inputs
   &:focus

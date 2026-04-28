@@ -57,10 +57,10 @@
       color: var(--text-color)
 
       a
-        color: #54c8ff
+        color: var(--link-text)
 
         &:hover
-          color: #70d5ff
+          color: var(--link-text-hover)
 
     tfoot th
       background-color: var(--accordion-title-bg)
@@ -170,29 +170,30 @@
         background-color: var(--dropdown-selected-bg)
 
   .ui.label
-    background-color: rgba(255, 255, 255, 0.15) !important
-    border: 1px solid rgba(255, 255, 255, 0.2) !important
-    color: rgba(255, 255, 255, 0.9) !important
+    background-color: var(--label-default) !important
+    border: 1px solid var(--label-default-border) !important
+    color: var(--text-color) !important
 
     &.blue
-      background-color: #3d94d9 !important
+      background-color: var(--label-blue) !important
       color: var(--input-text) !important
 
     &.teal
-      background-color: #00d1c1 !important
+      background-color: var(--label-teal) !important
       color: var(--input-text) !important
 
     &.green
-      background-color: #2ecc71 !important
+      background-color: var(--label-green) !important
       color: var(--input-text) !important
 
     &.red
-      background-color: #ff4d4d !important
+      background-color: var(--label-red) !important
       color: var(--input-text) !important
 
-    &.grey, &.gray
-      background-color: #555 !important
-      color: #eee !important
+    &.grey,
+    &.gray
+      background-color: var(--label-grey) !important
+      color: var(--label-grey-text) !important
 
     a
       color: inherit !important

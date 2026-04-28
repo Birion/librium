@@ -1,3 +1,4 @@
+// sass-lint:disable empty-line-between-blocks
 @use 'sass:list'
 // Typography and font styles
 // Defines font families, mixins, and typography-related styles
@@ -70,29 +71,24 @@ body
   &.header,
   &.menu
     +bodyfont
-
   // Text containers
   &.text
     &.container
       +bodyfont
-
   // Form inputs
   &.input
     > input
       +bodyfont
-
   // Accordion
   &.accordion
     .title
       &:not(.ui)
         +bodyfont
-
   // Steps
   &.steps
     .step
       .title
         +bodyfont
-
   // Search components
   &.category
     &.search
@@ -100,46 +96,36 @@ body
         .category
           > .name
             +bodyfont
-
   &.search
     > .results
       .result
         .title
           +bodyfont
-
       > .message
         +add-header
-
   // Modal, popup, and message components
   &.modal
     +add-header
-
   &.popup
     +add-header
-
   &.message
     +add-header
-
   // List components
   &.list
     .list
       > .item
         +add-header
-
     > .item
       +add-header
-
   // Card components
   &.card
     > .content
       +add-header(true)
-
   // Form components
   &.form
     input
       &:not([type])
         +bodyfont
-
   // Apply body font to all input types
   @each $elem in $inputs-list
     #{$elem}

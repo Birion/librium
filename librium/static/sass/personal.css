@@ -45,6 +45,9 @@ body.dark-mode {
   --navbar-text: rgba(255, 255, 255, 0.9);
   --selection-bg: #3d94d9;
   --selection-text: #fff;
+  --label-blue: var(--selection-bg);
+  --label-red: #ff4d4d;
+  --label-teal: #00d1c1;
 }
 
 #mobile-navbar,
@@ -311,14 +314,14 @@ body, .ui.pusher {
 .dark-mode .ui.label {
   background-color: rgba(255, 255, 255, 0.15) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--text-color) !important;
 }
 .dark-mode .ui.label.blue {
-  background-color: #3d94d9 !important;
+  background-color: var(--label-blue) !important;
   color: var(--input-text) !important;
 }
 .dark-mode .ui.label.teal {
-  background-color: #00d1c1 !important;
+  background-color: var(--label-teal) !important;
   color: var(--input-text) !important;
 }
 .dark-mode .ui.label.green {
@@ -326,7 +329,7 @@ body, .ui.pusher {
   color: var(--input-text) !important;
 }
 .dark-mode .ui.label.red {
-  background-color: #ff4d4d !important;
+  background-color: var(--label-red) !important;
   color: var(--input-text) !important;
 }
 .dark-mode .ui.label.grey, .dark-mode .ui.label.gray {
