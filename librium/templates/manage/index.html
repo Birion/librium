@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage{% endblock %}
+
+{% block content %}
+    <div class="ui main container">
+        <div class="ui styled fluid segment">
+            <h1 class="ui header">Manage</h1>
+            <div class="ui three stackable cards">
+                {% for slug, entry in entities.items() %}
+                    <a class="ui card" href="{{ url_for('manage.entity_list', entity_type=slug) }}">
+                        <div class="content">
+                            <div class="header">{{ entry.label }}</div>
+                            <div class="description">Manage {{ entry.label|lower }}</div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -12,7 +12,7 @@ from librium.core.logging import configure_logging, get_logger
 from librium.core.utils import parse_read_arg
 from librium.core.limit import limiter
 from librium.services import BookService
-from librium.views import book, covers, main
+from librium.views import book, covers, main, manage
 from librium.views.api import bp as api_bp
 from librium.views.api.errors import too_many_requests
 from librium.views.api.swagger import swagger_ui_blueprint
@@ -65,7 +65,7 @@ def configure_jinja_env(app: Flask) -> None:
 
 def register_blueprints(app: Flask, limiter: Limiter) -> None:
     """Register all application blueprints."""
-    blueprints = [main.bp, book.bp, api_bp, swagger_ui_blueprint, covers.bp]
+    blueprints = [main.bp, book.bp, manage.bp, api_bp, swagger_ui_blueprint, covers.bp]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
         limiter.exempt(blueprint)

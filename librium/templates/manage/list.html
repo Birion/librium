@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage {{ entry.label }}{% endblock %}
+
+{% block content %}
+<div class="ui main container">
+    <div class="ui secondary menu">
+        <a class="item" href="{{ url_for('manage.index') }}">
+            <i class="arrow left icon"></i> Back to Manage
+        </a>
+        <div class="right menu">
+            <a class="ui primary button item" href="{{ url_for('manage.entity_new', entity_type=entity_type) }}">
+                <i class="plus icon"></i> Add {{ entry.singular }}
+            </a>
+        </div>
+    </div>
+
+    <h1 class="ui header">{{ entry.label }}</h1>
+
+    {% if items %}
+    <table class="ui celled striped table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th class="two wide">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>
+                    <a class="ui mini fluid blue button" href="{{ url_for('manage.entity_edit', entity_type=entity_type, item_id=item.id) }}">
+                        <i class="edit icon"></i> Edit
+                    </a>
+                    <form method="post" action="{{ url_for('manage.entity_delete', entity_type=entity_type, item_id=item.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this {{ entry.singular|lower }}?');">
+                        <button type="submit" class="ui mini fluid red button">
+                            <i class="trash icon"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="ui message">
+        <p>No {{ entry.label|lower }} found. <a href="{{ url_for('manage.entity_new', entity_type=entity_type) }}">Add one</a>.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

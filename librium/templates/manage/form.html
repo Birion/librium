@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if item %}Edit{% else %}New{% endif %} {{ entry.singular }}{% endblock %}
+
+{% block content %}
+<div class="ui main container">
+    <div class="ui secondary menu">
+        <a class="item" href="{{ url_for('manage.entity_list', entity_type=entity_type) }}">
+            <i class="arrow left icon"></i> Back to {{ entry.label }}
+        </a>
+    </div>
+
+    <h1 class="ui header">{% if item %}Edit{% else %}New{% endif %} {{ entry.singular }}</h1>
+
+    {% if error %}
+    <div class="ui negative message">
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    <form class="ui form" method="post"
+          action="{% if item %}{{ url_for('manage.entity_edit', entity_type=entity_type, item_id=item.id) }}{% else %}{{ url_for('manage.entity_new', entity_type=entity_type) }}{% endif %}">
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Name" required
+                   value="{{ item.name if item else '' }}">
+        </div>
+        <button class="ui primary button" type="submit">
+            <i class="save icon"></i> {% if item %}Update{% else %}Create{% endif %}
+        </button>
+        <a class="ui button" href="{{ url_for('manage.entity_list', entity_type=entity_type) }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}
