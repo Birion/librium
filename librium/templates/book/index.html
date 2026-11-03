@@ -8,20 +8,22 @@
                     {{ title|capitalize }}s
                 </label>
             </div>
-        <div id="{{ title }}s-dropdown" class="ui clearable multiple search selection dropdown" title="Search and select one or more {{ title }}s" role="combobox" aria-expanded="false" aria-haspopup="listbox">
-            <input type="hidden" name="{{ title }}s" value="{{ local_items|join(',') if local_items }}">
-            <i class="dropdown icon" aria-hidden="true"></i>
-            <div class="default text">Select {{ title }}</div>
-            <div class="menu" role="listbox">
-                {% for item in global_items %}
-                    <div class="item" data-value="{{ item.id }}" role="option">{{ item.name }}</div>
-                {% endfor %}
+            <div id="{{ title }}s-dropdown" class="ui clearable multiple search selection dropdown"
+                 title="Search and select one or more {{ title }}s" role="combobox" aria-expanded="false"
+                 aria-haspopup="listbox">
+                <input type="hidden" name="{{ title }}s" value="{{ local_items|join(',') if local_items }}">
+                <i class="dropdown icon" aria-hidden="true"></i>
+                <div class="default text">Select {{ title }}</div>
+                <div class="menu" role="listbox">
+                    {% for item in global_items %}
+                        <div class="item" data-value="{{ item.id }}" role="option">{{ item.name }}</div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
             <a href="#" style="float: right;" class="ui label new-link" data-type="{{ title }}"
-                   data-content="Add a new {{ title }}" aria-label="Add new {{ title }}" role="button">
-                    <i class="plus icon" aria-hidden="true"></i>
-                </a>
+               data-content="Add a new {{ title }}" aria-label="Add new {{ title }}" role="button">
+                <i class="plus icon" aria-hidden="true"></i>
+            </a>
         </div>
     </div>
 {% endmacro %}
@@ -61,55 +63,58 @@
                 </div>
                 <div class="ten wide column">
                     {% set url = "update/" + book.id|string if book else "update/0" %}
-                    <form id="book" class="ui equal width form" action="{{ url }}" method="post">
-                        <div class="fields">
-                            <div class="field">
-                                <div class="ui labeled input">
-                                    <div class="ui label">
-                                        <label for="title"
-                                               title="The book's title shown in lists and details">Title</label>
+                    <form id="book" class="ui form" action="{{ url }}" method="post">
+                        <div class="ui equal width form">
+                            <div class="fields">
+                                <div class="field">
+                                    <div class="ui labeled input">
+                                        <div class="ui label">
+                                            <label for="title"
+                                                   title="The book's title shown in lists and details">Title</label>
+                                        </div>
+                                        <input name="title" id="title" type="text" value="{{ book.title if book }}"
+                                               placeholder="Enter book title" aria-label="Book title"
+                                               title="Enter the full book title">
                                     </div>
-                                    <input name="title" id="title" type="text" value="{{ book.title if book }}"
-                                           placeholder="Enter book title" aria-label="Book title"
-                                           title="Enter the full book title">
+                                </div>
+                                <div class="field">
+                                    <div class="ui labeled input">
+                                        <div class="ui label">
+                                            <label for="isbn"
+                                                   title="International Standard Book Number (digits only or with hyphens)">ISBN</label>
+                                        </div>
+                                        <input name="isbn" id="isbn" type="text" placeholder="e.g., 9780123456789"
+                                               aria-label="ISBN" title="Enter a 10 or 13-digit ISBN (hyphens allowed)"
+                                               value="{{ book.isbn if book and book.isbn }}">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="field">
-                                <div class="ui labeled input">
-                                    <div class="ui label">
-                                        <label for="isbn"
-                                               title="International Standard Book Number (digits only or with hyphens)">ISBN</label>
+                            <div class="fields">
+                                <div class="field">
+                                    <div class="ui labeled input">
+                                        <div class="ui label">
+                                            <label for="uuid"
+                                                   title="Unique identifier generated by the system">UUID</label>
+                                        </div>
+                                        <input type="text" name="uuid" id="uuid" value="{{ book.uuid if book }}"
+                                               title="This value is read-only"
+                                               readonly>
                                     </div>
-                                    <input name="isbn" id="isbn" type="text" placeholder="e.g., 9780123456789"
-                                           aria-label="ISBN" title="Enter a 10 or 13-digit ISBN (hyphens allowed)"
-                                           value="{{ book.isbn if book and book.isbn }}">
                                 </div>
-                            </div>
-                        </div>
-                        <div class="fields">
-                            <div class="field">
-                                <div class="ui labeled input">
-                                    <div class="ui label">
-                                        <label for="uuid" title="Unique identifier generated by the system">UUID</label>
+                                <div class="field">
+                                    <div class="ui labeled input">
+                                        <div class="ui label">
+                                            <label for="format"
+                                                   title="The physical or digital format (e.g., Hardcover, eBook)">Format</label>
+                                        </div>
+                                        <select name="format" id="format" class="ui fluid dropdown"
+                                                title="Choose the book's format">
+                                            <option value="">Select format</option>
+                                            {% for format in formats %}
+                                                <option value="{{ format.id }}" {{ "selected" if book and format == book.format }}>{{ format.name }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
-                                    <input type="text" name="uuid" id="uuid" value="{{ book.uuid if book }}"
-                                           title="This value is read-only"
-                                           readonly>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="ui labeled input">
-                                    <div class="ui label">
-                                        <label for="format"
-                                               title="The physical or digital format (e.g., Hardcover, eBook)">Format</label>
-                                    </div>
-                                    <select name="format" id="format" class="ui fluid dropdown"
-                                            title="Choose the book's format">
-                                        <option value="">Select format</option>
-                                        {% for format in formats %}
-                                            <option value="{{ format.id }}" {{ "selected" if book and format == book.format }}>{{ format.name }}</option>
-                                        {% endfor %}
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -147,13 +152,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="fields">
-                            {{ make_select(book.author_ids if book else None, authors, "author") }}
-                            {{ make_select(book.genre_ids if book else None, genres, "genre") }}
+                        <div class="ui equal width form">
+                            <div class="fields">
+                                {{ make_select(book.author_ids if book else None, authors, "author") }}
+                                {{ make_select(book.genre_ids if book else None, genres, "genre") }}
+                            </div>
                         </div>
-                        <div class="fields">
-                            {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
-                            {{ make_select(book.language_ids if book else None, languages, "language") }}
+                        <div class="ui equal width form">
+                            <div class="fields">
+                                {{ make_select(book.publisher_ids if book else None, publishers, "publisher") }}
+                                {{ make_select(book.language_ids if book else None, languages, "language") }}
+                            </div>
                         </div>
 
                         <h4 class="ui dividing header">
@@ -168,7 +177,7 @@
                         {% if book %}
                             {% for si in book.series %}
                                 <div class="fields">
-                                    <div class="field">
+                                    <div class="eight wide field">
                                         <label for="series-name-{{ loop.index }}">Name</label>
                                         <div id="series-name-{{ loop.index }}-dropdown"
                                              class="ui fluid search selection dropdown" role="combobox"
@@ -186,20 +195,24 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="field">
+                                    <div class="two wide field">
                                         <label for="series-index-{{ loop.index }}">Index</label>
                                         <input name="series-index-{{ loop.index }}"
                                                id="series-index-{{ loop.index }}"
                                                type="number" aria-label="Series index"
                                                min="0" step="0.1" value="{{ si.index }}">
                                     </div>
-                                    <div class="field">
+                                    <div class="four wide field">
+                                        <label></label>
+                                        <a href="{{ url_for("main.series", name=si.series.name) }}"
+                                           data-content="Show all books in {{ si.series.name }}">{{ si.series.name }}</a>
+                                    </div>
+                                    <div class="two wide field">
                                         <label></label>
                                         <a class="ui red icon button remove series" title="Remove from book"
                                            aria-label="Remove series from book" role="button">
                                             <i class="minus icon" aria-hidden="true"></i>
                                         </a>
-
                                     </div>
                                 </div>
                             {% endfor %}

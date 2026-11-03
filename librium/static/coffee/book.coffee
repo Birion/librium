@@ -223,7 +223,7 @@ createSeriesFields = ($addButton) ->
   $addButton.parent().before $field
 
   # Create series field
-  $seriesField = makeDiv "field"
+  $seriesField = makeDiv "eight wide field"
   $seriesField.appendTo $field
 
   # Add series label
@@ -262,7 +262,7 @@ createSeriesFields = ($addButton) ->
   $menuDiv.appendTo $dropdownDiv
 
   # Create index field
-  $idxField = makeDiv "field"
+  $idxField = makeDiv "two wide field"
   $idxField.appendTo $field
 
   # Add index label and input
@@ -278,8 +278,12 @@ createSeriesFields = ($addButton) ->
     "aria-label": "Series index"
   .appendTo $idxField
 
+  # Create empty field for spacing
+  $emptyField = makeDiv "four wide field"
+  $emptyField.appendTo $field
+
   # Create button field
-  $buttonField = makeDiv "field"
+  $buttonField = makeDiv "two wide field"
   $buttonField.appendTo $field
 
   # Add button label

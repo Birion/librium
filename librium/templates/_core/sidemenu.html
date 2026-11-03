@@ -23,7 +23,12 @@
         <span class="mobile-hide">
             {{ app_name }}
         </span>
+
     </a>
+    <div class="item">
+        <span class="ui green text">{{ read_books() }}</span> + <span class="ui red text">{{ unread_books() }}</span> =
+        <span class="ui blue text">{{ read_books() + unread_books() }}</span> books
+    </div>
     <a href="{{ url_for("book.new") }}" class="item">
         Add a new book
     </a>
